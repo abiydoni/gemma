@@ -13,7 +13,7 @@
             <div class="relative group">
               <label for="foto" class="block cursor-pointer">
                 <div class="w-36 h-36 rounded-full bg-white/40 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:scale-105 group-hover:shadow-blue-200 backdrop-blur-md">
-                  <img id="preview-foto-profile" src="assets/img/user-default.png" alt="Foto Siswa" class="object-cover w-full h-full transition-all duration-300 hidden" />
+                  <img id="preview-foto-profile" src="assets/img/profile/default.png" alt="Foto Siswa" class="object-cover w-full h-full transition-all duration-300 hidden" />
                   <div id="icon-foto-profile" class="flex flex-col items-center justify-center w-full h-full z-10">
                     <i class="fa-solid fa-user text-blue-200 text-6xl drop-shadow"></i>
                     <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
@@ -147,10 +147,13 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   // Tombol kamera untuk upload foto
-  document.getElementById('btn-upload-foto').addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('foto').click();
-  });
+  var btnUploadFoto = document.getElementById('btn-upload-foto');
+  if (btnUploadFoto) {
+    btnUploadFoto.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('foto').click();
+    });
+  }
   // Upload & preview foto head dan form
   const fotoInput = document.getElementById('foto');
   const previewHead = document.getElementById('preview-foto-head');
@@ -168,8 +171,8 @@
       }
       reader.readAsDataURL(file);
     } else {
-      previewHead.src = 'assets/img/user-default.png';
-      previewForm.src = 'assets/img/user-default.png';
+      previewHead.src = 'assets/img/profile/default.png';
+      previewForm.src = 'assets/img/profile/default.png';
       previewHead.classList.add('hidden');
       iconPlusHead.classList.remove('hidden');
     }
@@ -181,41 +184,12 @@
       iconPlusHead.classList.remove('hidden');
     }
   });
-  // Harga otomatis
-  const hargaPaket = {
-    'SD-Privat': '100K',
-    'SD-Kelompok': '70K',
-    'SMP-Privat': '120K',
-    'SMP-Kelompok': '90K',
-    'SMA-Privat': '140K',
-    'SMA-Kelompok': '110K',
-    'Umum-Privat': '160K',
-    'Umum-Kelompok': '130K'
-  };
-  document.getElementById('jenjang').addEventListener('change', setHarga);
-  document.getElementById('tipe').addEventListener('change', setHarga);
-  function setHarga() {
-    const j = document.getElementById('jenjang').value;
-    const t = document.getElementById('tipe').value;
-    const m = document.querySelector('input[name="mapel"]').value;
-    document.getElementById('harga').value = hargaPaket[j+'-'+t] || '';
-    document.getElementById('cart-jenjang').textContent = j || '-';
-    document.getElementById('cart-tipe').textContent = t || '-';
-    document.getElementById('cart-mapel').textContent = m || '-';
-    document.getElementById('cart-harga').textContent = hargaPaket[j+'-'+t] || '-';
-  }
-  document.querySelector('input[name="mapel"]').addEventListener('input', function() {
-    document.getElementById('cart-mapel').textContent = this.value || '-';
-  });
-  // Inisialisasi cart saat load
-  setHarga();
-  document.getElementById('cart-mapel').textContent = document.querySelector('input[name="mapel"]').value || '-';
-  // Tampilkan upload bukti jika transfer
-  document.getElementById('metode').addEventListener('change', function() {
-    document.getElementById('bukti-transfer').style.display = this.value === 'Transfer' ? 'block' : 'none';
-  });
   // SweetAlert submit
   document.getElementById('form-daftar').addEventListener('submit', async function(e) {
+    if (!this.checkValidity()) {
+      this.reportValidity();
+      return;
+    }
     e.preventDefault();
     const btn = document.getElementById('btn-daftar');
     const btnLoading = document.getElementById('btn-loading');
@@ -228,27 +202,16 @@
     btn.disabled = false;
     btnLoading.classList.add('hidden');
     if(data.status === 'ok') {
-      // Hilangkan overlay sebelum redirect
-      const overlay = document.getElementById('overlay-disable');
-      if (overlay) overlay.remove();
-      Swal.fire({
-        iconHtml: '<i class="fa-solid fa-file-invoice-dollar text-blue-500"></i>',
-        customClass: { icon: 'border-0 text-5xl' },
-        title: 'Pendaftaran Berhasil!',
-        html: data.invoice,
-        confirmButtonText: 'Tutup',
-        width: 600
-      });
+      // Tampilkan invoice di preview kanan
+      document.getElementById('preview-invoice').innerHTML = data.invoice;
       form.reset();
       document.getElementById('harga').value = '';
-      document.getElementById('bukti-transfer').style.display = 'none';
-      document.getElementById('preview-foto').src = 'assets/img/user-default.png';
-      // Reset keranjang dan invoice preview
+      document.getElementById('preview-foto').src = 'assets/img/profile/default.png';
+      // Reset keranjang
       document.getElementById('cart-jenjang').textContent = '-';
       document.getElementById('cart-tipe').textContent = '-';
       document.getElementById('cart-mapel').textContent = '-';
       document.getElementById('cart-harga').textContent = '-';
-      document.getElementById('preview-invoice').textContent = 'Invoice akan muncul setelah pendaftaran berhasil.';
     } else {
       Swal.fire({ icon: 'error', title: 'Gagal', text: data.msg || 'Terjadi kesalahan.' });
     }
@@ -267,14 +230,18 @@
         previewProfile.src = ev.target.result;
         previewProfile.classList.remove('hidden');
         iconFotoProfile.classList.add('hidden');
-        iconEditProfile.classList.remove('pointer-events-none');
+        if (iconEditProfile) {
+          iconEditProfile.classList.remove('pointer-events-none');
+        }
       }
       reader.readAsDataURL(file);
     } else {
-      previewProfile.src = 'assets/img/user-default.png';
+      previewProfile.src = 'assets/img/profile/default.png';
       previewProfile.classList.add('hidden');
       iconFotoProfile.classList.remove('hidden');
-      iconEditProfile.classList.add('pointer-events-none');
+      if (iconEditProfile) {
+        iconEditProfile.classList.add('pointer-events-none');
+      }
     }
   });
   // Inisialisasi: jika belum ada foto, tampilkan icon user, jika sudah ada, tampilkan foto
@@ -282,7 +249,9 @@
     if (!fotoInputProfile.files.length) {
       previewProfile.classList.add('hidden');
       iconFotoProfile.classList.remove('hidden');
-      iconEditProfile.classList.add('pointer-events-none');
+      if (iconEditProfile) {
+        iconEditProfile.classList.add('pointer-events-none');
+      }
     }
   });
 
@@ -303,6 +272,47 @@ window.addEventListener('DOMContentLoaded', function() {
       window.location.href = 'index.php';
     });
   }
+  // Harga otomatis
+  const hargaPaket = {
+    'SD-Privat': '100K',
+    'SD-Kelompok': '70K',
+    'SMP-Privat': '120K',
+    'SMP-Kelompok': '90K',
+    'SMA-Privat': '140K',
+    'SMA-Kelompok': '110K',
+    'Umum-Privat': '160K',
+    'Umum-Kelompok': '130K'
+  };
+  function setHarga() {
+    const jenjangEl = document.getElementById('jenjang');
+    const tipeEl = document.getElementById('tipe');
+    const mapelEl = document.querySelector('input[name="mapel"]');
+    const hargaEl = document.getElementById('harga');
+    const cartJenjang = document.getElementById('cart-jenjang');
+    const cartTipe = document.getElementById('cart-tipe');
+    const cartMapel = document.getElementById('cart-mapel');
+    const cartHarga = document.getElementById('cart-harga');
+    if (!jenjangEl || !tipeEl || !mapelEl || !hargaEl || !cartJenjang || !cartTipe || !cartMapel || !cartHarga) {
+      console.log('Element tidak ditemukan:', {jenjangEl, tipeEl, mapelEl, hargaEl, cartJenjang, cartTipe, cartMapel, cartHarga});
+      return;
+    }
+    const j = jenjangEl.value;
+    const t = tipeEl.value;
+    const m = mapelEl.value;
+    hargaEl.value = hargaPaket[j+'-'+t] || '';
+    cartJenjang.textContent = j || '-';
+    cartTipe.textContent = t || '-';
+    cartMapel.textContent = m || '-';
+    cartHarga.textContent = hargaPaket[j+'-'+t] || '-';
+    console.log('setHarga dipanggil:', {j, t, m, harga: hargaPaket[j+'-'+t]});
+  }
+  const jenjangEl = document.getElementById('jenjang');
+  const tipeEl = document.getElementById('tipe');
+  const mapelEl = document.querySelector('input[name="mapel"]');
+  if (jenjangEl) jenjangEl.addEventListener('change', setHarga);
+  if (tipeEl) tipeEl.addEventListener('change', setHarga);
+  if (mapelEl) mapelEl.addEventListener('input', setHarga);
+  setHarga();
 });
 </script>
 <?php include 'includes/footer.php'; ?> 
