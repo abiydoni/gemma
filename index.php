@@ -451,7 +451,7 @@
         <div class="relative z-10 flex flex-col items-center text-center space-y-4">
             <h2 class="text-2xl md:text-3xl font-extrabold mb-1 drop-shadow-lg">Anda Berminat Menjadi Siswa di Bimbel Gemma?</h2>
             <p class="text-base md:text-lg mb-4 font-medium">Bergabunglah bersama Bimbel Gemma untuk mewujudkan prestasi lebih baik!</p>
-            <a href="/daftar-hero" class="inline-flex items-center px-8 py-3 bg-gradient-to-b from-yellow-400 to-yellow-600 text-blue-900 font-extrabold rounded-full border-2 border-yellow-200 shadow-xl shadow-yellow-900/20 text-base gap-3 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 active:translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-300 animate-pulse">
+            <a href="#" class="inline-flex items-center px-8 py-3 bg-gradient-to-b from-yellow-400 to-yellow-600 text-blue-900 font-extrabold rounded-full border-2 border-yellow-200 shadow-xl shadow-yellow-900/20 text-base gap-3 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 active:translate-y-1 focus:outline-none focus:ring-4 focus:ring-yellow-300 animate-pulse">
                 <span>Daftar Sekarang</span>
                 <i class="fa-solid fa-chalkboard-user text-xl"></i>
             </a>
