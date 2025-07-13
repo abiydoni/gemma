@@ -118,29 +118,46 @@
 
     <!-- Grid Card Fitur Unggulan Overlap -->
     <div class="relative z-30 max-w-6xl mx-auto -mt-24">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
-                <i class="fa-solid fa-user-graduate text-[#1976D2] text-5xl mb-4 fitur-bounce"></i>
-                <h3 class="font-bold text-xl mb-2 text-[#1976D2]">Pengajar Terbaik</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div class="bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-2xl shadow-xl p-8 flex flex-col items-center transition transform hover:scale-105 hover:shadow-2xl hover:border-blue-400 border-2 border-transparent group">
+                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-400 to-blue-600 mb-4 shadow-lg animate-bounce-slow">
+                    <i class="fa-solid fa-user-graduate text-white text-4xl"></i>
+                </div>
+                <h3 class="font-extrabold text-xl mb-2 text-blue-700 group-hover:text-blue-900 transition">Pengajar Terbaik</h3>
                 <p class="text-gray-600 text-center">Kami memiliki pengajar berpengalaman dan profesional.</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
-                <i class="fa-solid fa-comments text-[#1976D2] text-5xl mb-4 fitur-bounce"></i>
-                <h3 class="font-bold text-xl mb-2 text-[#1976D2]">Free Konsultasi</h3>
+            <div class="bg-gradient-to-br from-pink-50 via-white to-pink-100 rounded-2xl shadow-xl p-8 flex flex-col items-center transition transform hover:scale-105 hover:shadow-2xl hover:border-pink-400 border-2 border-transparent group">
+                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-pink-400 to-pink-600 mb-4 shadow-lg animate-bounce-slow">
+                    <i class="fa-solid fa-comments text-white text-4xl"></i>
+                </div>
+                <h3 class="font-extrabold text-xl mb-2 text-pink-700 group-hover:text-pink-900 transition">Free Konsultasi</h3>
                 <p class="text-gray-600 text-center">Konsultasi akademik & non-akademik gratis untuk siswa.</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
-                <i class="fa-solid fa-book-open text-[#1976D2] text-5xl mb-4 fitur-bounce"></i>
-                <h3 class="font-bold text-xl mb-2 text-[#1976D2]">Laporan Bulanan</h3>
+            <div class="bg-gradient-to-br from-yellow-50 via-white to-yellow-100 rounded-2xl shadow-xl p-8 flex flex-col items-center transition transform hover:scale-105 hover:shadow-2xl hover:border-yellow-400 border-2 border-transparent group">
+                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 mb-4 shadow-lg animate-bounce-slow">
+                    <i class="fa-solid fa-book-open text-white text-4xl"></i>
+                </div>
+                <h3 class="font-extrabold text-xl mb-2 text-yellow-700 group-hover:text-yellow-900 transition">Laporan Bulanan</h3>
                 <p class="text-gray-600 text-center">Laporan perkembangan dan evaluasi bulanan untuk orang tua.</p>
             </div>
-            <div class="bg-white rounded-2xl shadow-xl p-8 flex flex-col items-center">
-                <i class="fa-solid fa-award text-[#1976D2] text-5xl mb-4 fitur-bounce"></i>
-                <h3 class="font-bold text-xl mb-2 text-[#1976D2]">Terpercaya</h3>
+            <div class="bg-gradient-to-br from-purple-50 via-white to-purple-100 rounded-2xl shadow-xl p-8 flex flex-col items-center transition transform hover:scale-105 hover:shadow-2xl hover:border-purple-400 border-2 border-transparent group">
+                <div class="w-20 h-20 flex items-center justify-center rounded-full bg-gradient-to-br from-purple-400 to-purple-600 mb-4 shadow-lg animate-bounce-slow">
+                    <i class="fa-solid fa-award text-white text-4xl"></i>
+                </div>
+                <h3 class="font-extrabold text-xl mb-2 text-purple-700 group-hover:text-purple-900 transition">Terpercaya</h3>
                 <p class="text-gray-600 text-center">Lembaga bimbel terpercaya dengan berbagai program unggulan.</p>
             </div>
         </div>
     </div>
+    <style>
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .animate-bounce-slow {
+      animation: bounce-slow 2.2s infinite;
+    }
+    </style>
 
     <!-- Floating Social Media Icons -->
     <div class="fixed left-4 top-1/3 z-50 flex flex-col gap-4">
