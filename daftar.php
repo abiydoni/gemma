@@ -2,11 +2,25 @@
 <?php
 include 'api/db.php';
 try {
-  $stmt = $pdo->query('SELECT kode, nama FROM tb_mapel ORDER BY kode ASC');
+  $stmt = $pdo->query('SELECT kode, nama FROM tb_mapel ORDER BY nama ASC');
   $list_mapel = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  $stmt2 = $pdo->query('SELECT nama, keterangan FROM tb_jenjang ORDER BY nama ASC');
+  $list_jenjang = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+  $stmt3 = $pdo->query('SELECT kode, nama, jenjang, harga FROM tb_paket ORDER BY nama ASC');
+  $list_paket = $stmt3->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
   $list_mapel = [];
+  $list_jenjang = [];
+  $list_paket = [];
 }
+// Query harga paket
+$harga_paket = [];
+try {
+  $stmt4 = $pdo->query('SELECT jenjang, tipe, harga FROM tb_harga');
+  while ($row = $stmt4->fetch(PDO::FETCH_ASSOC)) {
+    $harga_paket[$row['jenjang'] . '-' . $row['tipe']] = $row['harga'];
+  }
+} catch (Exception $e) {}
 ?>
 <!-- Overlay untuk disable interaksi di luar form, termasuk navbar dan footer -->
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 py-10 relative z-[110] pointer-events-auto">
@@ -91,22 +105,26 @@ try {
               <i class="fa-solid fa-box-open text-blue-500"></i>
               <span class="font-bold text-blue-700 text-base">Data Paket Bimbel</span>
             </div>
+            <!-- Dropdown Jenjang -->
             <div class="flex items-center gap-2 sm:gap-3 bg-white/80 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow border border-blue-100 focus-within:border-blue-400 transition-all w-full">
               <i class="fa-solid fa-layer-group text-blue-400 text-base sm:text-lg"></i>
               <select name="jenjang" id="jenjang" required class="w-full bg-transparent outline-none focus:ring-0 text-base font-semibold text-blue-900 placeholder-gray-400">
-                <option value="">Jenjang</option>
-                <option value="SD">SD</option>
-                <option value="SMP">SMP</option>
-                <option value="SMA">SMA</option>
-                <option value="Umum">Umum</option>
+                <option value="">Pilih Jenjang</option>
+                <?php foreach($list_jenjang as $j): ?>
+                  <option value="<?= htmlspecialchars($j['nama']) ?>"><?= htmlspecialchars($j['nama']) ?><?= $j['keterangan'] ? ' - ' . htmlspecialchars($j['keterangan']) : '' ?></option>
+                <?php endforeach; ?>
               </select>
             </div>
+            <!-- Dropdown Tipe Paket -->
             <div class="flex items-center gap-2 sm:gap-3 bg-white/80 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow border border-blue-100 focus-within:border-blue-400 transition-all w-full">
               <i class="fa-solid fa-users text-blue-400 text-base sm:text-lg"></i>
               <select name="tipe" id="tipe" required class="w-full bg-transparent outline-none focus:ring-0 text-base font-semibold text-blue-900 placeholder-gray-400">
-                <option value="">Tipe Paket</option>
-                <option value="Privat">Privat</option>
-                <option value="Kelompok">Kelompok</option>
+                <option value="">Pilih Tipe Paket</option>
+                <?php foreach($list_paket as $p): ?>
+                  <option value="<?= htmlspecialchars($p['kode']) ?>" data-jenjang="<?= htmlspecialchars($p['jenjang']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>">
+                    <?= htmlspecialchars($p['nama']) ?>
+                  </option>
+                <?php endforeach; ?>
               </select>
             </div>
             <div class="flex items-center gap-2 sm:gap-3 bg-white/80 rounded-lg px-3 sm:px-4 py-2 sm:py-3 shadow border border-blue-100 focus-within:border-blue-400 transition-all w-full">
@@ -261,8 +279,25 @@ try {
   const btnBatal = document.getElementById('btn-batal');
   if (btnBatal) {
     btnBatal.addEventListener('click', function() {
-      window.location.href = '/gemma';
+      window.location.href = '/';
     });
   }
+  // Data paket dari PHP ke JS
+  var paketList = <?php echo json_encode($list_paket); ?>;
+  function setHarga() {
+    var jenjang = document.getElementById('jenjang').value;
+    var tipe = document.getElementById('tipe').value;
+    var hargaEl = document.getElementById('harga');
+    var harga = '';
+    for (var i = 0; i < paketList.length; i++) {
+      if (paketList[i].kode === tipe && paketList[i].jenjang === jenjang) {
+        harga = paketList[i].harga;
+        break;
+      }
+    }
+    hargaEl.value = harga;
+  }
+  document.getElementById('jenjang').addEventListener('change', setHarga);
+  document.getElementById('tipe').addEventListener('change', setHarga);
 </script>
 <?php include 'includes/footer.php'; ?> 

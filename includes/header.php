@@ -62,7 +62,7 @@
     <!-- Navbar -->
     <nav id="navbar" class="fixed top-0 left-0 w-full bg-[#1976D2] shadow-lg z-50">
         <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
-            <a href="/gemma" class="flex items-center font-extrabold text-2xl text-white tracking-wide hover:opacity-80 transition">
+            <a href="/" class="flex items-center font-extrabold text-2xl text-white tracking-wide hover:opacity-80 transition">
                 <?php
                 include_once __DIR__ . '/../api/db.php';
                 $profile = [

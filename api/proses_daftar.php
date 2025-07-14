@@ -1,27 +1,47 @@
 <?php
+include 'db.php';
 header('Content-Type: application/json');
 
 function clean($str) {
     return htmlspecialchars(trim($str));
 }
 
-// Ambil data
-$nama = clean($_POST['nama'] ?? '');
-$gender = clean($_POST['gender'] ?? '');
-$tgl_lahir = clean($_POST['tgl_lahir'] ?? '');
-$ortu = clean($_POST['ortu'] ?? '');
-$hp_ortu = clean($_POST['hp_ortu'] ?? '');
-$alamat = clean($_POST['alamat'] ?? '');
-$email = clean($_POST['email'] ?? '');
-$jenjang = clean($_POST['jenjang'] ?? '');
-$tipe = clean($_POST['tipe'] ?? '');
-$mapel = clean($_POST['mapel'] ?? '');
-$harga = clean($_POST['harga'] ?? '');
-// $metode = clean($_POST['metode'] ?? ''); // dihapus
+// Ambil data dari POST
+$nama = $_POST['nama'] ?? '';
+$gender = $_POST['gender'] ?? '';
+$tgl_lahir = $_POST['tgl_lahir'] ?? '';
+$ortu = $_POST['ortu'] ?? '';
+$hp_ortu = $_POST['hp_ortu'] ?? '';
+$alamat = $_POST['alamat'] ?? '';
+$email = $_POST['email'] ?? '';
+$jenjang = $_POST['jenjang'] ?? '';
+$tipe = $_POST['tipe'] ?? '';
+$mapel = $_POST['mapel'] ?? '';
+$harga = $_POST['harga'] ?? '';
+$foto = '';
+
+// Upload foto jika ada
+if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+    $ext = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+    $nama_file = 'siswa_' . time() . '_' . rand(1000,9999) . '.' . $ext;
+    $tujuan = '../assets/img/profile/' . $nama_file;
+    if (move_uploaded_file($_FILES['foto']['tmp_name'], $tujuan)) {
+        $foto = $nama_file;
+    }
+}
 
 // Validasi sederhana
 if(!$nama || !$gender || !$tgl_lahir || !$ortu || !$hp_ortu || !$alamat || !$jenjang || !$tipe || !$harga) {
     echo json_encode(['status'=>'fail','msg'=>'Data wajib diisi lengkap!']);
+    exit;
+}
+
+// Simpan ke tb_siswa
+try {
+    $stmt = $pdo->prepare("INSERT INTO tb_siswa (nama, gender, tgl_lahir, ortu, hp_ortu, alamat, email, jenjang, tipe, mapel, harga, foto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+    $stmt->execute([$nama, $gender, $tgl_lahir, $ortu, $hp_ortu, $alamat, $email, $jenjang, $tipe, $mapel, $harga, $foto]);
+} catch(Exception $e) {
+    echo json_encode(['status'=>'error','msg'=>'Gagal menyimpan ke database: '.$e->getMessage()]);
     exit;
 }
 
