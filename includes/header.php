@@ -62,8 +62,29 @@
     <!-- Navbar -->
     <nav id="navbar" class="fixed top-0 left-0 w-full bg-[#1976D2] shadow-lg z-50">
         <div class="max-w-6xl mx-auto flex items-center justify-between px-6 py-3">
-            <a href="#" class="flex items-center font-extrabold text-2xl text-white tracking-wide hover:opacity-80 transition">
-                <img src="assets/img/logo4.png" alt="Logo" class="w-auto h-12 -ml-4 -mt-2 mr-2 object-contain" style="filter: hue-rotate(200deg) saturate(2);">
+            <a href="/gemma" class="flex items-center font-extrabold text-2xl text-white tracking-wide hover:opacity-80 transition">
+                <?php
+                include_once __DIR__ . '/../api/db.php';
+                $profile = [
+                  'nama' => 'Bimbel Gemma',
+                  'alamat' => '',
+                  'ig' => '',
+                  'wa' => '',
+                  'keterangan' => 'Bimbingan belajar modern, seru, dan penuh semangat!'
+                ];
+                try {
+                  $stmt = $pdo->query('SELECT nama, alamat, ig, wa, keterangan, logo1 FROM tb_profile LIMIT 1');
+                  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                  if ($row) {
+                    foreach ($profile as $k => $v) {
+                      if (!empty($row[$k])) $profile[$k] = $row[$k];
+                    }
+                    $logo1 = (isset($row['logo1']) && $row['logo1'] && strpos($row['logo1'], '/') === false) ? 'assets/img/' . $row['logo1'] : $row['logo1'];
+                    if (empty($logo1)) $logo1 = 'assets/img/logo4.png';
+                  }
+                } catch (Exception $e) {}
+                ?>
+                <img src="<?= htmlspecialchars($logo1) ?>" alt="Logo" class="w-auto h-12 -ml-4 -mt-2 mr-2 object-contain" style="filter: hue-rotate(200deg) saturate(2);">
             </a>
             <div class="space-x-6 text-base font-semibold">
                 <a href="#paket" class="hover:text-yellow-300 text-white transition">Paket</a>
@@ -71,10 +92,6 @@
                 <a href="#galeri" class="hover:text-yellow-300 text-white transition">Galeri</a>
                 <a href="#artikel" class="hover:text-yellow-300 text-white transition">Artikel</a>
                 <a href="#promo" class="hover:text-yellow-300 text-white transition">Promo</a>
-                <a href="daftar.php" class="px-5 py-2 bg-gradient-to-b from-yellow-400 to-yellow-600 text-blue-900 font-extrabold rounded-full border-2 border-yellow-200 shadow-xl transition inline-flex items-center gap-2 hover:scale-105 focus:scale-105">
-                    <span>Pendaftaran</span>
-                    <i class="fa-solid fa-chalkboard-user text-base"></i>
-                </a>
                 <a href="login.php" class="ml-2 px-5 py-2 bg-gradient-to-b from-pink-400 to-pink-600 text-white font-extrabold rounded-full border-2 border-pink-200 shadow-xl transition inline-flex items-center gap-2 hover:scale-105 focus:scale-105">
                     <span>Login</span>
                     <i class="fa-solid fa-right-to-bracket text-base"></i>

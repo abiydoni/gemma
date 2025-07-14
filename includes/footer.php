@@ -1,3 +1,33 @@
+<?php
+include_once __DIR__ . '/../api/db.php';
+$logo1 = 'assets/img/logo4.png';
+try {
+  $stmt = $pdo->query('SELECT logo1 FROM tb_profile LIMIT 1');
+  $row = $stmt->fetch(PDO::FETCH_ASSOC);
+  if ($row && !empty($row['logo1'])) {
+    $logo1 = (strpos($row['logo1'], '/') === false) ? 'assets/img/' . $row['logo1'] : $row['logo1'];
+  }
+} catch (Exception $e) {}
+
+if (!isset($wa)) {
+  $wa = isset($profile['wa']) ? $profile['wa'] : '';
+  $wa_link = $wa;
+  if (strpos($wa, '08') === 0) {
+      $wa_link = '62' . substr($wa, 1);
+  }
+  $wa_link = preg_replace('/[^0-9]/', '', $wa_link);
+}
+
+if (!isset($alamat)) {
+  $alamat = isset($profile['alamat']) ? $profile['alamat'] : '';
+}
+
+$ig = isset($profile['ig']) ? $profile['ig'] : '';
+$ig_link = $ig;
+if ($ig && strpos($ig, 'http') !== 0) {
+    $ig_link = 'https://instagram.com/' . ltrim($ig, '@');
+}
+?>
     <!-- Section Ajakan Menjadi Siswa -->
     <section id="hero" class="relative py-8 px-6 flex flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-blue-700 via-blue-500 to-blue-300 text-white" style="min-height: 200px;">
         <!-- Slideshow Background (sama seperti hero) -->
@@ -28,16 +58,16 @@
                 <div class="flex flex-col items-center">
                     <div class="font-bold text-xl mb-2">Alamat Bimbel</div>
                     <div class="w-12 h-1 bg-blue-200 rounded-full mb-2"></div>
-                    <div class="text-center text-blue-100">JL. Dworowati No.5 Randuares RT.07/RW.01 Kumpulreo, Argomulyo, Salatiga, 50734</div>
+                    <div class="text-center text-blue-100"><?= htmlspecialchars($alamat) ?></div>
                 </div>
                 <!-- Media Sosial -->
                 <div class="flex flex-col items-center">
                     <div class="flex flex-col items-center mb-8">
-                        <img src="assets/img/logo4.png" alt="Logo Bimbel Gemma" class="w-auto h-12 mb-2">
+                        <img src="<?= htmlspecialchars($logo1) ?>" alt="Logo" class="w-auto h-16 object-contain mx-auto mb-2">
                     </div>
                     <div class="font-bold text-xl mb-2">Media Sosial</div>
                     <div class="flex gap-4 mt-2">
-                        <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-blue-600 text-xl hover:bg-blue-200 transition">
+                        <a href="<?= htmlspecialchars($ig_link) ?>" class="w-10 h-10 flex items-center justify-center rounded-full bg-white text-blue-600 text-xl hover:bg-blue-200 transition">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
                     </div>
@@ -49,8 +79,8 @@
                         <div class="bg-white text-blue-700 rounded-xl px-4 py-2 font-bold text-center shadow-md">
                             <div>Whatsapp :</div>
                             <div>
-                                <a href="https://wa.me/6289529749003" target="_blank" rel="noopener">
-                                    0895-2974-9003
+                                <a href="https://wa.me/<?= htmlspecialchars($wa_link) ?>" target="_blank" rel="noopener">
+                                <?= htmlspecialchars($wa) ?>
                                 </a>            
                             </div>
                         </div>

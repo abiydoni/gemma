@@ -1,4 +1,5 @@
 <?php include "includes/header.php"; ?>
+    <title><?= htmlspecialchars($profile['nama']) ?> - Bimbingan Belajar Modern</title>
     <!-- Hero Section -->
     <section id="hero" class="relative py-20 px-6 flex flex-col md:flex-row items-center gap-10 overflow-hidden bg-gradient-to-br from-blue-700 via-blue-500 to-blue-300 text-white" style="min-height: 480px;">
         <!-- Slideshow Background -->
@@ -13,13 +14,13 @@
         
         <div class="relative flex-1 space-y-6 z-10 pl-24">
             <h1 class="relative text-5xl md:text-7xl font-extrabold text-white tracking-tight mb-2" style="text-shadow: 0 6px 0 #2563eb, 0 12px 24px #2563eb99;">
-                <span class="absolute inset-0 z-0 select-none" aria-hidden="true" style="color:#2563eb; filter: blur(2px); transform: translate(6px,10px); text-shadow:none;">Bimbel Gemma</span>
-                <span class="relative z-10">Bimbel Gemma</span>
+                <span class="absolute inset-0 z-0 select-none" aria-hidden="true" style="color:#2563eb; filter: blur(2px); transform: translate(6px,10px); text-shadow:none;"><?= htmlspecialchars($profile['nama']) ?></span>
+                <span class="relative z-10"><?= htmlspecialchars($profile['nama']) ?></span>
                 <span class="absolute -top-4 -left-8 text-blue-300 text-2xl rotate-[-20deg]">★</span>
                 <span class="absolute -top-6 left-1/2 text-blue-400 text-xl rotate-12">★</span>
                 <span class="absolute -bottom-4 left-1/3 text-blue-200 text-lg rotate-6">★</span>
             </h1>
-            <p class="text-xl md:text-2xl">Bimbingan belajar modern, seru, dan penuh semangat!</p>
+            <p class="text-xl md:text-2xl"><?= htmlspecialchars($profile['keterangan']) ?></p>
             <p class="text-xl md:text-2xl">Daftar sekarang, raih prestasi bersama kami.</p>
             <a href="daftar.php" class="px-5 py-2 bg-gradient-to-b from-yellow-400 to-yellow-600 text-blue-900 font-extrabold rounded-full border-2 border-yellow-200 shadow-xl transition inline-flex items-center gap-2 hover:scale-105 focus:scale-105">
               <span>Pendaftaran</span>
@@ -76,10 +77,18 @@
 
     <!-- Floating Social Media Icons -->
     <div class="fixed left-4 top-1/3 z-50 flex flex-col gap-4">
-        <a href="#" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 to-yellow-500 text-white text-2xl shadow-lg transition social-anim social-ig" aria-label="Instagram">
+        <a href="<?= $profile['ig'] ? 'https://instagram.com/' . htmlspecialchars($profile['ig']) : '#' ?>" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 to-yellow-500 text-white text-2xl shadow-lg transition social-anim social-ig" aria-label="Instagram">
             <i class="fa-brands fa-instagram"></i>
         </a>
-        <a href="https://wa.me/6289529749003" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-500 text-white text-2xl shadow-lg transition social-anim social-wa" aria-label="WhatsApp">
+        <?php
+        $wa = isset($profile['wa']) ? $profile['wa'] : '';
+        $wa_link = $wa;
+        if (strpos($wa, '08') === 0) {
+            $wa_link = '62' . substr($wa, 1);
+        }
+        $wa_link = preg_replace('/[^0-9]/', '', $wa_link);
+        ?>
+        <a href="<?= $wa_link ? 'https://wa.me/' . htmlspecialchars($wa_link) : '#' ?>" target="_blank" class="w-12 h-12 flex items-center justify-center rounded-full bg-green-500 text-white text-2xl shadow-lg transition social-anim social-wa" aria-label="WhatsApp">
             <i class="fa-brands fa-whatsapp"></i>
         </a>
     </div>
@@ -213,7 +222,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                     <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform group-hover:scale-105 transition-all duration-300">
                         <div class="text-center mb-8">
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-4 shadow-lg">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl mb-4 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-green-400/60 animate-bounce-slow">
                                 <i class="fa-solid fa-book text-white text-2xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold text-gray-800 mb-2">SD</h3>
@@ -235,7 +244,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                     <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform group-hover:scale-105 transition-all duration-300">
                         <div class="text-center mb-8">
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-4 shadow-lg">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl mb-4 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-cyan-400/60 animate-bounce-slow">
                                 <i class="fa-solid fa-user-graduate text-white text-2xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold text-gray-800 mb-2">SMP</h3>
@@ -257,7 +266,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                     <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform group-hover:scale-105 transition-all duration-300">
                         <div class="text-center mb-8">
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl mb-4 shadow-lg">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl mb-4 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-purple-400/60 animate-bounce-slow">
                                 <i class="fa-solid fa-flask text-white text-2xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold text-gray-800 mb-2">SMA</h3>
@@ -279,7 +288,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                     <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform group-hover:scale-105 transition-all duration-300">
                         <div class="text-center mb-8">
-                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl mb-4 shadow-lg">
+                            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl mb-4 shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:shadow-yellow-400/60 animate-bounce-slow">
                                 <i class="fa-solid fa-users text-white text-2xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold text-gray-800 mb-2">Umum</h3>
