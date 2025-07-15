@@ -44,11 +44,9 @@ try {
   $list_mapel = $stmt_mapel->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 ?>
-<main class="flex-1 p-6 md:p-10 overflow-y-auto">
-  <div class="max-w-full mx-auto bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-blue-100 relative">
-    <!-- Redesain Card Data Siswa -->
-    <div class="bg-gradient-to-r from-blue-50 to-blue-100 rounded-2xl shadow-lg p-6 md:p-8 flex flex-col md:flex-row items-center gap-8 mb-10 border border-blue-200 animate-fadeInUp">
-      <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-blue-300 shadow-lg">
+  <div class="max-w-full overflow-x-auto bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-blue-100 relative">
+    <div class="flex items-center justify-between gap-2 mb-2">
+      <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-blue-300 shadow-lg">
       <div class="flex-1 flex flex-col items-center md:items-start">
         <div class="flex items-center gap-3 mb-2">
           <span class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-2">
@@ -64,8 +62,8 @@ try {
         <div class="flex flex-wrap gap-4 text-base text-blue-600 mb-1">
           <span><i class="fa-solid fa-user-group text-green-500 mr-1"></i><?= htmlspecialchars($siswa['ortu']) ?></span>
           <span><i class="fa-solid fa-phone text-green-600 mr-1"></i><?= htmlspecialchars($siswa['hp_ortu']) ?></span>
+          <span><i class="fa-solid fa-phone text-green-600 mr-1"></i><?= htmlspecialchars($siswa['alamat']) ?></span>
         </div>
-        <div class="text-base text-gray-600 mt-2"><i class="fa-solid fa-location-dot text-blue-400 mr-1"></i><?= htmlspecialchars($siswa['alamat']) ?></div>
       </div>
     </div>
     <!-- Card Transaksi -->
@@ -89,7 +87,6 @@ try {
                 <th class="py-2 px-3">Hari</th>
                 <th class="py-2 px-3">Jam</th>
                 <th class="py-2 px-3">Status</th>
-                <th class="py-2 px-3">Tanggal</th>
                 <th class="py-2 px-3">Aksi</th>
               </tr>
             </thead>
@@ -101,19 +98,18 @@ try {
                   $sisa = $t['harga'] - $t['bayar'];
                   $lunas = $sisa <= 0;
                   $badgeBg = $lunas ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-orange-100 text-orange-700 border border-orange-300';
-                  $statusText = $lunas ? 'Lunas' : 'Belum Lunas';
+                  $statusText = $lunas ? 'Lunas' : 'Aktif';
                 ?>
                 <tr class="border-b hover:bg-blue-50 group">
                   <td class="py-2 px-3 text-center"><?= $i+1 ?></td>
                   <td class="py-2 px-3"><?= htmlspecialchars($t['nama_paket'] ?? $t['paket']) ?></td>
                   <td class="py-2 px-3"><?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?></td>
-                  <td class="py-2 px-3">Rp<?= number_format($t['harga'],0,',','.') ?></td>
-                  <td class="py-2 px-3 text-green-700">Rp<?= number_format($t['bayar'],0,',','.') ?></td>
-                  <td class="py-2 px-3 <?= $lunas ? 'text-green-600' : 'text-red-600' ?>">Rp<?= number_format(max($sisa,0),0,',','.') ?></td>
+                  <td class="py-2 px-3 text-right"><?= number_format($t['harga'],0,',','.') ?></td>
+                  <td class="py-2 px-3 text-right text-green-700"><?= number_format($t['bayar'],0,',','.') ?></td>
+                  <td class="py-2 px-3 text-right <?= $lunas ? 'text-green-600' : 'text-red-600' ?>"><?= number_format(max($sisa,0),0,',','.') ?></td>
                   <td class="py-2 px-3"><?= htmlspecialchars($t['hari'] ?? '-') ?></td>
                   <td class="py-2 px-3"><?= htmlspecialchars($t['jam'] ?? '-') ?></td>
                   <td class="py-2 px-3"><span class="inline-block px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?>"><?= $statusText ?></span></td>
-                  <td class="py-2 px-3 text-xs text-gray-500"><?= htmlspecialchars($t['tanggal'] ?? '-') ?></td>
                   <td class="py-2 px-3 flex gap-1 justify-center">
                     <button class="edit-trx px-2 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-xs font-bold" data-id="<?= $t['id'] ?>" title="Edit" <?= $lunas ? 'disabled style="opacity:.5;cursor:not-allowed"' : '' ?>><i class="fa fa-edit"></i></button>
                     <button class="hapus-trx px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-xs font-bold" data-id="<?= $t['id'] ?>" title="Hapus" <?= $lunas ? 'disabled style="opacity:.5;cursor:not-allowed"' : '' ?>><i class="fa fa-trash"></i></button>
@@ -151,14 +147,13 @@ try {
       </a>
     </div>
   </div>
-</main>
 <!-- Modal Tambah Transaksi -->
 <div id="modal-tambah-trx" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-md relative overflow-hidden">
-    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-10 w-full relative">
+  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-xs relative overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full relative">
       <button id="close-modal-trx" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
       <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-400"></i> Tambah Transaksi</div>
-      <form id="form-tambah-trx" class="space-y-5">
+      <form id="form-tambah-trx" class="space-y-1">
         <input type="hidden" name="email" value="<?= htmlspecialchars($siswa['email']) ?>">
         <div>
           <label class="block text-base font-bold text-blue-700 mb-1">Paket</label>
@@ -210,6 +205,10 @@ try {
             </select>
           </div>
         </div>
+        <div>
+          <label class="block text-base font-bold text-blue-700 mb-1">Tanggal Mulai</label>
+          <input type="date" name="tanggal_mulai" class="input-form-modal" required min="<?= date('Y-m-d') ?>">
+        </div>
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" id="batal-modal-trx" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
           <button type="submit" class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Simpan</button>
@@ -220,10 +219,10 @@ try {
 </div>
 <!-- Modal Edit Transaksi -->
 <div id="modal-edit-trx" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs relative">
     <button id="close-modal-edit-trx" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa fa-xmark"></i></button>
     <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-edit text-yellow-400"></i> Edit Transaksi</div>
-    <form id="form-edit-trx" class="space-y-5">
+    <form id="form-edit-trx" class="space-y-1">
       <input type="hidden" name="id" id="edit-id">
       <div>
         <label class="block text-base font-bold text-blue-700 mb-1">Paket</label>
@@ -270,6 +269,10 @@ try {
           </select>
         </div>
       </div>
+      <div>
+        <label class="block text-base font-bold text-blue-700 mb-1">Tanggal Mulai</label>
+        <input type="date" name="tanggal_mulai" id="edit-tanggal-mulai" class="input-form-modal" required min="<?= date('Y-m-d') ?>">
+      </div>
       <div class="flex justify-end gap-3 mt-6">
         <button type="button" id="batal-modal-edit-trx" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
         <button type="submit" class="px-5 py-2 rounded-full bg-gradient-to-r from-yellow-500 to-yellow-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition flex items-center gap-2"><i class="fa-solid fa-save"></i> Simpan</button>
@@ -300,11 +303,11 @@ try {
 .input-form-modal {
   border: 2px solid #60a5fa;
   border-radius: 0.75rem;
-  padding: 0.75rem 1.1rem;
+  padding: 0.35rem 0.6rem;
   outline: none;
   background: #fff;
   width: 100%;
-  font-size: 1.08rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #2563eb;
   transition: border 0.2s;
@@ -341,8 +344,20 @@ function setHargaPaket() {
   }
 }
 document.getElementById('form-tambah-trx').addEventListener('submit', async function(e) {
+  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
+  const hariInput = this.querySelector('select[name="hari"]').value;
+  if (tanggalMulai && hariInput) {
+    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const d = new Date(tanggalMulai);
+    const hariTanggal = hariIndo[d.getDay()];
+    if (hariTanggal !== hariInput) {
+      e.preventDefault();
+      await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      return false;
+    }
+  }
   e.preventDefault();
-  const form = e.target;
+  const form = this;
   const formData = new FormData(form);
   const btn = form.querySelector('button[type=submit]');
   const konfirmasi = await Swal.fire({
@@ -403,6 +418,37 @@ document.querySelectorAll('.btn-hapus-trx').forEach(function(btn) {
 </script>
 <script>
 // Modal Tambah sudah ada
+// Validasi hari dan tanggal mulai pada form tambah transaksi
+document.getElementById('form-tambah-trx').addEventListener('submit', function(e) {
+  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
+  const hariInput = this.querySelector('select[name="hari"]').value;
+  if (tanggalMulai && hariInput) {
+    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const d = new Date(tanggalMulai);
+    const hariTanggal = hariIndo[d.getDay()];
+    if (hariTanggal !== hariInput) {
+      e.preventDefault();
+      Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      return false;
+    }
+  }
+});
+
+// Validasi hari dan tanggal mulai pada form edit transaksi
+document.getElementById('form-edit-trx').addEventListener('submit', function(e) {
+  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
+  const hariInput = this.querySelector('select[name="hari"]').value;
+  if (tanggalMulai && hariInput) {
+    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const d = new Date(tanggalMulai);
+    const hariTanggal = hariIndo[d.getDay()];
+    if (hariTanggal !== hariInput) {
+      e.preventDefault();
+      Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      return false;
+    }
+  }
+});
 // Modal Edit
 const modalEdit = document.getElementById('modal-edit-trx');
 const formEdit = document.getElementById('form-edit-trx');
@@ -431,6 +477,7 @@ Array.from(document.getElementsByClassName('edit-trx')).forEach(btn => {
       document.getElementById('edit-harga').value = data.harga;
       document.getElementById('edit-hari').value = data.hari;
       document.getElementById('edit-jam').value = data.jam;
+      document.getElementById('edit-tanggal-mulai').value = data.mulai || data.tanggal || '';
       modalEdit.classList.remove('hidden');
     } else {
       Swal.fire('Gagal','Data transaksi tidak ditemukan!','error');
@@ -439,6 +486,17 @@ Array.from(document.getElementsByClassName('edit-trx')).forEach(btn => {
 });
 formEdit.onsubmit = async function(e) {
   e.preventDefault();
+  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
+  const hariInput = this.querySelector('select[name="hari"]').value;
+  if (tanggalMulai && hariInput) {
+    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const d = new Date(tanggalMulai);
+    const hariTanggal = hariIndo[d.getDay()];
+    if (hariTanggal !== hariInput) {
+      await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      return false;
+    }
+  }
   const formData = new FormData(formEdit);
   formData.append('action','edit');
   const btn = formEdit.querySelector('button[type=submit]');

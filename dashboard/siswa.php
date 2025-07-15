@@ -19,13 +19,12 @@
               <th class="py-2 px-3">Ortu</th>
               <th class="py-2 px-3">HP Ortu</th>
               <th class="py-2 px-3">Alamat</th>
-              <th class="py-2 px-3">Email</th>
               <th class="py-2 px-3">Foto</th>
               <th class="py-2 px-3">Aksi</th>
             </tr>
           </thead>
           <tbody id="tbodySiswa">
-            <tr><td colspan="10" class="text-center py-6 text-gray-400">Memuat data...</td></tr>
+            <tr><td colspan="9" class="text-center py-6 text-gray-400">Memuat data...</td></tr>
           </tbody>
         </table>
       </div>
@@ -164,7 +163,7 @@
         .then(data => {
           const tbody = document.getElementById('tbodySiswa');
           if (!data.length) {
-            tbody.innerHTML = '<tr><td colspan="10" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center py-6 text-gray-400">Belum ada data siswa.</td></tr>';
             return;
           }
           tbody.innerHTML = data.map((s, i) => `
@@ -176,7 +175,6 @@
               <td class="py-2 px-3">${s.ortu||'-'}</td>
               <td class="py-2 px-3">${s.hp_ortu||'-'}</td>
               <td class="py-2 px-3">${s.alamat||'-'}</td>
-              <td class="py-2 px-3">${s.email||'-'}</td>
               <td class="py-2 px-3 text-center">${s.foto ? `<img src="../assets/img/profile/${s.foto}" class="w-10 h-10 rounded-full object-cover mx-auto">` : '-'}</td>
               <td class="py-2 px-3 flex gap-2 justify-center">
                 <button class="px-3 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-xs font-bold" onclick='editSiswa(${JSON.stringify(s)})'><i class="fa fa-edit"></i></button>

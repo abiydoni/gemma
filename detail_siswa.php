@@ -163,7 +163,7 @@ try {
     <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-10 w-full relative">
       <button id="close-modal-trx" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
       <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-400"></i> Tambah Transaksi</div>
-      <form id="form-tambah-trx" class="space-y-5">
+      <form id="form-tambah-trx" class="space-y-1">
         <input type="hidden" name="email" value="<?= htmlspecialchars($siswa['email']) ?>">
         <div>
           <label class="block text-base font-bold text-blue-700 mb-1">Paket</label>
@@ -215,6 +215,10 @@ try {
             </select>
           </div>
         </div>
+        <div>
+          <label class="block text-base font-bold text-blue-700 mb-1">Tanggal Mulai</label>
+          <input type="date" name="mulai" class="input-form-modal" required min="<?= date('Y-m-d') ?>">
+        </div>
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" id="batal-modal-trx" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
           <button type="submit" class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Simpan</button>
@@ -228,11 +232,11 @@ try {
 .input-form-modal {
   border: 2px solid #60a5fa;
   border-radius: 0.75rem;
-  padding: 0.75rem 1.1rem;
+  padding: 0.35rem 0.6rem;
   outline: none;
   background: #fff;
   width: 100%;
-  font-size: 1.08rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #2563eb;
   transition: border 0.2s;
@@ -276,8 +280,20 @@ function setHargaMapel() {
 }
 
 document.getElementById('form-tambah-trx').addEventListener('submit', async function(e) {
+  const tanggalMulai = this.querySelector('input[name="mulai"]').value;
+  const hariInput = this.querySelector('select[name="hari"]').value;
+  if (tanggalMulai && hariInput) {
+    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const d = new Date(tanggalMulai);
+    const hariTanggal = hariIndo[d.getDay()];
+    if (hariTanggal !== hariInput) {
+      e.preventDefault();
+      await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      return false;
+    }
+  }
   e.preventDefault();
-  const form = e.target;
+  const form = this;
   const formData = new FormData(form);
   const btn = form.querySelector('button[type=submit]');
   // Konfirmasi sebelum simpan

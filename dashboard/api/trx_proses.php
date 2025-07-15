@@ -38,12 +38,13 @@ if ($action === 'add') {
   $harga = $_POST['harga'] ?? 0;
   $hari = $_POST['hari'] ?? '';
   $jam = $_POST['jam'] ?? '';
+  $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
   if(!$email || !$paket || !$mapel || !$harga || !$hari || !$jam) {
     echo json_encode(['status'=>'fail','msg'=>'Data wajib diisi lengkap!']); exit;
   }
   try {
-    $stmt = $pdo->prepare('INSERT INTO tb_trx (email, paket, mapel, harga, bayar, hari, jam, status, tanggal) VALUES (?,?,?,?,0,?,?,0,NOW())');
-    $stmt->execute([$email, $paket, $mapel, $harga, $hari, $jam]);
+    $stmt = $pdo->prepare('INSERT INTO tb_trx (email, paket, mapel, harga, bayar, hari, jam, status, mulai) VALUES (?,?,?,?,0,?,?,0,?)');
+    $stmt->execute([$email, $paket, $mapel, $harga, $hari, $jam, $tanggal_mulai ? $tanggal_mulai : date('Y-m-d')]);
     echo json_encode(['status'=>'ok']);
   } catch(Exception $e) {
     echo json_encode(['status'=>'error','msg'=>'Gagal simpan: '.$e->getMessage()]);
@@ -59,12 +60,13 @@ if ($action === 'edit') {
   $harga = $_POST['harga'] ?? 0;
   $hari = $_POST['hari'] ?? '';
   $jam = $_POST['jam'] ?? '';
+  $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
   if(!$id || !$paket || !$mapel || !$harga || !$hari || !$jam) {
     echo json_encode(['status'=>'fail','msg'=>'Data wajib diisi lengkap!']); exit;
   }
   try {
-    $stmt = $pdo->prepare('UPDATE tb_trx SET paket=?, mapel=?, harga=?, hari=?, jam=? WHERE id=?');
-    $stmt->execute([$paket, $mapel, $harga, $hari, $jam, $id]);
+    $stmt = $pdo->prepare('UPDATE tb_trx SET paket=?, mapel=?, harga=?, hari=?, jam=?, mulai=? WHERE id=?');
+    $stmt->execute([$paket, $mapel, $harga, $hari, $jam, $tanggal_mulai ? $tanggal_mulai : date('Y-m-d'), $id]);
     echo json_encode(['status'=>'ok']);
   } catch(Exception $e) {
     echo json_encode(['status'=>'error','msg'=>'Gagal update: '.$e->getMessage()]);
