@@ -1,25 +1,96 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+  header('Location: ../login.php');
+  exit;
+}
+$user_nama = $_SESSION['user_nama'] ?? ($_SESSION['user_email'] ?? '');
+$user_role = $_SESSION['user_role'] ?? '';
+include '../api/db.php';
+$total_siswa = 0;
+try {
+  $stmt = $pdo->query('SELECT COUNT(email) as jumlah FROM tb_siswa');
+  $row = $stmt->fetch();
+  $total_siswa = $row ? $row['jumlah'] : 0;
+} catch(Exception $e) {}
+?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - Bimbel Gemma</title>
+  <title>Dashboard Admin</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    @keyframes fadeInUp { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform: none; } }
+    .animate-fadeInUp { animation: fadeInUp 0.8s cubic-bezier(.4,2,.3,1) both; }
+    .sidebar-active { background: linear-gradient(90deg, #2563eb22 60%, #fff0 100%); color: #fff; font-weight: bold; }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 via-white to-blue-100 min-h-screen text-gray-800">
-  <header class="w-full bg-blue-700 shadow z-10 flex items-center justify-between px-6 py-3">
-    <div class="flex items-center gap-3">
-      <img src="../assets/img/logo4.png" alt="Logo" class="w-8 h-8 object-contain rounded-full bg-white p-1">
-      <span class="text-white font-extrabold text-lg tracking-wide">Dashboard</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <i class="fa-solid fa-user-circle text-white text-2xl"></i>
-      <span class="text-white font-semibold hidden sm:inline">Admin</span>
-      <a href="logout.php" class="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-full shadow hover:scale-105 hover:shadow-xl transition flex items-center gap-2 ml-2">
-        <i class="fa-solid fa-right-from-bracket"></i> Logout
-      </a>
-    </div>
-  </header>
-  <main class="md:ml-64 transition-all duration-300">
+<body class="bg-gradient-to-br from-blue-50 via-white to-blue-100 font-sans min-h-screen relative overflow-x-hidden">
+  <!-- Dekorasi background -->
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-200 via-white to-pink-100 rounded-full blur-3xl opacity-40 -z-10"></div>
+  <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-100 via-white to-blue-100 rounded-full blur-2xl opacity-30 -z-10"></div>
+
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-blue-800 text-white flex flex-col shadow-2xl z-20 relative">
+      <div class="p-6 text-center font-extrabold text-2xl tracking-wide flex items-center justify-center gap-2">
+        <img src="../assets/img/logo4.png" alt="Logo" class="w-auto h-20 object-contain p-1">
+      </div>
+      <nav class="flex-grow p-4 space-y-2">
+        <div class="uppercase text-xs font-bold text-blue-200 mt-2 mb-2 tracking-widest">Menu Utama</div>
+        <a href="/gemma/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80 sidebar-active">
+          <i class="fas fa-home"></i><span>Dashboard</span>
+        </a>
+        <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Master Data</div>
+        <a href="siswa.php" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data Siswa</span>
+        </a>
+        <a href="jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Jadwal Les</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data Mapel</span>
+        </a>
+        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data Tarif</span>
+        </a>
+        <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Laporan</div>
+        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-chart-line"></i><span>Laporan</span>
+        </a>
+        <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
+        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+          <i class="fas fa-cogs"></i><span>Pengaturan</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-h-0">
+      <!-- Navbar User Info -->
+      <nav class="w-full flex items-center justify-end px-8 py-4 bg-white/80 shadow-sm relative z-10">
+        <div class="relative group">
+          <button class="flex items-center gap-3 focus:outline-none" id="userMenuBtn">
+            <img src="../assets/img/profile/default.png" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-blue-400 shadow object-cover">
+            <div class="text-right">
+              <div class="font-bold text-blue-800 text-base"><?= htmlspecialchars($user_nama) ?></div>
+              <div class="text-xs text-gray-500 font-semibold"><?= htmlspecialchars($user_role) ?></div>
+            </div>
+            <i class="fa fa-chevron-down text-gray-400 ml-2"></i>
+          </button>
+          <!-- Dropdown -->
+          <div id="userDropdown" class="hidden group-focus-within:block group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-blue-100 animate-fadeInUp">
+            <a href="#" class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition font-semibold"><i class="fa fa-user-edit mr-2"></i> Edit Profile</a>
+            <a href="#" class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition font-semibold"><i class="fa fa-key mr-2"></i> Ubah Password</a>
+            <button onclick="logout()" class="w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold"><i class="fa fa-sign-out-alt mr-2"></i> Logout</button>
+          </div>
+        </div>
+      </nav>
+      <!-- Konten Utama -->
+      <main class="flex-grow p-8 md:p-12 overflow-y-auto">

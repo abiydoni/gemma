@@ -89,9 +89,9 @@
             <div class="space-x-6 text-base font-semibold">
                 <a href="#paket" class="hover:text-yellow-300 text-white transition">Paket</a>
                 <a href="#jadwal" class="hover:text-yellow-300 text-white transition">Jadwal</a>
-                <a href="#galeri" class="hover:text-yellow-300 text-white transition">Galeri</a>
-                <a href="#artikel" class="hover:text-yellow-300 text-white transition">Artikel</a>
-                <a href="#promo" class="hover:text-yellow-300 text-white transition">Promo</a>
+                <!-- <a href="#galeri" class="hover:text-yellow-300 text-white transition">Galeri</a>
+                <a href="#artikel" class="hover:text-yellow-300 text-white transition">Artikel</a> -->
+                <a href="#promo" class="hover:text-yellow-300 text-white transition">Siswa</a>
                 <a href="login.php" class="ml-2 px-5 py-2 bg-gradient-to-b from-pink-400 to-pink-600 text-white font-extrabold rounded-full border-2 border-pink-200 shadow-xl transition inline-flex items-center gap-2 hover:scale-105 focus:scale-105">
                     <span>Login</span>
                     <i class="fa-solid fa-right-to-bracket text-base"></i>
@@ -100,3 +100,56 @@
         </div>
     </nav>
     <div class="h-16"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var menuSiswa = document.querySelector('a[href="#promo"], a[href="#siswa"]');
+  if(menuSiswa) {
+    menuSiswa.addEventListener('click', function(e) {
+      e.preventDefault();
+      Swal.fire({
+        title: 'Cek Data Siswa',
+        input: 'email',
+        inputLabel: 'Masukkan Email Siswa',
+        inputPlaceholder: 'Email aktif siswa',
+        showCancelButton: true,
+        confirmButtonText: 'Cek',
+        cancelButtonText: 'Batal',
+        inputValidator: (value) => {
+          if (!value) return 'Email wajib diisi!';
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return 'Format email tidak valid!';
+        }
+      }).then((result) => {
+        if(result.isConfirmed && result.value) {
+          var email = result.value;
+          fetch('api/cek_email.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: 'email=' + encodeURIComponent(email)
+          })
+          .then(r => r.json())
+          .then(data => {
+            if(data.status === 'found') {
+              window.location.href = 'detail_siswa.php?email=' + encodeURIComponent(email);
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: 'Email tidak ditemukan',
+                text: 'Email belum terdaftar. Ingin mendaftar sebagai siswa baru?',
+                showCancelButton: true,
+                confirmButtonText: 'Daftar',
+                cancelButtonText: 'Batal'
+              }).then((r2) => {
+                if(r2.isConfirmed) window.location.href = 'daftar.php';
+              });
+            }
+          })
+          .catch(() => {
+            Swal.fire('Error','Gagal menghubungi server!','error');
+          });
+        }
+      });
+    });
+  }
+});
+</script>

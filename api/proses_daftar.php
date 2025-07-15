@@ -14,10 +14,6 @@ $ortu = $_POST['ortu'] ?? '';
 $hp_ortu = $_POST['hp_ortu'] ?? '';
 $alamat = $_POST['alamat'] ?? '';
 $email = $_POST['email'] ?? '';
-$jenjang = $_POST['jenjang'] ?? '';
-$tipe = $_POST['tipe'] ?? '';
-$mapel = $_POST['mapel'] ?? '';
-$harga = $_POST['harga'] ?? '';
 $foto = '';
 
 // Upload foto jika ada
@@ -31,15 +27,15 @@ if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
 }
 
 // Validasi sederhana
-if(!$nama || !$gender || !$tgl_lahir || !$ortu || !$hp_ortu || !$alamat || !$jenjang || !$tipe || !$harga) {
+if(!$nama || !$gender || !$tgl_lahir || !$ortu || !$hp_ortu || !$alamat) {
     echo json_encode(['status'=>'fail','msg'=>'Data wajib diisi lengkap!']);
     exit;
 }
 
 // Simpan ke tb_siswa
 try {
-    $stmt = $pdo->prepare("INSERT INTO tb_siswa (nama, gender, tgl_lahir, ortu, hp_ortu, alamat, email, jenjang, tipe, mapel, harga, foto) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-    $stmt->execute([$nama, $gender, $tgl_lahir, $ortu, $hp_ortu, $alamat, $email, $jenjang, $tipe, $mapel, $harga, $foto]);
+    $stmt = $pdo->prepare("INSERT INTO tb_siswa (nama, gender, tgl_lahir, ortu, hp_ortu, alamat, email, foto) VALUES (?,?,?,?,?,?,?,?)");
+    $stmt->execute([$nama, $gender, $tgl_lahir, $ortu, $hp_ortu, $alamat, $email, $foto]);
 } catch(Exception $e) {
     echo json_encode(['status'=>'error','msg'=>'Gagal menyimpan ke database: '.$e->getMessage()]);
     exit;
