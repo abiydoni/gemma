@@ -1,15 +1,15 @@
 <?php include "header.php"; ?>
 
-      <div class="flex items-center justify-between mb-8">
-        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-3">
-          <i class="fas fa-users text-blue-600"></i> Data Siswa
-        </h1>
-        <button id="btnTambah" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow flex items-center gap-2">
-          <i class="fa fa-plus"></i> Tambah Siswa
-        </button>
-      </div>
-      <div class="bg-white rounded-2xl shadow-xl p-4 overflow-x-auto">
-        <table class="min-w-full text-sm text-gray-700" id="tabelSiswa">
+<div class="flex items-center justify-between mb-8">
+  <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-3">
+    <i class="fas fa-users text-blue-600"></i> Data Siswa
+  </h1>
+  <button id="btnTambah" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-bold shadow flex items-center gap-2">
+    <i class="fa fa-plus"></i> Tambah Siswa
+  </button>
+</div>
+<div class="bg-white rounded-2xl shadow-xl p-4 overflow-x-auto">
+  <table class="min-w-full text-sm text-gray-700" id="tabelSiswa">
           <thead>
             <tr class="bg-blue-100 text-blue-800">
               <th class="py-2 px-3">#</th>

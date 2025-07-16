@@ -66,7 +66,8 @@ try {
             'date' => $date,
             'jam' => $t['jam'],
             'nama' => $t['nama_siswa'],
-            'mapel' => $t['nama_mapel']
+            'mapel' => $t['nama_mapel'],
+            'paket' => $t['paket'] // tambahkan paket
           ];
         }
       }
@@ -100,6 +101,11 @@ foreach($events as $e) {
   $usedMapel[$e['mapel']] = $mapelList[$e['mapel']] ?? 'bg-blue-500 text-white';
 }
 ?>
+<div class="flex items-center mb-6">
+  <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-3">
+    <i class="fa-solid fa-calendar-days text-blue-600"></i> Jadwal Les Harian Bulan <?= date('F Y', $start) ?>
+  </h1>
+</div>
   <div class="max-w-full overflow-x-auto bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-blue-100 relative">
     <div class="flex items-center justify-between gap-2 mb-2">
       <form method="get" class="inline">
@@ -111,10 +117,6 @@ foreach($events as $e) {
         <button type="submit" class="px-3 py-1 rounded bg-blue-100 text-blue-700 font-bold shadow hover:bg-blue-200">Bulan Berikutnya &raquo;</button>
       </form>
     </div>
-    <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 mb-6 flex items-center gap-3">
-      <i class="fa-solid fa-calendar-days text-blue-600"></i> Jadwal Les Harian Bulan <?= date('F Y', $start) ?>
-    </h1>
-    <!-- Hapus form paginasi di sini -->
     <table class="min-w-max w-full text-[10px] border-2 border-blue-400 rounded-xl shadow">
       <thead>
         <tr class="bg-blue-100 text-blue-800">
@@ -152,9 +154,23 @@ foreach($events as $e) {
                 return $e['date'] === $tgl && $e['jam'] === $jam;
               });
               $cellColor = '';
+              $hasKelompok = false;
+              $hasPrivate = false;
+              $colorKL = '';
+              $colorPR = '';
               if($found) {
                 $first = reset($found);
                 $cellColor = $mapelList[$first['mapel']] ?? 'bg-blue-200';
+                foreach($found as $f) {
+                  if(isset($f['paket']) && substr($f['paket'],0,2)==='KL') {
+                    $hasKelompok = true;
+                    $colorKL = $mapelList[$f['mapel']] ?? 'bg-pink-400';
+                  }
+                  if(isset($f['paket']) && substr($f['paket'],0,2)==='PR') {
+                    $hasPrivate = true;
+                    $colorPR = $mapelList[$f['mapel']] ?? 'bg-blue-400';
+                  }
+                }
               }
               $dataDetail = '';
               if($found) {
@@ -166,7 +182,7 @@ foreach($events as $e) {
               }
             ?>
             <td class="py-0.5 px-0.5 text-center align-top border-blue-100 border-r last:border-r-0 border-b min-w-[16px] max-w-[20px]
-              <?= ' ' . $cellColor ?>
+              <?= ($hasKelompok && $hasPrivate) ? '' : ' ' . $cellColor ?>
               <?= $isPast ? ' bg-gray-100 text-gray-400 opacity-60 pointer-events-none select-none' : '' ?>
               <?= $isMinggu ? ' text-red-500' : '' ?>
               <?= $found ? ' detail-cell' : '' ?>"
@@ -182,7 +198,18 @@ foreach($events as $e) {
                   echo implode(' | ', $tips);
                 ?>"
               <?php endif; ?>
-            ></td>
+            style="height:24px;min-height:24px;max-height:24px;">
+              <?php if($hasKelompok && $hasPrivate): ?>
+                <div class="w-full h-full flex relative items-center" style="height:100%;min-height:100%;max-height:100%;">
+                  <div class="h-full w-1/2 relative flex items-center justify-center <?= $colorKL ?>">
+                    <i class='fa fa-users text-[9px] text-pink-700 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'></i>
+                  </div>
+                  <div class="h-full w-1/2 <?= $colorPR ?>"></div>
+                </div>
+              <?php elseif(isset($hasKelompok) && $hasKelompok): ?>
+                <i class="fa fa-users text-xs text-pink-700"></i>
+              <?php endif; ?>
+            </td>
           <?php endforeach; ?>
         </tr>
         <?php endforeach; ?>

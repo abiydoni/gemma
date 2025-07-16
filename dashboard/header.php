@@ -26,6 +26,7 @@ try {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <!-- SweetAlert -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <style>
     @keyframes fadeInUp { from { opacity:0; transform: translateY(40px);} to { opacity:1; transform: none; } }
     .animate-fadeInUp { animation: fadeInUp 0.8s cubic-bezier(.4,2,.3,1) both; }
@@ -37,42 +38,57 @@ try {
   <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-gradient-to-br from-blue-200 via-white to-pink-100 rounded-full blur-3xl opacity-40 -z-10"></div>
   <div class="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-yellow-100 via-white to-blue-100 rounded-full blur-2xl opacity-30 -z-10"></div>
 
-  <div class="flex h-screen">
+  <div class="flex min-h-screen">
     <!-- Sidebar -->
-    <aside class="w-64 bg-blue-800 text-white flex flex-col shadow-2xl z-20 relative">
+    <aside class="fixed top-0 left-0 h-screen w-64 bg-blue-800 text-white flex flex-col shadow-2xl z-30 overflow-y-auto">
       <div class="p-6 text-center font-extrabold text-2xl tracking-wide flex items-center justify-center gap-2">
         <img src="../assets/img/logo4.png" alt="Logo" class="w-auto h-20 object-contain p-1">
       </div>
       <nav class="flex-grow p-4 space-y-2">
         <div class="uppercase text-xs font-bold text-blue-200 mt-2 mb-2 tracking-widest">Menu Utama</div>
-        <a href="/gemma/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80 sidebar-active">
+        <a href="/gemma/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80 sidebar-active">
           <i class="fas fa-home"></i><span>Dashboard</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Master Data</div>
-        <a href="siswa.php" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+        <a href="siswa.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fas fa-users"></i><span>Data Siswa</span>
         </a>
-        <a href="jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
+        <a href="jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fas fa-users"></i><span>Jadwal Les</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data Mapel</span>
+        <a href="paket.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data Paket</span>
         </a>
-        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data Tarif</span>
+        <a href="mapel.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data Mata Pelajaran</span>
+        </a>
+        <a href="user.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Data User</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Laporan</div>
-        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
-          <i class="fas fa-chart-line"></i><span>Laporan</span>
+        <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-chart-line"></i><span>Keuangan</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
-        <a href="#" class="flex items-center space-x-3 rounded-lg px-4 py-3 transition hover:bg-blue-700/80">
-          <i class="fas fa-cogs"></i><span>Pengaturan</span>
+        <a href="fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Setting Fasilitas</span>
+        </a>
+        <a href="set_jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Setting Jadwal</span>
+        </a>
+        <a href="jenjang.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Setting Jenjang</span>
+        </a>
+        <a href="kondisi.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-users"></i><span>Setting Kondisi</span>
+        </a>
+        <a href="profile.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fas fa-cogs"></i><span>Profile</span>
         </a>
       </nav>
     </aside>
 
-    <div class="flex-1 flex flex-col min-h-0">
+    <div class="flex-1 flex flex-col min-h-0 ml-0 md:ml-64">
       <!-- Navbar User Info -->
       <nav class="w-full flex items-center justify-end px-8 py-4 bg-white/80 shadow-sm relative z-10">
         <div class="relative group">
@@ -93,4 +109,4 @@ try {
         </div>
       </nav>
       <!-- Konten Utama -->
-      <main class="flex-grow p-8 md:p-12 overflow-y-auto">
+      <main class="flex-grow p-8 md:p-12 overflow-y-auto pt-32">
