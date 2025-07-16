@@ -47,43 +47,43 @@ try {
       <nav class="flex-grow p-4 space-y-2">
         <div class="uppercase text-xs font-bold text-blue-200 mt-2 mb-2 tracking-widest">Menu Utama</div>
         <a href="/gemma/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80 sidebar-active">
-          <i class="fas fa-home"></i><span>Dashboard</span>
+          <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
         </a>
-        <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Master Data</div>
         <a href="siswa.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data Siswa</span>
+          <i class="fa-solid fa-user-graduate"></i><span>Data Siswa</span>
         </a>
         <a href="jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Jadwal Les</span>
+          <i class="fa-solid fa-calendar-days"></i><span>Jadwal Les</span>
         </a>
+        <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Master Data</div>
         <a href="paket.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data Paket</span>
+          <i class="fa-solid fa-box-open"></i><span>Data Paket</span>
         </a>
         <a href="mapel.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data Mata Pelajaran</span>
+          <i class="fa-solid fa-book-open-reader"></i><span>Data Mata Pelajaran</span>
         </a>
         <a href="user.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Data User</span>
+          <i class="fa-solid fa-user-gear"></i><span>Data User</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Laporan</div>
         <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-chart-line"></i><span>Keuangan</span>
+          <i class="fa-solid fa-cash-register"></i><span>Keuangan</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
-        <a href="fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Setting Fasilitas</span>
+        <a href="setting_fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-building-wheat"></i><span>Setting Fasilitas</span>
         </a>
-        <a href="set_jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Setting Jadwal</span>
+        <a href="setting_jadwal.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-clock-rotate-left"></i><span>Setting Jadwal</span>
         </a>
         <a href="jenjang.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Setting Jenjang</span>
+          <i class="fa-solid fa-layer-group"></i><span>Setting Jenjang</span>
         </a>
         <a href="kondisi.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-users"></i><span>Setting Kondisi</span>
+          <i class="fa-solid fa-flag"></i><span>Setting Kondisi</span>
         </a>
         <a href="profile.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fas fa-cogs"></i><span>Profile</span>
+          <i class="fa-solid fa-user-cog"></i><span>Profile</span>
         </a>
       </nav>
     </aside>

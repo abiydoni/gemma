@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2025 at 02:10 PM
+-- Generation Time: Jul 16, 2025 at 06:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -94,6 +94,29 @@ INSERT INTO `tb_jenjang` (`id`, `nama`, `keterangan`, `tanggal`) VALUES
 (2, 'SMP', 'Sekolah Menengah Pertama', '2025-07-14 05:27:13'),
 (3, 'SMA', 'Sekolah Menengah Atas', '2025-07-14 05:27:13'),
 (4, 'UMUM', 'Umum', '2025-07-14 05:27:13');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_keuangan`
+--
+
+CREATE TABLE `tb_keuangan` (
+  `id` int(11) NOT NULL,
+  `tanggal` date NOT NULL,
+  `keterangan` varchar(255) NOT NULL,
+  `debet` decimal(20,2) NOT NULL DEFAULT 0.00,
+  `kredit` decimal(20,2) NOT NULL DEFAULT 0.00,
+  `waktu_update` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tb_keuangan`
+--
+
+INSERT INTO `tb_keuangan` (`id`, `tanggal`, `keterangan`, `debet`, `kredit`, `waktu_update`) VALUES
+(1, '2025-07-16', 'Pengeluaran', 0.00, 120000.00, '2025-07-16 15:28:11'),
+(2, '2025-07-16', '[AUTO] Pembayaran Siswa ID: 7', 140000.00, 0.00, '2025-07-16 16:40:13');
 
 -- --------------------------------------------------------
 
@@ -261,7 +284,7 @@ INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `hari`,
 (1, 'abiydoni@gmail.com', 'PR001', 'GE001', 100000, 100000, '0', '0', NULL, 1, '2025-07-15 05:22:38'),
 (5, 'pipin@gmail.com', 'PR004', 'GE001', 160000, 160000, 'Selasa', '12:00', '2025-07-22', 0, '2025-07-16 06:51:16'),
 (6, 'abiydoni@gmail.com', 'KL001', 'GE002', 70000, 0, 'Rabu', '18:00', '2025-07-16', 0, '2025-07-16 00:49:59'),
-(7, 'pipin@gmail.com', 'PR002', 'GE003', 140000, 0, 'Kamis', '11:00', '2025-07-17', 0, '2025-07-16 10:43:29');
+(7, 'pipin@gmail.com', 'PR002', 'GE003', 140000, 140000, 'Kamis', '11:00', '2025-07-17', 0, '2025-07-16 16:40:13');
 
 -- --------------------------------------------------------
 
@@ -305,6 +328,12 @@ ALTER TABLE `tb_jadwal`
 -- Indexes for table `tb_jenjang`
 --
 ALTER TABLE `tb_jenjang`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tb_keuangan`
+--
+ALTER TABLE `tb_keuangan`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -372,6 +401,12 @@ ALTER TABLE `tb_jadwal`
 --
 ALTER TABLE `tb_jenjang`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `tb_keuangan`
+--
+ALTER TABLE `tb_keuangan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `tb_kondisi`

@@ -84,6 +84,15 @@ if ($action === 'bayar') {
   try {
     $stmt = $pdo->prepare('UPDATE tb_trx SET bayar = bayar + ? WHERE id = ?');
     $stmt->execute([$nominal, $id]);
+    // Jurnal otomatis keuangan
+    $tanggal = date('Y-m-d');
+    $keterangan = "[AUTO] Pembayaran Siswa ID: $id";
+    $debet = $nominal;
+    $kredit = 0;
+    $stmt2 = $pdo->prepare('INSERT INTO tb_keuangan (tanggal, keterangan, debet, kredit) VALUES (?, ?, ?, ?)');
+    $stmt2->execute([$tanggal, $keterangan, $debet, $kredit]);
+    // updateAllSaldo jika ada
+    if (function_exists('updateAllSaldo')) updateAllSaldo($pdo);
     echo json_encode(['status'=>'ok']);
   } catch(Exception $e) {
     echo json_encode(['status'=>'error','msg'=>'Gagal bayar: '.$e->getMessage()]);
