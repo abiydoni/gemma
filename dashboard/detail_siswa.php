@@ -25,7 +25,7 @@ if (!empty($siswa['email'])) {
     $stmt->execute([$siswa['email']]);
     $trx = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($trx as $i => $t) {
-      $stmt2 = $pdo->prepare('SELECT tanggal, jam_trx FROM tb_trx_tanggal WHERE id_trx = ? ORDER BY tanggal, jam_trx');
+      $stmt2 = $pdo->prepare('SELECT id, tanggal, jam_trx FROM tb_trx_tanggal WHERE id_trx = ? ORDER BY tanggal, jam_trx');
       $stmt2->execute([$t['id']]);
       $trx[$i]['jadwal'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -117,7 +117,6 @@ try {
                   </td>
                   <td class="py-2 px-3"><span class="inline-block px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?>"><?= $statusText ?></span></td>
                   <td class="py-2 px-3 flex gap-1 justify-center">
-                    <button class="edit-trx px-2 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-xs font-bold" data-id="<?= $t['id'] ?>" title="Edit" <?= $lunas ? 'disabled style="opacity:.5;cursor:not-allowed"' : '' ?>><i class="fa fa-edit"></i></button>
                     <button class="hapus-trx px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600 text-xs font-bold" data-id="<?= $t['id'] ?>" title="Hapus" <?= $lunas ? 'disabled style="opacity:.5;cursor:not-allowed"' : '' ?>><i class="fa fa-trash"></i></button>
                     <?php if(!$lunas): ?>
                     <button class="bayar-trx px-2 py-1 rounded bg-green-500 text-white hover:bg-green-600 text-xs font-bold" data-id="<?= $t['id'] ?>" data-sisa="<?= $sisa ?>" title="Bayar"><i class="fa fa-money-bill"></i></button>
@@ -169,7 +168,7 @@ try {
               <select name="paket" required class="input-form-modal" onchange="setHargaPaket()">
                 <option value="">Pilih Paket</option>
                 <?php foreach($list_paket as $p): ?>
-                  <option value="<?= htmlspecialchars($p['kode']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>">
+                  <option value="<?= htmlspecialchars($p['kode']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>" data-keterangan="<?= htmlspecialchars($p['keterangan']) ?>">
                     <?= htmlspecialchars($p['nama']) ?><?= $p['keterangan'] ? ' - '.htmlspecialchars($p['keterangan']) : '' ?>
                   </option>
                 <?php endforeach; ?>
@@ -351,10 +350,34 @@ try {
 </div>
 <!-- Tambahkan modal detail jadwal di bawah tabel -->
 <div id="modal-detail-jadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs relative">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative">
     <button id="close-modal-detail-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa fa-xmark"></i></button>
     <div class="text-xl font-extrabold text-blue-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-400"></i> Detail Jadwal Les</div>
     <div id="isi-modal-detail-jadwal"></div>
+  </div>
+</div>
+<!-- Modal Edit Jadwal -->
+<div id="modalEditJadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
+    <button id="closeEditJadwalModal" class="absolute top-2 right-2 text-gray-400 hover:text-red-500"><i class="fa fa-times"></i></button>
+    <h3 class="text-lg font-bold mb-4 text-blue-700">Edit Tanggal & Jam Jadwal</h3>
+    <form id="formEditJadwal">
+      <input type="hidden" id="editJadwalId" name="id">
+      <div class="mb-3">
+        <label class="block text-xs font-bold mb-1">Tanggal</label>
+        <input type="date" id="editJadwalTanggal" name="tanggal" class="w-full border rounded px-2 py-1" required>
+      </div>
+      <div class="mb-3">
+        <label class="block text-xs font-bold mb-1">Jam</label>
+        <select id="editJadwalJam" name="jam" class="w-full border rounded px-2 py-1" required>
+          <option value="">Pilih Jam</option>
+        </select>
+      </div>
+      <div class="flex justify-end gap-2 mt-4">
+        <button type="button" id="batalEditJadwal" class="px-3 py-1 rounded bg-gray-300 text-gray-700 font-bold">Batal</button>
+        <button type="submit" class="px-3 py-1 rounded bg-blue-600 text-white font-bold">Simpan</button>
+      </div>
+    </form>
   </div>
 </div>
 <style>
@@ -374,6 +397,29 @@ try {
 .input-form-modal:focus {
   border-color: #2563eb;
   background: #f0f6ff;
+}
+.btn-hapus-baris {
+  min-width: 28px;
+  min-height: 28px;
+  width: 28px;
+  height: 28px;
+  padding: 0 !important;
+  margin-left: 6px;
+  margin-right: 6px;
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ef4444;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+}
+.btn-hapus-baris:hover, .btn-hapus-baris:focus {
+  background: #b91c1c;
+  box-shadow: 0 4px 16px 0 rgba(239,68,68,0.15);
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -402,14 +448,61 @@ function setHargaPaket() {
   var harga = select.options[select.selectedIndex].getAttribute('data-harga');
   var inputView = document.getElementById('harga-paket-view');
   var inputHidden = document.getElementById('harga-paket-hidden');
+  var keterangan = select.options[select.selectedIndex].getAttribute('data-keterangan') || '';
   if(harga) {
+    // Jika Harian dan mode custom, kalikan harga dengan jumlah tanggal
+    if (keterangan === 'Harian' && document.querySelector('input[name=mode_jadwal]:checked').value === 'custom') {
+      var rows = document.querySelectorAll('#tabel-tanggal-jam tbody tr');
+      var total = parseInt(harga) * rows.length;
+      inputView.value = Number(total).toLocaleString('id-ID');
+      inputHidden.value = total;
+    } else {
     inputView.value = Number(harga).toLocaleString('id-ID');
     inputHidden.value = harga;
+    }
   } else {
     inputView.value = '';
     inputHidden.value = '';
   }
 }
+// Update harga jika jumlah tanggal bertambah/berkurang pada mode custom dan paket Harian
+function updateHargaHarian() {
+  var select = document.querySelector('select[name=paket]');
+  var harga = select.options[select.selectedIndex].getAttribute('data-harga');
+  var keterangan = select.options[select.selectedIndex].getAttribute('data-keterangan') || '';
+  var inputView = document.getElementById('harga-paket-view');
+  var inputHidden = document.getElementById('harga-paket-hidden');
+  if (keterangan === 'Harian' && document.querySelector('input[name=mode_jadwal]:checked').value === 'custom') {
+    var rows = document.querySelectorAll('#tabel-tanggal-jam tbody tr');
+    var total = parseInt(harga) * rows.length;
+    inputView.value = Number(total).toLocaleString('id-ID');
+    inputHidden.value = total;
+  }
+}
+// Event listener untuk perubahan baris tanggal pada mode custom
+if(document.getElementById('btn-tambah-baris')){
+  document.getElementById('btn-tambah-baris').addEventListener('click', function(){
+    addBarisTanggalJam();
+    updateHargaHarian();
+  });
+}
+document.querySelector('#tabel-tanggal-jam').addEventListener('click', function(e){
+  const btn = e.target.closest('.btn-hapus-baris');
+  if(btn){
+    btn.closest('tr').remove();
+    updateHargaHarian();
+  }
+});
+document.querySelectorAll('input[name=mode_jadwal]').forEach(radio => {
+  radio.addEventListener('change', function() {
+    setHargaPaket();
+    updateHargaHarian();
+  });
+});
+document.querySelector('select[name=paket]').addEventListener('change', function() {
+  setHargaPaket();
+  updateHargaHarian();
+});
 document.getElementById('form-tambah-trx').addEventListener('submit', async function(e) {
   const mode = this.querySelector('input[name="mode_jadwal"]:checked').value;
   if (mode === 'otomatis') {
@@ -466,7 +559,9 @@ document.getElementById('form-tambah-trx').addEventListener('submit', async func
     if(data.status === 'ok') {
       Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Transaksi berhasil disimpan!' }).then(() => window.location.reload());
     } else {
-      Swal.fire({ icon: 'error', title: 'Gagal', text: data.msg || 'Gagal menyimpan transaksi.' });
+      let msg = data.msg || 'Gagal menyimpan transaksi.';
+      if (data.detail) msg += '\n' + data.detail;
+      Swal.fire({ icon: 'error', title: 'Gagal', text: msg });
     }
   } catch(err) {
     Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
@@ -474,7 +569,7 @@ document.getElementById('form-tambah-trx').addEventListener('submit', async func
   btn.disabled = false;
   btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Simpan';
 });
-document.querySelectorAll('.btn-hapus-trx').forEach(function(btn) {
+document.querySelectorAll('.hapus-trx').forEach(function(btn) {
   btn.addEventListener('click', async function(e) {
     e.preventDefault();
     const id = this.getAttribute('data-id');
@@ -506,104 +601,136 @@ document.querySelectorAll('.btn-hapus-trx').forEach(function(btn) {
 });
 </script>
 <script>
-// === Fungsi Tambah Baris Jadwal ===
-function addBarisTanggalJam(tgl='', jam='') {
-  const tbody = document.querySelector('#tabel-tanggal-jam tbody');
-  const idx = Date.now() + Math.floor(Math.random()*1000);
-  tbody.insertAdjacentHTML('beforeend', `
-    <tr data-idx="${idx}">
-      <td><input type="date" name="tanggal_les[]" class="input-form-modal" value="${tgl}" required></td>
-      <td>
-        <select name="jam_les[]" class="input-form-modal" required>
-          <option value="">Pilih Jam</option>
-          <option value="09:00">09:00</option>
-          <option value="10:00">10:00</option>
-          <option value="11:00">11:00</option>
-          <option value="12:00">12:00</option>
-          <option value="13:00">13:00</option>
-          <option value="14:00">14:00</option>
-          <option value="15:00">15:00</option>
-          <option value="16:00">16:00</option>
-          <option value="17:00">17:00</option>
-          <option value="18:00">18:00</option>
-          <option value="19:00">19:00</option>
-          <option value="20:00">20:00</option>
-        </select>
-      </td>
-      <td><button type="button" class="btn-hapus-baris px-2 py-1 bg-red-500 text-white rounded flex items-center justify-center" title="Hapus"><i class="fa fa-trash"></i></button></td>
-    </tr>
-  `);
+// Fungsi untuk ambil hari dari tanggal (YYYY-MM-DD -> Senin, Selasa, dst)
+function getHariIndo(tgl) {
+  const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const d = new Date(tgl);
+  return hariIndo[d.getDay()];
 }
-
-// === Fungsi Toggle Required ===
-function toggleRequired(mode) {
-  // Otomatis
-  const hari = document.querySelector('select[name="hari"]');
-  const jam = document.querySelector('select[name="jam"]');
-  const tglMulai = document.querySelector('input[name="tanggal_mulai"]');
-  if(hari) hari.required = (mode === 'otomatis');
-  if(jam) jam.required = (mode === 'otomatis');
-  if(tglMulai) tglMulai.required = (mode === 'otomatis');
-  // Custom
-  document.querySelectorAll('input[name="tanggal_les[]"]').forEach(el => el.required = (mode === 'custom'));
-  document.querySelectorAll('select[name="jam_les[]"]').forEach(el => el.required = (mode === 'custom'));
+// Fungsi untuk konversi tanggal DD/MM/YYYY ke YYYY-MM-DD
+function toYYYYMMDD(tgl) {
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(tgl)) {
+    const [d, m, y] = tgl.split('/');
+    return `${y}-${m}-${d}`;
+  }
+  return tgl;
 }
-
-// === Event Tambah Baris Jadwal ===
-document.getElementById('btn-tambah-baris').onclick = () => addBarisTanggalJam();
-document.querySelector('#tabel-tanggal-jam').addEventListener('click', function(e){
-  if(e.target.classList.contains('btn-hapus-baris')){
-    e.target.closest('tr').remove();
+// Fungsi untuk generate opsi jam dari jam buka-tutup
+function generateJamOptions(buka, tutup) {
+  let html = '<option value="">Pilih Jam</option>';
+  if (!buka || !tutup) return html;
+  const [bukaH, bukaM] = buka.split(':').map(Number);
+  const [tutupH, tutupM] = tutup.split(':').map(Number);
+  for (let h = bukaH; h <= tutupH; h++) {
+    let jam = (h < 10 ? '0' : '') + h + ':00';
+    if (h === tutupH && tutupM === 0) break;
+    html += `<option value="${jam}">${jam}</option>`;
+  }
+  return html;
+}
+// Handler untuk modal edit jadwal
+const inputTglEdit = document.getElementById('editJadwalTanggal');
+const selectJamEdit = document.getElementById('editJadwalJam');
+// Fungsi untuk mengisi jam pada modal edit jadwal
+function isiJamEditJadwal(tanggal, jamLama) {
+  const hari = getHariIndo(tanggal);
+  const selectJamEdit = document.getElementById('editJadwalJam'); // ambil ulang setiap kali fungsi dipanggil
+  if (!selectJamEdit) return;
+  fetch('api/jadwal_get.php?hari=' + encodeURIComponent(hari))
+    .then(res => res.json())
+    .then(data => {
+      selectJamEdit.innerHTML = generateJamOptions(data.buka, data.tutup);
+      if (jamLama) selectJamEdit.value = jamLama;
+    });
+}
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.btn-edit-jadwal')) {
+    const btn = e.target.closest('.btn-edit-jadwal');
+    const idx = btn.getAttribute('data-idx');
+    const tr = btn.closest('tr');
+    // Ambil data dari baris
+    const tanggal = tr.children[1].textContent.trim();
+    const jam = tr.children[2].textContent.trim();
+    const idJadwal = tr.getAttribute('data-idjadwal') || '';
+    document.getElementById('editJadwalId').value = idJadwal;
+    document.getElementById('editJadwalTanggal').value = toYYYYMMDD(tanggal);
+    document.getElementById('editJadwalJam').value = jam;
+    document.getElementById('modalEditJadwal').classList.remove('hidden');
+    isiJamEditJadwal(toYYYYMMDD(tanggal), jam);
+    jadwalTerpilih = { idx, idJadwal, tr };
   }
 });
-
-// === Toggle Mode Otomatis/Custom ===
-const radios = document.querySelectorAll('input[name=mode_jadwal]');
-radios.forEach(radio => {
-  radio.addEventListener('change', function() {
-    if (this.value === 'otomatis') {
-      document.getElementById('form-otomatis').style.display = '';
-      document.getElementById('form-custom').style.display = 'none';
+document.getElementById('closeEditJadwalModal').onclick = function() {
+  document.getElementById('modalEditJadwal').classList.add('hidden');
+};
+document.getElementById('batalEditJadwal').onclick = function() {
+  document.getElementById('modalEditJadwal').classList.add('hidden');
+};
+document.getElementById('formEditJadwal').onsubmit = function(e) {
+  e.preventDefault();
+  const id = document.getElementById('editJadwalId').value;
+  const tanggal = document.getElementById('editJadwalTanggal').value;
+  const jam = document.getElementById('editJadwalJam').value;
+  if (!id || !tanggal || !jam) return;
+  fetch('api/trx_proses.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=edit_jadwal&id=${encodeURIComponent(id)}&tanggal=${encodeURIComponent(tanggal)}&jam=${encodeURIComponent(jam)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      // Update tampilan baris jadwal tanpa reload
+      if (jadwalTerpilih && jadwalTerpilih.tr) {
+        jadwalTerpilih.tr.children[1].textContent = tanggal;
+        jadwalTerpilih.tr.children[2].textContent = jam;
+      }
+      // Ambil ulang data jadwal dari server dan update data-jadwal pada tombol detail
+      if (jadwalTerpilih && jadwalTerpilih.tr) {
+        // Cari tombol detail jadwal terkait transaksi ini
+        const btnDetail = document.querySelector(`button.btn-detail-jadwal[data-mapel]`);
+        if (btnDetail) {
+          // Ambil id_trx dari parent row transaksi
+          const trTransaksi = btnDetail.closest('tr');
+          if (trTransaksi) {
+            const idTrx = trTransaksi.querySelector('.hapus-trx')?.getAttribute('data-id');
+            if (idTrx) {
+              fetch(`api/trx_proses.php?action=get_jadwal&id_trx=${encodeURIComponent(idTrx)}`)
+                .then(res => res.json())
+                .then(jadwalBaru => {
+                  btnDetail.setAttribute('data-jadwal', JSON.stringify(jadwalBaru));
+                  // Jika modal detail jadwal masih terbuka, update isi modal juga
+                  if (!document.getElementById('modal-detail-jadwal').classList.contains('hidden')) {
+                    // Render ulang isi modal
+                    const mapel = btnDetail.getAttribute('data-mapel');
+                    let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th><th class='px-2 py-1 border'>Aksi</th></tr></thead><tbody>`;
+                    jadwalBaru.forEach((j, idx) => {
+                      html += `<tr data-idx='${idx}' data-idjadwal='${j.id}'>
+                        <td class='px-2 py-1 border'>${mapel}</td>
+                        <td class='px-2 py-1 border'>${j.tanggal}</td>
+                        <td class='px-2 py-1 border'>${j.jam_trx}</td>
+                        <td class='px-2 py-1 border text-center'>
+                          <button type='button' class='btn-edit-jadwal px-2 py-1 bg-yellow-400 text-white rounded text-xs font-bold' data-idx='${idx}' title='Edit'><i class='fa fa-edit'></i></button>
+                        </td>
+                      </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
+                  }
+                });
+            }
+          }
+        }
+      }
+      document.getElementById('modalEditJadwal').classList.add('hidden');
+      Swal.fire('Berhasil', 'Jadwal berhasil diupdate', 'success');
     } else {
-      document.getElementById('form-otomatis').style.display = 'none';
-      document.getElementById('form-custom').style.display = '';
+      Swal.fire('Gagal', data.msg || 'Gagal update jadwal', 'error');
     }
-    toggleRequired(this.value);
+  })
+  .catch(() => {
+    Swal.fire('Gagal', 'Gagal update jadwal', 'error');
   });
-});
-
-// === Reset Modal Tambah Transaksi ===
-if(document.getElementById('btn-tambah-trx')){
-  document.getElementById('btn-tambah-trx').addEventListener('click', function(){
-    const tbody = document.querySelector('#tabel-tanggal-jam tbody');
-    if(tbody){
-      tbody.innerHTML = '';
-      addBarisTanggalJam();
-    }
-    // Reset ke mode otomatis
-    document.querySelector('input[name=mode_jadwal][value=otomatis]').checked = true;
-    document.getElementById('form-otomatis').style.display = '';
-    document.getElementById('form-custom').style.display = 'none';
-    toggleRequired('otomatis');
-  });
-}
-</script>
-<script>
-document.querySelectorAll('.btn-detail-jadwal').forEach(btn => {
-  btn.onclick = function() {
-    const jadwal = JSON.parse(this.getAttribute('data-jadwal'));
-    const mapel = this.getAttribute('data-mapel');
-    let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th></tr></thead><tbody>`;
-    jadwal.forEach(j => {
-      html += `<tr><td class='px-2 py-1 border'>${mapel}</td><td class='px-2 py-1 border'>${j.tanggal}</td><td class='px-2 py-1 border'>${j.jam_trx}</td></tr>`;
-    });
-    html += '</tbody></table>';
-    document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
-    document.getElementById('modal-detail-jadwal').classList.remove('hidden');
-  };
-});
-document.getElementById('close-modal-detail-jadwal').onclick = function() {
-  document.getElementById('modal-detail-jadwal').classList.add('hidden');
 };
 </script>
 <?php include 'footer.php'; ?> 

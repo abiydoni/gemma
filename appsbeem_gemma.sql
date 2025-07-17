@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 17, 2025 at 02:18 PM
+-- Generation Time: Jul 17, 2025 at 06:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -283,7 +283,8 @@ CREATE TABLE `tb_trx` (
 INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `status`, `tanggal`) VALUES
 (9, 'pipin@gmail.com', 'KL001', 'GE001', 30000, 0, 0, '2025-07-17 09:20:49'),
 (10, 'abiydoni@gmail.com', 'KL001', 'GE002', 30000, 0, 0, '2025-07-17 11:28:41'),
-(11, 'abiydoni@gmail.com', 'PR002', 'GE004', 120000, 0, 0, '2025-07-17 11:30:14');
+(15, 'abiydoni@gmail.com', 'PR001', 'GE001', 45000, 0, 0, '2025-07-17 15:52:49'),
+(17, 'abiydoni@gmail.com', 'PR001', 'GE002', 90000, 0, 0, '2025-07-17 16:16:54');
 
 -- --------------------------------------------------------
 
@@ -303,18 +304,16 @@ CREATE TABLE `tb_trx_tanggal` (
 --
 
 INSERT INTO `tb_trx_tanggal` (`id`, `id_trx`, `jam_trx`, `tanggal`) VALUES
-(1, 9, '19:00', '2025-07-17'),
-(2, 9, '17:00', '2025-07-26'),
+(1, 9, '10:00', '2025-07-17'),
+(2, 9, '10:00', '2025-07-26'),
 (3, 10, '19:00', '2025-07-17'),
 (4, 10, '20:00', '2025-07-24'),
 (5, 10, '19:00', '2025-07-25'),
 (6, 10, '18:00', '2025-07-26'),
-(7, 10, '15:00', '2025-07-27'),
-(8, 11, '14:00', '2025-07-22'),
-(9, 11, '14:00', '2025-07-29'),
-(10, 11, '14:00', '2025-08-05'),
-(11, 11, '14:00', '2025-08-12'),
-(12, 11, '14:00', '2025-08-19');
+(7, 10, '23:00', '2025-07-27'),
+(13, 15, '10:00', '2025-07-26'),
+(14, 17, '16:00', '2025-07-17'),
+(15, 17, '13:00', '2025-07-19');
 
 -- --------------------------------------------------------
 
@@ -336,7 +335,8 @@ CREATE TABLE `tb_user` (
 --
 
 INSERT INTO `tb_user` (`id`, `email`, `nama`, `password`, `role`, `tanggal`) VALUES
-(1, 'abiydoni@gmail.com', 'Doni Abiyantoro', '$2y$10$Xkk4KxJJP/14KuKkl3szgu509UwL.6eCmgqsvTNyxqccDPhnJWaqS', 's_admin', '2025-07-14 07:33:47');
+(1, 'abiydoni@gmail.com', 'Doni Abiyantoro', '$2y$10$Xkk4KxJJP/14KuKkl3szgu509UwL.6eCmgqsvTNyxqccDPhnJWaqS', 's_admin', '2025-07-14 07:33:47'),
+(3, 'bimbelgemma@gmail.com', 'Aviana AS', '$2y$10$yHOlSZHjfUlYm3GDHv5F2uVDHCikcbDqv1Dkyb5k6MJIpaM2NsIji', 'admin', '2025-07-17 16:27:03');
 
 --
 -- Indexes for dumped tables
@@ -479,19 +479,19 @@ ALTER TABLE `tb_siswa`
 -- AUTO_INCREMENT for table `tb_trx`
 --
 ALTER TABLE `tb_trx`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `tb_trx_tanggal`
 --
 ALTER TABLE `tb_trx_tanggal`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
