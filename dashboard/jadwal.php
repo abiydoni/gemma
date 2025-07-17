@@ -37,41 +37,31 @@ try {
   }
 } catch(Exception $e) {}
 
-// Ambil jadwal les (tb_trx) untuk bulan aktif dan 1 bulan berikutnya
+// Ambil jadwal les dari tb_trx_tanggal untuk bulan aktif
 $events = [];
 $bulan = isset($_GET['bulan']) ? $_GET['bulan'] : date('Y-m');
 $startBulan = DateTime::createFromFormat('Y-m', $bulan);
 $start = strtotime($startBulan->format('Y-m-01'));
-$endBulan = clone $startBulan;
-$endBulan->modify('+1 month');
-$end = strtotime($endBulan->format('Y-m-t'));
+$end = strtotime(date('Y-m-t', $start));
 try {
-  $stmt = $pdo->prepare("SELECT t.*, s.nama as nama_siswa, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_siswa s ON t.email = s.email LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.mulai <= ?");
-  $stmt->execute([date('Y-m-t', $end)]);
-  $trx = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  foreach($trx as $t) {
-    $hariMap = [
-      'Senin'=>1, 'Selasa'=>2, 'Rabu'=>3, 'Kamis'=>4, 'Jumat'=>5, 'Sabtu'=>6
+  $stmt = $pdo->prepare("
+    SELECT tgl.tanggal, tgl.jam_trx, s.nama AS nama_siswa, m.nama AS nama_mapel, tr.paket
+    FROM tb_trx_tanggal tgl
+    JOIN tb_trx tr ON tgl.id_trx = tr.id
+    LEFT JOIN tb_siswa s ON tr.email = s.email
+    LEFT JOIN tb_mapel m ON tr.mapel = m.kode
+    WHERE tgl.tanggal BETWEEN ? AND ?
+  ");
+  $stmt->execute([date('Y-m-01', $start), date('Y-m-t', $start)]);
+  $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  foreach($rows as $row) {
+    $events[] = [
+      'date' => $row['tanggal'],
+      'jam' => $row['jam_trx'],
+      'nama' => $row['nama_siswa'],
+      'mapel' => $row['nama_mapel'],
+      'paket' => $row['paket']
     ];
-    $dow = $hariMap[$t['hari']] ?? null;
-    if($dow) {
-      $startLoop = strtotime($t['mulai']);
-      $endLoop = strtotime('-1 day', strtotime('+1 month', $startLoop));
-      for($d=$startLoop; $d<=$endLoop; $d+=86400) {
-        // Hanya warnai tanggal yang ada di bulan yang sedang ditampilkan
-        if($d < $start || $d > strtotime(date('Y-m-t', $start))) continue;
-        if(date('N',$d)==$dow) {
-          $date = date('Y-m-d',$d);
-          $events[] = [
-            'date' => $date,
-            'jam' => $t['jam'],
-            'nama' => $t['nama_siswa'],
-            'mapel' => $t['nama_mapel'],
-            'paket' => $t['paket'] // tambahkan paket
-          ];
-        }
-      }
-    }
   }
 } catch(Exception $e) {}
 

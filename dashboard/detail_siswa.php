@@ -643,7 +643,30 @@ function isiJamEditJadwal(tanggal, jamLama) {
       if (jamLama) selectJamEdit.value = jamLama;
     });
 }
+let jadwalTerpilih = null; // Variabel untuk menyimpan data jadwal yang sedang diedit
 document.addEventListener('click', function(e) {
+  // Handler tombol detail jadwal
+  if (e.target.closest('.btn-detail-jadwal')) {
+    const btn = e.target.closest('.btn-detail-jadwal');
+    const jadwal = JSON.parse(btn.getAttribute('data-jadwal'));
+    const mapel = btn.getAttribute('data-mapel');
+    let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th><th class='px-2 py-1 border'>Aksi</th></tr></thead><tbody>`;
+    jadwal.forEach((j, idx) => {
+      html += `<tr data-idx='${idx}' data-idjadwal='${j.id}'>
+        <td class='px-2 py-1 border'>${mapel}</td>
+        <td class='px-2 py-1 border'>${j.tanggal}</td>
+        <td class='px-2 py-1 border'>${j.jam_trx}</td>
+        <td class='px-2 py-1 border text-center'>
+          <button type='button' class='btn-edit-jadwal px-2 py-1 bg-yellow-400 text-white rounded text-xs font-bold' data-idx='${idx}' title='Edit'><i class='fa fa-edit'></i></button>
+        </td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
+    document.getElementById('modal-detail-jadwal').classList.remove('hidden');
+    return;
+  }
+  // Handler tombol edit jadwal di modal detail
   if (e.target.closest('.btn-edit-jadwal')) {
     const btn = e.target.closest('.btn-edit-jadwal');
     const idx = btn.getAttribute('data-idx');
@@ -658,6 +681,12 @@ document.addEventListener('click', function(e) {
     document.getElementById('modalEditJadwal').classList.remove('hidden');
     isiJamEditJadwal(toYYYYMMDD(tanggal), jam);
     jadwalTerpilih = { idx, idJadwal, tr };
+    return;
+  }
+  // Handler tombol close modal detail jadwal
+  if (e.target.closest('#close-modal-detail-jadwal')) {
+    document.getElementById('modal-detail-jadwal').classList.add('hidden');
+    return;
   }
 });
 document.getElementById('closeEditJadwalModal').onclick = function() {
