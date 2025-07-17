@@ -46,7 +46,7 @@ try {
       </div>
       <nav class="flex-grow p-4 space-y-2">
         <div class="uppercase text-xs font-bold text-blue-200 mt-2 mb-2 tracking-widest">Menu Utama</div>
-        <a href="/gemma/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80 sidebar-active">
+        <a href="/dashboard/" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80 sidebar-active">
           <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
         </a>
         <a href="siswa.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
