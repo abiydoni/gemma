@@ -34,7 +34,7 @@ $foto = isset($siswa['foto']) && $siswa['foto'] ? 'assets/img/profile/' . $siswa
 $trx = [];
 if (!empty($siswa['email'])) {
   try {
-    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, p.nama as nama_paket, t.mapel, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode OR t.paket = p.nama LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.email = ? ORDER BY t.tanggal DESC');
+    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, t.mulai, p.nama as nama_paket, t.mapel, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode OR t.paket = p.nama LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.email = ? ORDER BY t.tanggal DESC');
     $stmt->execute([$siswa['email']]);
     $trx_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
     // Pisahkan yang belum lunas dan sudah lunas
@@ -48,14 +48,14 @@ if (!empty($siswa['email'])) {
 // Ambil data paket untuk dropdown modal
 $list_paket = [];
 try {
-  $stmt_paket = $pdo->query('SELECT kode, nama, jenjang, harga FROM tb_paket ORDER BY kode ASC');
+  $stmt_paket = $pdo->query("SELECT kode, nama, keterangan, jenjang, harga FROM tb_paket WHERE status=1 ORDER BY nama ASC");
   $list_paket = $stmt_paket->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 
 // Ambil data mapel untuk dropdown modal
 $list_mapel = [];
 try {
-  $stmt_mapel = $pdo->query('SELECT kode, nama FROM tb_mapel ORDER BY kode ASC');
+  $stmt_mapel = $pdo->query('SELECT kode, nama FROM tb_mapel WHERE status=1 ORDER BY kode ASC');
   $list_mapel = $stmt_mapel->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 ?>
@@ -125,7 +125,7 @@ try {
                   <i class="fa-solid <?= $icon ?>"></i> <?= $statusText ?>
                 </span>
                 <?php if (isset($t['tanggal'])): ?>
-                  <span class="text-xs text-gray-400 mt-1 truncate whitespace-nowrap overflow-hidden block max-w-[160px] md:max-w-[200px]" title="<?= htmlspecialchars($t['tanggal']) ?>">Transaksi: <?= htmlspecialchars($t['tanggal']) ?></span>
+                  <span class="text-xs text-gray-400 mt-1 truncate whitespace-nowrap overflow-hidden block max-w-[160px] md:max-w-[200px]" title="<?= htmlspecialchars($t['mulai'] ?? $t['tanggal']) ?>">Mulai: <?= htmlspecialchars($t['mulai'] ?? $t['tanggal']) ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -171,7 +171,7 @@ try {
             <option value="">Pilih Paket</option>
             <?php foreach($list_paket as $p): ?>
               <option value="<?= htmlspecialchars($p['kode']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>">
-                <?= htmlspecialchars($p['nama']) ?> (<?= htmlspecialchars($p['jenjang']) ?>)
+                <?= htmlspecialchars($p['nama']) ?><?= $p['keterangan'] ? ' - '.htmlspecialchars($p['keterangan']) : '' ?>
               </option>
             <?php endforeach; ?>
           </select>

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2025 at 06:57 PM
+-- Generation Time: Jul 17, 2025 at 02:18 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -116,7 +116,10 @@ CREATE TABLE `tb_keuangan` (
 
 INSERT INTO `tb_keuangan` (`id`, `tanggal`, `keterangan`, `debet`, `kredit`, `waktu_update`) VALUES
 (1, '2025-07-16', 'Pengeluaran', 0.00, 120000.00, '2025-07-16 15:28:11'),
-(2, '2025-07-16', '[AUTO] Pembayaran Siswa ID: 7', 140000.00, 0.00, '2025-07-16 16:40:13');
+(2, '2025-07-16', '[AUTO] Pembayaran Siswa ID: 7', 140000.00, 0.00, '2025-07-16 16:40:13'),
+(3, '2025-07-17', '[AUTO] Pembayaran Siswa ID: 6', 70000.00, 0.00, '2025-07-17 02:55:06'),
+(4, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 70000.00, 0.00, '2025-07-17 02:58:38'),
+(5, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 100000.00, 0.00, '2025-07-17 03:18:27');
 
 -- --------------------------------------------------------
 
@@ -198,8 +201,8 @@ INSERT INTO `tb_paket` (`id`, `Kode`, `nama`, `keterangan`, `jenjang`, `harga`, 
 (2, 'KL001', 'Kelompok', 'Harian', 'SD', 30000, 1, '2025-07-16 05:59:16'),
 (3, 'PR002', 'Privat', 'Bulanan', 'SD', 120000, 1, '2025-07-16 05:59:21'),
 (4, 'KL002', 'Kelompok', 'Bulanan', 'SD', 90000, 1, '2025-07-16 05:59:24'),
-(5, 'PR003', 'Privat', 'Tahunan', 'SD', 140000, 1, '2025-07-16 05:59:27'),
-(6, 'KL003', 'Kelompok', 'Tahunan', 'SD', 110000, 1, '2025-07-16 05:59:30'),
+(5, 'PR003', 'Privat', 'Tahunan', 'SD', 140000, 0, '2025-07-17 02:22:22'),
+(6, 'KL003', 'Kelompok', 'Tahunan', 'SD', 110000, 0, '2025-07-17 02:22:18'),
 (9, 'PR999', 'Promo Privat', 'Persiapan PAS (Harian)', 'SD', 20000, 1, '2025-07-16 06:27:48'),
 (10, 'KL999', 'Promo Kelompok', 'Persiapan PAS (Harian)', 'SD', 15000, 1, '2025-07-16 06:03:18');
 
@@ -269,9 +272,6 @@ CREATE TABLE `tb_trx` (
   `mapel` varchar(100) NOT NULL,
   `harga` int(11) NOT NULL,
   `bayar` int(11) NOT NULL,
-  `hari` varchar(20) NOT NULL,
-  `jam` varchar(20) NOT NULL,
-  `mulai` date DEFAULT NULL,
   `status` tinyint(1) NOT NULL,
   `tanggal` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -280,11 +280,41 @@ CREATE TABLE `tb_trx` (
 -- Dumping data for table `tb_trx`
 --
 
-INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `hari`, `jam`, `mulai`, `status`, `tanggal`) VALUES
-(1, 'abiydoni@gmail.com', 'PR001', 'GE001', 100000, 100000, '0', '0', NULL, 1, '2025-07-15 05:22:38'),
-(5, 'pipin@gmail.com', 'PR004', 'GE001', 160000, 160000, 'Selasa', '12:00', '2025-07-22', 0, '2025-07-16 06:51:16'),
-(6, 'abiydoni@gmail.com', 'KL001', 'GE002', 70000, 0, 'Rabu', '18:00', '2025-07-16', 0, '2025-07-16 00:49:59'),
-(7, 'pipin@gmail.com', 'PR002', 'GE003', 140000, 140000, 'Kamis', '11:00', '2025-07-17', 0, '2025-07-16 16:40:13');
+INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `status`, `tanggal`) VALUES
+(9, 'pipin@gmail.com', 'KL001', 'GE001', 30000, 0, 0, '2025-07-17 09:20:49'),
+(10, 'abiydoni@gmail.com', 'KL001', 'GE002', 30000, 0, 0, '2025-07-17 11:28:41'),
+(11, 'abiydoni@gmail.com', 'PR002', 'GE004', 120000, 0, 0, '2025-07-17 11:30:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tb_trx_tanggal`
+--
+
+CREATE TABLE `tb_trx_tanggal` (
+  `id` int(11) NOT NULL,
+  `id_trx` int(11) DEFAULT NULL,
+  `jam_trx` varchar(10) NOT NULL,
+  `tanggal` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `tb_trx_tanggal`
+--
+
+INSERT INTO `tb_trx_tanggal` (`id`, `id_trx`, `jam_trx`, `tanggal`) VALUES
+(1, 9, '19:00', '2025-07-17'),
+(2, 9, '17:00', '2025-07-26'),
+(3, 10, '19:00', '2025-07-17'),
+(4, 10, '20:00', '2025-07-24'),
+(5, 10, '19:00', '2025-07-25'),
+(6, 10, '18:00', '2025-07-26'),
+(7, 10, '15:00', '2025-07-27'),
+(8, 11, '14:00', '2025-07-22'),
+(9, 11, '14:00', '2025-07-29'),
+(10, 11, '14:00', '2025-08-05'),
+(11, 11, '14:00', '2025-08-12'),
+(12, 11, '14:00', '2025-08-19');
 
 -- --------------------------------------------------------
 
@@ -375,6 +405,13 @@ ALTER TABLE `tb_trx`
   ADD KEY `email` (`email`);
 
 --
+-- Indexes for table `tb_trx_tanggal`
+--
+ALTER TABLE `tb_trx_tanggal`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_trx` (`id_trx`);
+
+--
 -- Indexes for table `tb_user`
 --
 ALTER TABLE `tb_user`
@@ -406,7 +443,7 @@ ALTER TABLE `tb_jenjang`
 -- AUTO_INCREMENT for table `tb_keuangan`
 --
 ALTER TABLE `tb_keuangan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `tb_kondisi`
@@ -442,13 +479,29 @@ ALTER TABLE `tb_siswa`
 -- AUTO_INCREMENT for table `tb_trx`
 --
 ALTER TABLE `tb_trx`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT for table `tb_trx_tanggal`
+--
+ALTER TABLE `tb_trx_tanggal`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `tb_user`
 --
 ALTER TABLE `tb_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `tb_trx_tanggal`
+--
+ALTER TABLE `tb_trx_tanggal`
+  ADD CONSTRAINT `tb_trx_tanggal_ibfk_1` FOREIGN KEY (`id_trx`) REFERENCES `tb_trx` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

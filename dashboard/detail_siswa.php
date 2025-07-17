@@ -16,31 +16,33 @@ if (!$siswa) {
 }
 $foto = isset($siswa['foto']) && $siswa['foto'] ? '../assets/img/profile/' . $siswa['foto'] : '../assets/img/profile/default.png';
 
-// Ambil data transaksi siswa dari tabel tb_trx berdasarkan email, join tb_paket dan tb_mapel
+// Ambil data transaksi siswa dari tabel tb_trx dan tb_trx_tanggal berdasarkan email
 $trx = [];
 if (!empty($siswa['email'])) {
   try {
-    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, p.nama as nama_paket, t.mapel, m.nama as nama_mapel, t.hari, t.jam FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode OR t.paket = p.nama LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.email = ? ORDER BY t.tanggal DESC');
+    // Ambil semua transaksi siswa (tanpa join tb_trx_tanggal)
+    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, p.nama as nama_paket, t.mapel, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.email = ? ORDER BY t.tanggal DESC');
     $stmt->execute([$siswa['email']]);
-    $trx_all = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $trx_belum_lunas = array_filter($trx_all, function($t) { return ($t['harga'] - $t['bayar']) > 0; });
-    $trx_lunas = array_filter($trx_all, function($t) { return ($t['harga'] - $t['bayar']) <= 0; });
-    $trx_lunas = array_slice($trx_lunas, 0, 2);
-    $trx = array_merge($trx_belum_lunas, $trx_lunas);
+    $trx = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($trx as $i => $t) {
+      $stmt2 = $pdo->prepare('SELECT tanggal, jam_trx FROM tb_trx_tanggal WHERE id_trx = ? ORDER BY tanggal, jam_trx');
+      $stmt2->execute([$t['id']]);
+      $trx[$i]['jadwal'] = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+    }
   } catch (Exception $e) {}
 }
 
 // Ambil data paket untuk dropdown modal
 $list_paket = [];
 try {
-  $stmt_paket = $pdo->query('SELECT kode, nama, jenjang, harga FROM tb_paket ORDER BY kode ASC');
+  $stmt_paket = $pdo->query("SELECT kode, nama, keterangan, jenjang, harga FROM tb_paket WHERE status=1 ORDER BY nama ASC");
   $list_paket = $stmt_paket->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 
 // Ambil data mapel untuk dropdown modal
 $list_mapel = [];
 try {
-  $stmt_mapel = $pdo->query('SELECT kode, nama FROM tb_mapel ORDER BY kode ASC');
+  $stmt_mapel = $pdo->query('SELECT kode, nama FROM tb_mapel WHERE status=1 ORDER BY kode ASC');
   $list_mapel = $stmt_mapel->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 ?>
@@ -84,19 +86,18 @@ try {
                 <th class="py-2 px-3">Harga</th>
                 <th class="py-2 px-3">Bayar</th>
                 <th class="py-2 px-3">Sisa</th>
-                <th class="py-2 px-3">Hari</th>
-                <th class="py-2 px-3">Jam</th>
+                <th class="py-2 px-3">Jadwal Les</th>
                 <th class="py-2 px-3">Status</th>
                 <th class="py-2 px-3">Aksi</th>
               </tr>
             </thead>
             <tbody id="tbodyTrx">
-              <?php if (empty($trx)): ?>
-                <tr><td colspan="11" class="text-center py-6 text-gray-400">Belum ada transaksi untuk siswa ini.</td></tr>
+            <?php if (empty($trx)): ?>
+                <tr><td colspan="9" class="text-center py-6 text-gray-400">Belum ada transaksi untuk siswa ini.</td></tr>
               <?php else: ?>
                 <?php foreach($trx as $i => $t): 
                   $sisa = $t['harga'] - $t['bayar'];
-                  $lunas = $sisa <= 0;
+                  $lunas = ($t['status'] == 1);
                   $badgeBg = $lunas ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-orange-100 text-orange-700 border border-orange-300';
                   $statusText = $lunas ? 'Lunas' : 'Aktif';
                 ?>
@@ -107,8 +108,13 @@ try {
                   <td class="py-2 px-3 text-right"><?= number_format($t['harga'],0,',','.') ?></td>
                   <td class="py-2 px-3 text-right text-green-700"><?= number_format($t['bayar'],0,',','.') ?></td>
                   <td class="py-2 px-3 text-right <?= $lunas ? 'text-green-600' : 'text-red-600' ?>"><?= number_format(max($sisa,0),0,',','.') ?></td>
-                  <td class="py-2 px-3"><?= htmlspecialchars($t['hari'] ?? '-') ?></td>
-                  <td class="py-2 px-3"><?= htmlspecialchars($t['jam'] ?? '-') ?></td>
+                  <td class="py-2 px-3">
+                    <?php if (!empty($t['jadwal'])): ?>
+                      <button type="button" class="btn-detail-jadwal px-3 py-1 bg-blue-500 text-white rounded text-xs font-bold" data-jadwal='<?= json_encode($t['jadwal']) ?>' data-mapel="<?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?>">Detail</button>
+                    <?php else: ?>
+                      <span class="text-gray-400">-</span>
+                    <?php endif; ?>
+                  </td>
                   <td class="py-2 px-3"><span class="inline-block px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?>"><?= $statusText ?></span></td>
                   <td class="py-2 px-3 flex gap-1 justify-center">
                     <button class="edit-trx px-2 py-1 rounded bg-yellow-400 text-white hover:bg-yellow-500 text-xs font-bold" data-id="<?= $t['id'] ?>" title="Edit" <?= $lunas ? 'disabled style="opacity:.5;cursor:not-allowed"' : '' ?>><i class="fa fa-edit"></i></button>
@@ -149,65 +155,109 @@ try {
   </div>
 <!-- Modal Tambah Transaksi -->
 <div id="modal-tambah-trx" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-xs relative overflow-hidden">
+  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-2xl relative overflow-hidden">
     <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full relative">
       <button id="close-modal-trx" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
       <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-plus-circle text-blue-400"></i> Tambah Transaksi</div>
       <form id="form-tambah-trx" class="space-y-1">
-        <input type="hidden" name="email" value="<?= htmlspecialchars($siswa['email']) ?>">
-        <div>
-          <label class="block text-base font-bold text-blue-700 mb-1">Paket</label>
-          <select name="paket" required class="input-form-modal" onchange="setHargaPaket()">
-            <option value="">Pilih Paket</option>
-            <?php foreach($list_paket as $p): ?>
-              <option value="<?= htmlspecialchars($p['kode']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>">
-                <?= htmlspecialchars($p['nama']) ?> (<?= htmlspecialchars($p['jenjang']) ?>)
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div>
-          <label class="block text-base font-bold text-blue-700 mb-1">Mapel</label>
-          <select name="mapel" required class="input-form-modal">
-            <option value="">Pilih Mapel</option>
-            <?php foreach($list_mapel as $m): ?>
-              <option value="<?= htmlspecialchars($m['kode']) ?>">
-                <?= htmlspecialchars($m['nama']) ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        </div>
-        <div>
-          <label class="block text-base font-bold text-blue-700 mb-1">Harga</label>
-          <input type="hidden" name="harga" id="harga-paket-hidden">
-          <input type="text" id="harga-paket-view" class="input-form-modal" placeholder="Harga" readonly>
-        </div>
-        <div class="flex gap-4">
+        <div class="flex flex-col md:flex-row gap-6">
+          <!-- Kolom Kiri: Form Utama -->
           <div class="flex-1">
-            <label class="block text-base font-bold text-blue-700 mb-1">Hari</label>
-            <select name="hari" class="input-form-modal" required>
-              <option value="">Pilih Hari</option>
-              <option value="Senin">Senin</option>
-              <option value="Selasa">Selasa</option>
-              <option value="Rabu">Rabu</option>
-              <option value="Kamis">Kamis</option>
-              <option value="Jumat">Jumat</option>
-              <option value="Sabtu">Sabtu</option>
-            </select>
+            <input type="hidden" name="email" value="<?= htmlspecialchars($siswa['email']) ?>">
+            <div>
+              <label class="block text-sm font-bold text-blue-700 mb-1">Paket</label>
+              <select name="paket" required class="input-form-modal" onchange="setHargaPaket()">
+                <option value="">Pilih Paket</option>
+                <?php foreach($list_paket as $p): ?>
+                  <option value="<?= htmlspecialchars($p['kode']) ?>" data-harga="<?= htmlspecialchars($p['harga']) ?>">
+                    <?= htmlspecialchars($p['nama']) ?><?= $p['keterangan'] ? ' - '.htmlspecialchars($p['keterangan']) : '' ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-blue-700 mb-1">Mapel</label>
+              <select name="mapel" required class="input-form-modal">
+                <option value="">Pilih Mapel</option>
+                <?php foreach($list_mapel as $m): ?>
+                  <option value="<?= htmlspecialchars($m['kode']) ?>">
+                    <?= htmlspecialchars($m['nama']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-blue-700 mb-1">Harga</label>
+              <input type="hidden" name="harga" id="harga-paket-hidden">
+              <input type="text" id="harga-paket-view" class="input-form-modal" placeholder="Harga" readonly>
+            </div>
           </div>
+          <!-- Kolom Kanan: Model Jadwal Les -->
           <div class="flex-1">
-            <label class="block text-base font-bold text-blue-700 mb-1">Jam</label>
-            <select name="jam" class="input-form-modal" required>
-              <option value="">Pilih Jam</option>
-              <?php for($h=9; $h<=20; $h++): $jam = sprintf('%02d:00', $h); ?>
-                <option value="<?= $jam ?>"><?= $jam ?></option>
-              <?php endfor; ?>
-            </select>
+            <div class="mb-4">
+              <label class="block font-bold mb-1">Mode Jadwal Les:</label>
+              <div class="flex gap-4">
+                <label><input type="radio" name="mode_jadwal" value="otomatis" checked> Otomatis</label>
+                <label><input type="radio" name="mode_jadwal" value="custom"> Custom</label>
+              </div>
+            </div>
+            <div id="form-otomatis">
+              <div class="flex gap-4">
+                <div class="flex-1">
+                  <label class="block text-sm font-bold text-blue-700 mb-1">Hari</label>
+                  <select name="hari" class="input-form-modal" required>
+                    <option value="">Pilih Hari</option>
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                    <option value="Sabtu">Sabtu</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label class="block text-sm font-bold text-blue-700 mb-1">Jam</label>
+                  <select name="jam" class="input-form-modal" required>
+                    <option value="">Pilih Jam</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="19:00">19:00</option>
+                    <option value="20:00">20:00</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-blue-700 mb-1">Tanggal Mulai</label>
+                <input type="date" name="tanggal_mulai" class="input-form-modal" required min="<?= date('Y-m-d') ?>">
+              </div>
+            </div>
+            <div id="form-custom" style="display:none;">
+              <div class="mb-4">
+                <label class="block font-bold mb-1">Jadwal Les (boleh lebih dari satu):</label>
+                <table class="min-w-full text-sm mb-2" id="tabel-tanggal-jam">
+                  <thead>
+                    <tr>
+                      <th class="py-1 px-2">Tanggal</th>
+                      <th class="py-1 px-2">Jam</th>
+                      <th class="py-1 px-2">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Baris dinamis di sini -->
+                  </tbody>
+                </table>
+                <button type="button" id="btn-tambah-baris" class="px-3 py-1 bg-blue-500 text-white rounded flex items-center justify-center" title="Tambah Baris"><i class="fa fa-plus"></i></button>
+              </div>
+            </div>
           </div>
-        </div>
-        <div>
-          <label class="block text-base font-bold text-blue-700 mb-1">Tanggal Mulai</label>
-          <input type="date" name="tanggal_mulai" class="input-form-modal" required min="<?= date('Y-m-d') ?>">
         </div>
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" id="batal-modal-trx" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
@@ -229,7 +279,7 @@ try {
         <select name="paket" id="edit-paket" required class="input-form-modal">
           <option value="">Pilih Paket</option>
           <?php foreach($list_paket as $p): ?>
-            <option value="<?= htmlspecialchars($p['kode']) ?>"> <?= htmlspecialchars($p['nama']) ?> (<?= htmlspecialchars($p['jenjang']) ?>) </option>
+            <option value="<?= htmlspecialchars($p['kode']) ?>"> <?= htmlspecialchars($p['nama']) ?> (<?= htmlspecialchars($p['keterangan']) ?>) </option>
           <?php endforeach; ?>
         </select>
       </div>
@@ -299,6 +349,14 @@ try {
     </form>
   </div>
 </div>
+<!-- Tambahkan modal detail jadwal di bawah tabel -->
+<div id="modal-detail-jadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs relative">
+    <button id="close-modal-detail-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa fa-xmark"></i></button>
+    <div class="text-xl font-extrabold text-blue-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-400"></i> Detail Jadwal Les</div>
+    <div id="isi-modal-detail-jadwal"></div>
+  </div>
+</div>
 <style>
 .input-form-modal {
   border: 2px solid #60a5fa;
@@ -307,8 +365,8 @@ try {
   outline: none;
   background: #fff;
   width: 100%;
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 400;
   color: #2563eb;
   transition: border 0.2s;
   margin-top: 2px;
@@ -319,6 +377,15 @@ try {
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script>
+flatpickr("#input-tanggal-les", {
+  mode: "multiple",
+  dateFormat: "Y-m-d",
+  minDate: "today"
+});
+</script>
 <script>
 document.getElementById('btn-tambah-trx').onclick = function() {
   document.getElementById('modal-tambah-trx').classList.remove('hidden');
@@ -344,15 +411,37 @@ function setHargaPaket() {
   }
 }
 document.getElementById('form-tambah-trx').addEventListener('submit', async function(e) {
-  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
-  const hariInput = this.querySelector('select[name="hari"]').value;
-  if (tanggalMulai && hariInput) {
-    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const d = new Date(tanggalMulai);
-    const hariTanggal = hariIndo[d.getDay()];
-    if (hariTanggal !== hariInput) {
+  const mode = this.querySelector('input[name="mode_jadwal"]:checked').value;
+  if (mode === 'otomatis') {
+    const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
+    const hariInput = this.querySelector('select[name="hari"]').value;
+    if (tanggalMulai && hariInput) {
+      const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+      const d = new Date(tanggalMulai);
+      const hariTanggal = hariIndo[d.getDay()];
+      if (hariTanggal !== hariInput) {
+        e.preventDefault();
+        await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+        return false;
+      }
+    }
+  } else if (mode === 'custom') {
+    // Validasi minimal satu baris tanggal-jam
+    const rows = this.querySelectorAll('#tabel-tanggal-jam tbody tr');
+    if (rows.length === 0) {
       e.preventDefault();
-      await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
+      await Swal.fire({icon:'error',title:'Jadwal Kosong',text:'Minimal satu jadwal (tanggal & jam) harus diisi!'});
+      return false;
+    }
+    let valid = true;
+    rows.forEach(row => {
+      const tgl = row.querySelector('input[name="tanggal_les[]"]').value;
+      const jam = row.querySelector('select[name="jam_les[]"]').value;
+      if (!tgl || !jam) valid = false;
+    });
+    if (!valid) {
+      e.preventDefault();
+      await Swal.fire({icon:'error',title:'Jadwal Tidak Lengkap',text:'Semua baris jadwal harus diisi tanggal dan jam!'});
       return false;
     }
   }
@@ -372,7 +461,7 @@ document.getElementById('form-tambah-trx').addEventListener('submit', async func
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
   try {
-    const res = await fetch('../api/proses_trx.php', { method: 'POST', body: formData });
+    const res = await fetch('api/trx_proses.php', { method: 'POST', body: formData });
     const data = await res.json();
     if(data.status === 'ok') {
       Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Transaksi berhasil disimpan!' }).then(() => window.location.reload());
@@ -417,155 +506,104 @@ document.querySelectorAll('.btn-hapus-trx').forEach(function(btn) {
 });
 </script>
 <script>
-// Modal Tambah sudah ada
-// Validasi hari dan tanggal mulai pada form tambah transaksi
-document.getElementById('form-tambah-trx').addEventListener('submit', function(e) {
-  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
-  const hariInput = this.querySelector('select[name="hari"]').value;
-  if (tanggalMulai && hariInput) {
-    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const d = new Date(tanggalMulai);
-    const hariTanggal = hariIndo[d.getDay()];
-    if (hariTanggal !== hariInput) {
-      e.preventDefault();
-      Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
-      return false;
-    }
-  }
-});
-
-// Validasi hari dan tanggal mulai pada form edit transaksi
-document.getElementById('form-edit-trx').addEventListener('submit', function(e) {
-  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
-  const hariInput = this.querySelector('select[name="hari"]').value;
-  if (tanggalMulai && hariInput) {
-    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const d = new Date(tanggalMulai);
-    const hariTanggal = hariIndo[d.getDay()];
-    if (hariTanggal !== hariInput) {
-      e.preventDefault();
-      Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
-      return false;
-    }
-  }
-});
-// Modal Edit
-const modalEdit = document.getElementById('modal-edit-trx');
-const formEdit = document.getElementById('form-edit-trx');
-const closeEdit = document.getElementById('close-modal-edit-trx');
-const batalEdit = document.getElementById('batal-modal-edit-trx');
-closeEdit.onclick = batalEdit.onclick = () => modalEdit.classList.add('hidden');
-
-// Modal Bayar
-const modalBayar = document.getElementById('modal-bayar-trx');
-const formBayar = document.getElementById('form-bayar-trx');
-const closeBayar = document.getElementById('close-modal-bayar-trx');
-const batalBayar = document.getElementById('batal-modal-bayar-trx');
-closeBayar.onclick = batalBayar.onclick = () => modalBayar.classList.add('hidden');
-
-// Edit Transaksi
-Array.from(document.getElementsByClassName('edit-trx')).forEach(btn => {
-  if(btn.hasAttribute('disabled')) return;
-  btn.onclick = async function() {
-    const id = this.getAttribute('data-id');
-    const res = await fetch('api/trx_proses.php?action=get&id='+id);
-    const data = await res.json();
-    if(data && data.id) {
-      document.getElementById('edit-id').value = data.id;
-      document.getElementById('edit-paket').value = data.paket;
-      document.getElementById('edit-mapel').value = data.mapel;
-      document.getElementById('edit-harga').value = data.harga;
-      document.getElementById('edit-hari').value = data.hari;
-      document.getElementById('edit-jam').value = data.jam;
-      document.getElementById('edit-tanggal-mulai').value = data.mulai || data.tanggal || '';
-      modalEdit.classList.remove('hidden');
-    } else {
-      Swal.fire('Gagal','Data transaksi tidak ditemukan!','error');
-    }
-  }
-});
-formEdit.onsubmit = async function(e) {
-  e.preventDefault();
-  const tanggalMulai = this.querySelector('input[name="tanggal_mulai"]').value;
-  const hariInput = this.querySelector('select[name="hari"]').value;
-  if (tanggalMulai && hariInput) {
-    const hariIndo = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-    const d = new Date(tanggalMulai);
-    const hariTanggal = hariIndo[d.getDay()];
-    if (hariTanggal !== hariInput) {
-      await Swal.fire({icon:'error',title:'Hari Tidak Cocok',text:`Hari pada tanggal mulai (${hariTanggal}) tidak sama dengan input hari (${hariInput}). Silakan pilih yang sesuai.`});
-      return false;
-    }
-  }
-  const formData = new FormData(formEdit);
-  formData.append('action','edit');
-  const btn = formEdit.querySelector('button[type=submit]');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menyimpan...';
-  const res = await fetch('api/trx_proses.php', { method:'POST', body:formData });
-  const data = await res.json();
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fa-solid fa-save"></i> Simpan';
-  if(data.status==='ok') {
-    Swal.fire('Berhasil','Transaksi berhasil diupdate!','success').then(()=>window.location.reload());
-  } else {
-    Swal.fire('Gagal',data.msg||'Gagal update transaksi','error');
-  }
+// === Fungsi Tambah Baris Jadwal ===
+function addBarisTanggalJam(tgl='', jam='') {
+  const tbody = document.querySelector('#tabel-tanggal-jam tbody');
+  const idx = Date.now() + Math.floor(Math.random()*1000);
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr data-idx="${idx}">
+      <td><input type="date" name="tanggal_les[]" class="input-form-modal" value="${tgl}" required></td>
+      <td>
+        <select name="jam_les[]" class="input-form-modal" required>
+          <option value="">Pilih Jam</option>
+          <option value="09:00">09:00</option>
+          <option value="10:00">10:00</option>
+          <option value="11:00">11:00</option>
+          <option value="12:00">12:00</option>
+          <option value="13:00">13:00</option>
+          <option value="14:00">14:00</option>
+          <option value="15:00">15:00</option>
+          <option value="16:00">16:00</option>
+          <option value="17:00">17:00</option>
+          <option value="18:00">18:00</option>
+          <option value="19:00">19:00</option>
+          <option value="20:00">20:00</option>
+        </select>
+      </td>
+      <td><button type="button" class="btn-hapus-baris px-2 py-1 bg-red-500 text-white rounded flex items-center justify-center" title="Hapus"><i class="fa fa-trash"></i></button></td>
+    </tr>
+  `);
 }
-// Bayar Transaksi
-Array.from(document.getElementsByClassName('bayar-trx')).forEach(btn => {
+
+// === Fungsi Toggle Required ===
+function toggleRequired(mode) {
+  // Otomatis
+  const hari = document.querySelector('select[name="hari"]');
+  const jam = document.querySelector('select[name="jam"]');
+  const tglMulai = document.querySelector('input[name="tanggal_mulai"]');
+  if(hari) hari.required = (mode === 'otomatis');
+  if(jam) jam.required = (mode === 'otomatis');
+  if(tglMulai) tglMulai.required = (mode === 'otomatis');
+  // Custom
+  document.querySelectorAll('input[name="tanggal_les[]"]').forEach(el => el.required = (mode === 'custom'));
+  document.querySelectorAll('select[name="jam_les[]"]').forEach(el => el.required = (mode === 'custom'));
+}
+
+// === Event Tambah Baris Jadwal ===
+document.getElementById('btn-tambah-baris').onclick = () => addBarisTanggalJam();
+document.querySelector('#tabel-tanggal-jam').addEventListener('click', function(e){
+  if(e.target.classList.contains('btn-hapus-baris')){
+    e.target.closest('tr').remove();
+  }
+});
+
+// === Toggle Mode Otomatis/Custom ===
+const radios = document.querySelectorAll('input[name=mode_jadwal]');
+radios.forEach(radio => {
+  radio.addEventListener('change', function() {
+    if (this.value === 'otomatis') {
+      document.getElementById('form-otomatis').style.display = '';
+      document.getElementById('form-custom').style.display = 'none';
+    } else {
+      document.getElementById('form-otomatis').style.display = 'none';
+      document.getElementById('form-custom').style.display = '';
+    }
+    toggleRequired(this.value);
+  });
+});
+
+// === Reset Modal Tambah Transaksi ===
+if(document.getElementById('btn-tambah-trx')){
+  document.getElementById('btn-tambah-trx').addEventListener('click', function(){
+    const tbody = document.querySelector('#tabel-tanggal-jam tbody');
+    if(tbody){
+      tbody.innerHTML = '';
+      addBarisTanggalJam();
+    }
+    // Reset ke mode otomatis
+    document.querySelector('input[name=mode_jadwal][value=otomatis]').checked = true;
+    document.getElementById('form-otomatis').style.display = '';
+    document.getElementById('form-custom').style.display = 'none';
+    toggleRequired('otomatis');
+  });
+}
+</script>
+<script>
+document.querySelectorAll('.btn-detail-jadwal').forEach(btn => {
   btn.onclick = function() {
-    const id = this.getAttribute('data-id');
-    const sisa = this.getAttribute('data-sisa');
-    document.getElementById('bayar-id').value = id;
-    document.getElementById('bayar-nominal').value = sisa;
-    document.getElementById('bayar-nominal').setAttribute('max', sisa);
-    modalBayar.classList.remove('hidden');
-  }
-});
-formBayar.onsubmit = async function(e) {
-  e.preventDefault();
-  const formData = new FormData(formBayar);
-  formData.append('action','bayar');
-  const btn = formBayar.querySelector('button[type=submit]');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Membayar...';
-  const res = await fetch('api/trx_proses.php', { method:'POST', body:formData });
-  const data = await res.json();
-  btn.disabled = false;
-  btn.innerHTML = '<i class="fa-solid fa-money-bill"></i> Bayar';
-  if(data.status==='ok') {
-    Swal.fire('Berhasil','Pembayaran berhasil!','success').then(()=>window.location.reload());
-  } else {
-    Swal.fire('Gagal',data.msg||'Gagal pembayaran','error');
-  }
-}
-// Hapus Transaksi
-Array.from(document.getElementsByClassName('hapus-trx')).forEach(btn => {
-  if(btn.hasAttribute('disabled')) return;
-  btn.onclick = async function() {
-    const id = this.getAttribute('data-id');
-    const konfirmasi = await Swal.fire({
-      title: 'Konfirmasi Hapus',
-      text: 'Yakin ingin menghapus transaksi ini?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Ya, Hapus',
-      cancelButtonText: 'Batal'
+    const jadwal = JSON.parse(this.getAttribute('data-jadwal'));
+    const mapel = this.getAttribute('data-mapel');
+    let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th></tr></thead><tbody>`;
+    jadwal.forEach(j => {
+      html += `<tr><td class='px-2 py-1 border'>${mapel}</td><td class='px-2 py-1 border'>${j.tanggal}</td><td class='px-2 py-1 border'>${j.jam_trx}</td></tr>`;
     });
-    if (!konfirmasi.isConfirmed) return;
-    const res = await fetch('api/trx_proses.php', {
-      method:'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'action=delete&id='+encodeURIComponent(id)
-    });
-    const data = await res.json();
-    if(data.status==='ok') {
-      Swal.fire('Berhasil','Transaksi berhasil dihapus!','success').then(()=>window.location.reload());
-    } else {
-      Swal.fire('Gagal',data.msg||'Gagal menghapus transaksi','error');
-    }
-  }
+    html += '</tbody></table>';
+    document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
+    document.getElementById('modal-detail-jadwal').classList.remove('hidden');
+  };
 });
+document.getElementById('close-modal-detail-jadwal').onclick = function() {
+  document.getElementById('modal-detail-jadwal').classList.add('hidden');
+};
 </script>
 <?php include 'footer.php'; ?> 
