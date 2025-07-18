@@ -91,20 +91,17 @@ try {
     <div class="flex-1 flex flex-col min-h-0 ml-0 md:ml-64">
       <!-- Navbar User Info -->
       <nav class="w-full flex items-center justify-end px-8 py-4 bg-white/80 shadow-sm relative z-10">
-        <div class="relative group">
-          <button class="flex items-center gap-3 focus:outline-none" id="userMenuBtn">
-            <img src="../assets/img/profile/default.png" alt="Avatar" class="w-10 h-10 rounded-full border-2 border-blue-400 shadow object-cover">
-            <div class="text-right">
-              <div class="font-bold text-blue-800 text-base"><?= htmlspecialchars($user_nama) ?></div>
-              <div class="text-xs text-gray-500 font-semibold"><?= htmlspecialchars($user_role) ?></div>
-            </div>
-            <i class="fa fa-chevron-down text-gray-400 ml-2"></i>
+        <!-- Dropdown User di Navbar -->
+        <div class="relative inline-block text-left float-right mr-4 mt-2">
+          <button id="dropdownUserBtn" class="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold focus:outline-none">
+            <img src="../assets/img/profile/default.png" class="w-8 h-8 rounded-full border-2 border-blue-300" alt="User">
+            <span><?= htmlspecialchars($_SESSION['user_nama'] ?? 'User') ?></span>
+            <i class="fa fa-chevron-down"></i>
           </button>
-          <!-- Dropdown -->
-          <div id="userDropdown" class="hidden group-focus-within:block group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 border border-blue-100 animate-fadeInUp">
-            <a href="#" class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition font-semibold"><i class="fa fa-user-edit mr-2"></i> Edit Profile</a>
-            <a href="#" class="block px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition font-semibold"><i class="fa fa-key mr-2"></i> Ubah Password</a>
-            <button onclick="logout()" class="w-full text-left px-5 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition font-semibold"><i class="fa fa-sign-out-alt mr-2"></i> Logout</button>
+          <div id="dropdownUserMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg z-50 border border-blue-100 overflow-hidden">
+            <a href="#" id="menu-edit-profil" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-user-edit"></i> Edit Profil</a>
+            <a href="#" id="menu-ubah-password" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-key"></i> Ubah Password</a>
+            <button onclick="logout()" class="w-full text-left flex items-center gap-2 px-5 py-3 text-red-600 hover:bg-red-50 font-semibold"><i class="fa fa-sign-out-alt"></i> Logout</button>
           </div>
         </div>
       </nav>
