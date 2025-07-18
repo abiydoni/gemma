@@ -76,7 +76,9 @@ function loadUser() {
   $.post('api/user_proses.php', {action:'list'}, function(res) {
     if(res.success) {
       let html = '';
+      const myId = '<?= $_SESSION['user_id'] ?? 0 ?>';
       res.data.forEach(function(row, i) {
+        let disableDelete = (row.id == myId) ? 'disabled style="opacity:.5;cursor:not-allowed"' : '';
         html += `<tr class="hover:bg-blue-50 border-b border-blue-100 transition-all">
           <td class='py-2 px-3 border-blue-100 text-center'>${i+1}</td>
           <td class='py-2 px-3 border-blue-100'>${row.email}</td>
@@ -85,7 +87,7 @@ function loadUser() {
           <td class="text-center py-2 px-3 border-blue-100">
             <button class='btn-edit text-blue-600 hover:text-blue-900 mr-2' data-id='${row.id}'><i class='fa fa-pen'></i></button>
             <button class='btn-password text-yellow-600 hover:text-yellow-900 mr-2' data-id='${row.id}'><i class='fa fa-key'></i></button>
-            <button class='btn-hapus text-red-600 hover:text-red-900' data-id='${row.id}'><i class='fa fa-trash'></i></button>
+            <button class='btn-hapus text-red-600 hover:text-red-900' data-id='${row.id}' ${disableDelete}><i class='fa fa-trash'></i></button>
           </td>
         </tr>`;
       });
@@ -96,15 +98,23 @@ function loadUser() {
 
 function getAllowedRoles() {
   // Role user login dari PHP ke JS
-  const myRole = '<?= $_SESSION['role'] ?? 'user' ?>';
-  const roleLevel = { 'user': 1, 'admin': 2, 's_admin': 3 };
-  const myLevel = roleLevel[myRole] || 1;
-  const allRoles = [
-    {value:'s_admin', label:'Super Admin', level:3},
-    {value:'admin', label:'Admin', level:2},
-    {value:'user', label:'User', level:1}
-  ];
-  return allRoles.filter(r => r.level <= myLevel);
+  const myRole = '<?= $_SESSION['user_role'] ?? 'user' ?>';
+  if (myRole === 's_admin') {
+    return [
+      {value:'s_admin', label:'Super Admin', level:3},
+      {value:'admin', label:'Admin', level:2},
+      {value:'user', label:'User', level:1}
+    ];
+  } else if (myRole === 'admin') {
+    return [
+      {value:'admin', label:'Admin', level:2},
+      {value:'user', label:'User', level:1}
+    ];
+  } else {
+    return [
+      {value:'user', label:'User', level:1}
+    ];
+  }
 }
 
 function setRoleDropdown() {
