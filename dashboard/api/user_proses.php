@@ -4,10 +4,21 @@ header('Content-Type: application/json');
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 if ($action == 'list') {
+  session_start();
+  $my_role = $_SESSION['user_role'] ?? 'user';
+  $my_id = $_SESSION['user_id'] ?? 0;
+  $role_level = [
+    'user' => 1,
+    'admin' => 2,
+    's_admin' => 3
+  ];
+  $my_level = $role_level[$my_role] ?? 1;
   $data = [];
   $stmt = $pdo->query('SELECT id, email, nama, role FROM tb_user ORDER BY nama ASC');
   while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-    $data[] = $row;
+    if ((($role_level[$row['role']] ?? 0) <= $my_level) || $row['id'] == $my_id) {
+      $data[] = $row;
+    }
   }
   echo json_encode(['success'=>true, 'data'=>$data]);
   exit;

@@ -94,6 +94,28 @@ function loadUser() {
   },'json');
 }
 
+function getAllowedRoles() {
+  // Role user login dari PHP ke JS
+  const myRole = '<?= $_SESSION['role'] ?? 'user' ?>';
+  const roleLevel = { 'user': 1, 'admin': 2, 's_admin': 3 };
+  const myLevel = roleLevel[myRole] || 1;
+  const allRoles = [
+    {value:'s_admin', label:'Super Admin', level:3},
+    {value:'admin', label:'Admin', level:2},
+    {value:'user', label:'User', level:1}
+  ];
+  return allRoles.filter(r => r.level <= myLevel);
+}
+
+function setRoleDropdown() {
+  const allowed = getAllowedRoles();
+  const $role = $('#user-role');
+  $role.empty();
+  allowed.forEach(r => {
+    $role.append(`<option value="${r.value}">${r.label}</option>`);
+  });
+}
+
 $(document).ready(function(){
   loadUser();
 
@@ -102,6 +124,7 @@ $(document).ready(function(){
     $('#user-id').val('');
     $('#modal-title').text('Tambah User');
     $('#user-email').prop('readonly', false);
+    setRoleDropdown();
     $('#modal-user').removeClass('hidden');
   });
   $('#close-modal-user').click(function(){
@@ -146,6 +169,7 @@ $(document).ready(function(){
           $('#user-id').val(row.id);
           $('#user-email').val(row.email).prop('readonly', true);
           $('#user-nama').val(row.nama);
+          setRoleDropdown();
           $('#user-role').val(row.role);
           $('#modal-title').text('Edit User');
           $('#modal-user').removeClass('hidden');

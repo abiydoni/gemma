@@ -122,7 +122,10 @@ try {
                 <div class="text-sm text-gray-600">Sisa: <span class="font-semibold <?= $sisaColor ?>">Rp<?= number_format(max($sisa,0),0,',','.') ?></span></div>
               </div>
               <div class="flex flex-col items-end mt-2 md:mt-0 min-w-0 w-full md:w-auto">
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?> max-w-full overflow-hidden mt-6">
+                <?php if (!empty($t['jadwal'])): ?>
+                  <button type="button" class="btn-detail-jadwal mb-2 px-3 py-1 bg-blue-500 text-white rounded text-xs font-bold" data-jadwal='<?= json_encode($t['jadwal']) ?>' data-mapel="<?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?>">Detail</button>
+                <?php endif; ?>
+                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?> max-w-full overflow-hidden mt-2">
                   <i class="fa-solid <?= $icon ?>"></i> <?= $statusText ?>
                 </span>
                 <?php if (isset($t['tanggal'])): ?>
@@ -267,6 +270,58 @@ try {
         <div class="flex justify-end gap-3 mt-6">
           <button type="button" id="batal-modal-trx" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
           <button type="submit" class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Detail Jadwal -->
+<div id="modal-detail-jadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
+  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-2xl relative overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full relative">
+      <button id="close-modal-detail-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-400"></i> Jadwal Les</div>
+      <div id="isi-modal-detail-jadwal">
+        <!-- Isi jadwal akan dimuat di sini -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Edit Jadwal -->
+<div id="modalEditJadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
+  <div class="bg-gradient-to-br from-blue-100 via-white to-blue-200/80 rounded-3xl shadow-2xl p-0 sm:p-1 w-full max-w-2xl relative overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 w-full relative">
+      <button id="close-modal-edit-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="text-2xl font-extrabold text-blue-700 mb-6 flex items-center gap-2"><i class="fa-solid fa-edit text-blue-400"></i> Edit Jadwal Les</div>
+      <form id="formEditJadwal" class="space-y-1">
+        <input type="hidden" name="id_jadwal" id="editJadwalId">
+        <div class="flex flex-col md:flex-row gap-6">
+          <div class="flex-1">
+            <label class="block text-sm font-bold text-blue-700 mb-1">Tanggal</label>
+            <input type="date" name="tanggal" id="editJadwalTanggal" class="input-form-modal" required>
+          </div>
+          <div class="flex-1">
+            <label class="block text-sm font-bold text-blue-700 mb-1">Jam</label>
+            <select name="jam" id="editJadwalJam" class="input-form-modal" required>
+              <option value="">Pilih Jam</option>
+              <option value="09:00">09:00</option>
+              <option value="10:00">10:00</option>
+              <option value="11:00">11:00</option>
+              <option value="12:00">12:00</option>
+              <option value="13:00">13:00</option>
+              <option value="14:00">14:00</option>
+              <option value="15:00">15:00</option>
+              <option value="16:00">16:00</option>
+              <option value="17:00">17:00</option>
+              <option value="18:00">18:00</option>
+              <option value="19:00">19:00</option>
+              <option value="20:00">20:00</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 mt-6">
+          <button type="button" id="batal-modal-edit-jadwal" class="px-5 py-2 rounded-full bg-gray-200 text-gray-700 font-bold shadow hover:bg-gray-300 transition">Batal</button>
+          <button type="submit" class="px-5 py-2 rounded-full bg-gradient-to-r from-blue-600 to-blue-400 text-white font-bold shadow-lg hover:scale-105 hover:shadow-xl transition flex items-center gap-2"><i class="fa-solid fa-save"></i> Simpan</button>
         </div>
       </form>
     </div>
@@ -451,6 +506,91 @@ document.querySelectorAll('.btn-hapus-trx').forEach(function(btn) {
     }
   });
 });
+
+// Script untuk modal detail jadwal
+document.addEventListener('click', function(e) {
+  // Handler tombol detail jadwal
+  if (e.target.closest('.btn-detail-jadwal')) {
+    const btn = e.target.closest('.btn-detail-jadwal');
+    const jadwal = JSON.parse(btn.getAttribute('data-jadwal'));
+    const mapel = btn.getAttribute('data-mapel');
+    let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th></tr></thead><tbody>`;
+    jadwal.forEach((j, idx) => {
+      html += `<tr data-idx='${idx}' data-idjadwal='${j.id}'>
+        <td class='px-2 py-1 border'>${mapel}</td>
+        <td class='px-2 py-1 border'>${j.tanggal}</td>
+        <td class='px-2 py-1 border'>${j.jam_trx}</td>
+      </tr>`;
+    });
+    html += '</tbody></table>';
+    document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
+    document.getElementById('modal-detail-jadwal').classList.remove('hidden');
+    return;
+  }
+  // Handler tombol close modal detail jadwal
+  if (e.target.closest('#close-modal-detail-jadwal')) {
+    document.getElementById('modal-detail-jadwal').classList.add('hidden');
+    return;
+  }
+});
+
+// Script untuk modal edit jadwal
+document.getElementById('formEditJadwal').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const form = this;
+  const formData = new FormData(form);
+  const btn = form.querySelector('button[type=submit]');
+  const konfirmasi = await Swal.fire({
+    title: 'Konfirmasi Edit',
+    text: 'Apakah data jadwal sudah benar dan ingin disimpan?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Simpan',
+    cancelButtonText: 'Batal'
+  });
+  if (!konfirmasi.isConfirmed) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+  try {
+    const res = await fetch('api/trx_proses.php', { method: 'POST', body: formData });
+    const data = await res.json();
+    if(data.status === 'ok') {
+      Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Jadwal berhasil diubah!' }).then(() => {
+        document.getElementById('modalEditJadwal').classList.add('hidden');
+        window.location.reload(); // Refresh halaman untuk menampilkan jadwal yang sudah diubah
+      });
+    } else {
+      let msg = data.msg || 'Gagal menyimpan jadwal.';
+      if (data.detail) msg += '\n' + data.detail;
+      Swal.fire({ icon: 'error', title: 'Gagal', text: msg });
+    }
+  } catch(err) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-save"></i> Simpan';
+});
+document.getElementById('close-modal-edit-jadwal').onclick = function() {
+  document.getElementById('modalEditJadwal').classList.add('hidden');
+};
+document.getElementById('batal-modal-edit-jadwal').onclick = function() {
+  document.getElementById('modalEditJadwal').classList.add('hidden');
+};
+
+// Helper function untuk mengubah tanggal ke format YYYY-MM-DD
+function toYYYYMMDD(dateString) {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+// Helper function untuk mengisi jam pada modal edit jadwal
+function isiJamEditJadwal(tanggal, jam) {
+  const selectJam = document.getElementById('editJadwalJam');
+  selectJam.value = jam;
+}
 </script>
 <style>
 .input-form-modal {
