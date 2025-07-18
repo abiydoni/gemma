@@ -50,6 +50,27 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_jadwal' && !empty($_GET['i
     exit;
 }
 
+if (isset($_POST['action']) && $_POST['action'] == 'bayar' && !empty($_POST['id']) && !empty($_POST['nominal'])) {
+    $id = $_POST['id'];
+    $nominal = intval($_POST['nominal']);
+    try {
+        // Update field bayar
+        $stmt = $pdo->prepare('UPDATE tb_trx SET bayar = bayar + ? WHERE id = ?');
+        $stmt->execute([$nominal, $id]);
+        // Cek apakah sudah lunas, lalu update status jika perlu
+        $stmt = $pdo->prepare('SELECT harga, bayar FROM tb_trx WHERE id = ?');
+        $stmt->execute([$id]);
+        $trx = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($trx && $trx['bayar'] >= $trx['harga']) {
+            $pdo->prepare('UPDATE tb_trx SET status = 1 WHERE id = ?')->execute([$id]);
+        }
+        echo json_encode(['status'=>'ok']);
+    } catch(Exception $e) {
+        echo json_encode(['status'=>'error','msg'=>'Gagal update pembayaran: '.$e->getMessage()]);
+    }
+    exit;
+}
+
 $email = $_POST['email'] ?? '';
 $paket = $_POST['paket'] ?? '';
 $mapel = $_POST['mapel'] ?? '';

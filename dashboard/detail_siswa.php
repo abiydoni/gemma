@@ -762,4 +762,68 @@ document.getElementById('formEditJadwal').onsubmit = function(e) {
   });
 };
 </script>
+<script>
+// Script modal bayar transaksi
+// Buka modal dan isi data saat tombol bayar diklik
+let sisaTagihan = 0;
+document.querySelectorAll('.bayar-trx').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    const id = this.getAttribute('data-id');
+    sisaTagihan = parseInt(this.getAttribute('data-sisa')) || 0;
+    document.getElementById('bayar-id').value = id;
+    document.getElementById('bayar-nominal').value = sisaTagihan; // Otomatis isi nominal sesuai sisa
+    document.getElementById('bayar-nominal').setAttribute('max', sisaTagihan);
+    document.getElementById('modal-bayar-trx').classList.remove('hidden');
+  });
+});
+document.getElementById('close-modal-bayar-trx').onclick = function() {
+  document.getElementById('modal-bayar-trx').classList.add('hidden');
+};
+document.getElementById('batal-modal-bayar-trx').onclick = function() {
+  document.getElementById('modal-bayar-trx').classList.add('hidden');
+};
+document.getElementById('form-bayar-trx').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const id = document.getElementById('bayar-id').value;
+  const nominal = parseInt(document.getElementById('bayar-nominal').value);
+  if (!id || !nominal || nominal < 1) {
+    await Swal.fire({icon:'error',title:'Input Salah',text:'Nominal pembayaran harus diisi!'});
+    return;
+  }
+  if (nominal > sisaTagihan) {
+    await Swal.fire({icon:'error',title:'Input Salah',text:'Nominal tidak boleh melebihi sisa tagihan!'});
+    return;
+  }
+  // Konfirmasi sebelum submit
+  const konfirmasi = await Swal.fire({
+    title: 'Konfirmasi Pembayaran',
+    text: `Yakin ingin membayar sebesar Rp${nominal.toLocaleString('id-ID')}?`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Ya, Bayar',
+    cancelButtonText: 'Batal'
+  });
+  if (!konfirmasi.isConfirmed) return;
+  const btn = this.querySelector('button[type=submit]');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Membayar...';
+  try {
+    const res = await fetch('api/trx_proses.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `action=bayar&id=${encodeURIComponent(id)}&nominal=${encodeURIComponent(nominal)}`
+    });
+    const data = await res.json();
+    if(data.status === 'ok') {
+      Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Pembayaran berhasil!' }).then(() => window.location.reload());
+    } else {
+      Swal.fire({ icon: 'error', title: 'Gagal', text: data.msg || 'Gagal melakukan pembayaran.' });
+    }
+  } catch(err) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
+  }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-money-bill"></i> Bayar';
+});
+</script>
 <?php include 'footer.php'; ?> 
