@@ -94,7 +94,10 @@ function loadKeuangan() {
         html += `<tr class=\"hover:bg-blue-50 border-b border-blue-100 transition-all ${autoClass}\">`
           + `<td class='py-2 px-3 border-blue-100 text-center'>${i+1}</td>`
           + `<td class='py-2 px-3 border-blue-100'>${row.tanggal}</td>`
-          + `<td class='py-2 px-3 border-blue-100'>${row.keterangan||''}</td>`
+          + `<td class='py-2 px-3 border-blue-100'>`
+          + (row.keterangan && row.keterangan.includes('[AUTO]') ? `<span class='inline-block px-1.5 py-0 rounded-full bg-green-50 text-green-700 border border-green-300 text-[10px] font-bold mr-1 align-middle'>AUTO</span>` : '')
+          + `${(row.keterangan||'').replace('[AUTO]', '').trim()}`
+          + `</td>`
           + `<td class='py-2 px-3 border-blue-100 text-right'>${row.debet>0?formatAngka(row.debet):''}</td>`
           + `<td class='py-2 px-3 border-blue-100 text-right'>${row.kredit>0?formatAngka(row.kredit):''}</td>`
           + `<td class='py-2 px-3 border-blue-100 text-right ${saldoClass}'>${formatAngka(saldoJalan)}</td>`

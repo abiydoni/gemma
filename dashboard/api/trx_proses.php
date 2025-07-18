@@ -58,12 +58,21 @@ if (isset($_POST['action']) && $_POST['action'] == 'bayar' && !empty($_POST['id'
         $stmt = $pdo->prepare('UPDATE tb_trx SET bayar = bayar + ? WHERE id = ?');
         $stmt->execute([$nominal, $id]);
         // Cek apakah sudah lunas, lalu update status jika perlu
-        $stmt = $pdo->prepare('SELECT harga, bayar FROM tb_trx WHERE id = ?');
+        $stmt = $pdo->prepare('SELECT harga, bayar, email FROM tb_trx WHERE id = ?');
         $stmt->execute([$id]);
         $trx = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($trx && $trx['bayar'] >= $trx['harga']) {
             $pdo->prepare('UPDATE tb_trx SET status = 1 WHERE id = ?')->execute([$id]);
         }
+        // Insert ke jurnal/keuangan
+        $stmtInfo = $pdo->prepare('SELECT nama, email FROM tb_siswa WHERE email = ? LIMIT 1');
+        $stmtInfo->execute([$trx['email'] ?? '']);
+        $siswa = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+        $namaSiswa = $siswa['nama'] ?? '-';
+        $emailSiswa = $siswa['email'] ?? ($trx['email'] ?? '-');
+        $keterangan = "[AUTO] Bayar - Siswa: $namaSiswa";
+        $stmtJurnal = $pdo->prepare('INSERT INTO tb_keuangan (tanggal, keterangan, debet, kredit) VALUES (?, ?, ?, 0)');
+        $stmtJurnal->execute([date('Y-m-d'), $keterangan, $nominal]);
         echo json_encode(['status'=>'ok']);
     } catch(Exception $e) {
         echo json_encode(['status'=>'error','msg'=>'Gagal update pembayaran: '.$e->getMessage()]);
