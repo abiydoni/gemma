@@ -479,6 +479,38 @@ function updateHargaHarian() {
     inputHidden.value = total;
   }
 }
+function addBarisTanggalJam() {
+  var tbody = document.querySelector('#tabel-tanggal-jam tbody');
+  var tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>
+      <input type="date" name="tanggal_les[]" class="input-form-modal" required>
+    </td>
+    <td>
+      <select name="jam_les[]" class="input-form-modal" required>
+        <option value="">Pilih Jam</option>
+        <option value="09:00">09:00</option>
+        <option value="10:00">10:00</option>
+        <option value="11:00">11:00</option>
+        <option value="12:00">12:00</option>
+        <option value="13:00">13:00</option>
+        <option value="14:00">14:00</option>
+        <option value="15:00">15:00</option>
+        <option value="16:00">16:00</option>
+        <option value="17:00">17:00</option>
+        <option value="18:00">18:00</option>
+        <option value="19:00">19:00</option>
+        <option value="20:00">20:00</option>
+      </select>
+    </td>
+    <td class="text-center">
+      <button type="button" class="btn-hapus-baris bg-red-500 text-white rounded-full px-2 py-1">
+        <i class="fa fa-trash"></i>
+      </button>
+    </td>
+  `;
+  tbody.appendChild(tr);
+}
 // Event listener untuk perubahan baris tanggal pada mode custom
 if(document.getElementById('btn-tambah-baris')){
   document.getElementById('btn-tambah-baris').addEventListener('click', function(){
@@ -497,8 +529,39 @@ document.querySelectorAll('input[name=mode_jadwal]').forEach(radio => {
   radio.addEventListener('change', function() {
     setHargaPaket();
     updateHargaHarian();
+    document.getElementById('form-otomatis').style.display = this.value === 'otomatis' ? '' : 'none';
+    document.getElementById('form-custom').style.display = this.value === 'custom' ? '' : 'none';
+    // Atur required tanggal_mulai, hari, jam
+    const inputTanggalMulai = document.querySelector('input[name="tanggal_mulai"]');
+    const inputHari = document.querySelector('select[name="hari"]');
+    const inputJam = document.querySelector('select[name="jam"]');
+    if (this.value === 'otomatis') {
+      inputTanggalMulai.setAttribute('required', 'required');
+      inputHari.setAttribute('required', 'required');
+      inputJam.setAttribute('required', 'required');
+    } else {
+      inputTanggalMulai.removeAttribute('required');
+      inputHari.removeAttribute('required');
+      inputJam.removeAttribute('required');
+    }
   });
 });
+// Inisialisasi required tanggal_mulai, hari, jam saat load
+const modeAwal = document.querySelector('input[name=mode_jadwal]:checked');
+if (modeAwal) {
+  const inputTanggalMulai = document.querySelector('input[name="tanggal_mulai"]');
+  const inputHari = document.querySelector('select[name="hari"]');
+  const inputJam = document.querySelector('select[name="jam"]');
+  if (modeAwal.value === 'otomatis') {
+    inputTanggalMulai.setAttribute('required', 'required');
+    inputHari.setAttribute('required', 'required');
+    inputJam.setAttribute('required', 'required');
+  } else {
+    inputTanggalMulai.removeAttribute('required');
+    inputHari.removeAttribute('required');
+    inputJam.removeAttribute('required');
+  }
+}
 document.querySelector('select[name=paket]').addEventListener('change', function() {
   setHargaPaket();
   updateHargaHarian();
