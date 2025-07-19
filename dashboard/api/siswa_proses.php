@@ -63,6 +63,21 @@ if ($action === 'delete') {
     exit;
   }
   try {
+    // Cek email siswa
+    $stmt = $pdo->prepare('SELECT email FROM tb_siswa WHERE id = ? LIMIT 1');
+    $stmt->execute([$id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $email = $row['email'] ?? '';
+    if($email) {
+      // Cek apakah email ada di tb_trx
+      $cek = $pdo->prepare('SELECT COUNT(*) FROM tb_trx WHERE email = ?');
+      $cek->execute([$email]);
+      $adaTrx = $cek->fetchColumn();
+      if($adaTrx > 0) {
+        echo json_encode(['status'=>'fail','msg'=>'Data tidak dapat dihapus karena masih ada transaksi siswa ini!']);
+        exit;
+      }
+    }
     $stmt = $pdo->prepare('DELETE FROM tb_siswa WHERE id = ?');
     $stmt->execute([$id]);
     echo json_encode(['status'=>'ok']);
