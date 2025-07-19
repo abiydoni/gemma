@@ -92,6 +92,13 @@ try {
     $paket[$row['jenjang']][] = $row;
   }
 } catch (Exception $e) {}
+
+// --- Ambil data jenjang dari tb_jenjang ---
+$jenjangs = [];
+try {
+  $stmt = $pdo->query('SELECT nama, keterangan FROM tb_jenjang ORDER BY id ASC');
+  $jenjangs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {}
 ?>
     <title><?= htmlspecialchars($profile['nama']) ?> - Bimbingan Belajar Modern</title>
     <!-- Hero Section -->
@@ -283,33 +290,24 @@ $wa_link = preg_replace('/[^0-9]/', '', $wa_link);
                     Paket Bimbel Unggulan
                 </h2>
                 <p class="text-lg text-gray-600 max-w-3xl mx-auto">
-                    Pilih paket yang sesuai dengan kebutuhan belajar Anda. Kami menyediakan berbagai program bimbingan yang dirancang khusus untuk meraih prestasi akademik terbaik
+                    Pilih jenjang yang sesuai dengan kebutuhan belajar Anda. Kami menyediakan berbagai program bimbingan yang dirancang khusus untuk meraih prestasi akademik terbaik
                 </p>
             </div>
-
-            <!-- Paket Cards Dinamis -->
+            <!-- Jenjang Cards Dinamis -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <?php $card_idx = 0; foreach(['SD','SMP','SMA','UMUM'] as $jenjang): if(empty($paket[$jenjang])) continue;
-                $grad = $card_gradients[$card_idx % count($card_gradients)];
-                $bg_card = $grad[0];
-                $bg_icon = $grad[1];
-                $card_idx++;
-              ?>
+              <?php $card_idx = 0; foreach($jenjangs as $j): $grad = $card_gradients[$card_idx % count($card_gradients)]; $bg_card = $grad[0]; $bg_icon = $grad[1]; $card_idx++; ?>
                 <div class="relative group">
                   <div class="absolute inset-0 bg-gradient-to-r <?= $bg_card ?> rounded-3xl blur-xl opacity-20"></div>
                   <div class="relative bg-white rounded-3xl shadow-xl p-8 border border-gray-100 transform group-hover:scale-105 transition-all duration-300">
                     <div class="text-center mb-8">
                       <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br <?= $bg_icon ?> rounded-2xl mb-4 shadow-lg transition-all duration-300 group-hover:scale-110 animate-bounce-slow">
-                        <i class="fa-solid fa-book text-white text-2xl"></i>
+                        <i class="fa-solid fa-layer-group text-white text-2xl"></i>
                       </div>
-                      <h3 class="text-2xl font-bold text-gray-800 mb-2"><?php echo $jenjang; ?></h3>
+                      <h3 class="text-2xl font-bold text-gray-800 mb-2"><?php echo htmlspecialchars($j['nama']); ?></h3>
                     </div>
-                    <?php foreach($paket[$jenjang] as $p): ?>
                     <div class="text-center mb-4">
-                      <div class="font-semibold text-green-500"><?php echo htmlspecialchars($p['nama']); ?></div>
-                      <div class="text-2xl font-bold text-green-600 mb-1"><?php echo number_format($p['harga'],0,',','.'); ?>/bulan</div>
+                      <div class="text-gray-600 text-base"><?php echo htmlspecialchars($j['keterangan']); ?></div>
                     </div>
-                    <?php endforeach; ?>
                   </div>
                 </div>
               <?php endforeach; ?>
