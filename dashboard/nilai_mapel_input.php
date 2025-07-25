@@ -57,6 +57,11 @@ include 'header.php';
     <input type="hidden" name="id" id="nilai-id">
     <input type="hidden" name="action" id="form-action" value="add">
   </form>
+  <div class="flex justify-end mb-4">
+    <button type="button" id="btn-print-nilai" class="px-4 py-2 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700 flex items-center gap-2">
+      <i class="fa fa-print"></i> Print Nilai
+    </button>
+  </div>
   <div id="tabel-nilai-area" class="overflow-x-auto">
     <table id="tabel-nilai" class="min-w-full text-xs md:text-sm border border-blue-300 rounded-xl shadow overflow-hidden" id="tabel-keuangan">
       <thead>
@@ -159,5 +164,98 @@ $('#tabel-nilai').on('click','.btn-hapus-nilai',function(){
     }
   });
 });
+$('#btn-print-nilai').click(function(){
+  let selected = $('#id_trx option:selected').text();
+  let printTable = $('#tabel-nilai').clone();
+  printTable.find('th:last-child, td:last-child').remove();
+  let printWindow = window.open('', '', 'height=700,width=1000');
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Daftar Nilai Mapel</title>
+        <style>
+          body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f7fa;
+            color: #222;
+            padding: 0;
+            margin: 0;
+          }
+          .print-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 40px 40px 40px;
+          }
+          .print-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+          }
+          .print-header-icon {
+            font-size: 32px;
+            color: #2563eb;
+          }
+          .print-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin: 0;
+          }
+          .print-info {
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            color: #374151;
+          }
+          table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            background: #f9fafb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          }
+          th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          th {
+            background: #e0e7ff;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-top: 1px solid #e5e7eb;
+          }
+          tr:last-child td {
+            border-bottom: none;
+          }
+          @media print {
+            body { background: #fff; }
+            .print-container { box-shadow: none; margin: 0; padding: 0; border-radius: 0; }
+          }
+        </style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
+      </head>
+      <body>
+        <div class="print-container">
+          <div class="print-header">
+            <span class="print-header-icon"><i class="fa-solid fa-file-lines"></i></span>
+            <span class="print-title">Daftar Nilai Mapel</span>
+          </div>
+          <div class="print-info"><strong>Siswa & Mapel:</strong> ${selected}</div>
+          ${printTable.prop('outerHTML')}
+        </div>
+      </body>
+    </html>
+  `);
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+});
 </script>
-<?php include 'footer.php'; ?> 
+<?php include 'footer.php'; ?>

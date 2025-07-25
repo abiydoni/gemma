@@ -6,7 +6,14 @@
           </span>
           Dashboard
         </h1>
-              <!-- Kartu Statistik -->
+        <!-- Tombol Laporan Perkembangan Siswa -->
+        <div class="mb-6 flex justify-end">
+          <a href="laporan_perkembangan.php" class="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold shadow transition">
+            <i class="fa-solid fa-file-lines"></i>
+            Laporan Perkembangan Siswa
+          </a>
+        </div>
+        <!-- Kartu Statistik -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div class="bg-white p-4 rounded-2xl shadow hover:shadow-lg transition transform hover:-translate-y-1 animate-fadeInUp flex flex-col items-center group">
             <div class="w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 mb-3 shadow group-hover:scale-105 transition animate-pulse">

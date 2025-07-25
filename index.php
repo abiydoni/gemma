@@ -1,6 +1,17 @@
 <?php include "includes/header.php"; ?>
 <?php
 include 'api/db.php';
+
+// Validasi profile agar tidak error jika belum ada
+if (!isset($profile) || !is_array($profile)) {
+  $profile = [
+    'nama' => 'Bimbel Modern',
+    'keterangan' => 'Deskripsi singkat bimbel.',
+    'ig' => '',
+    'wa' => ''
+  ];
+}
+
 $fasilitas = [];
 $fa_icons = [
   'fa-user-graduate', 'fa-comments', 'fa-book-open', 'fa-award', 'fa-star', 'fa-lightbulb', 'fa-heart', 'fa-gem', 'fa-chalkboard-teacher', 'fa-certificate', 'fa-rocket', 'fa-handshake', 'fa-trophy', 'fa-briefcase', 'fa-graduation-cap'
@@ -38,7 +49,9 @@ $border_hover = [
 try {
   $stmt = $pdo->query('SELECT nama, keterangan, ikon FROM tb_fasilitas ORDER BY id ASC');
   $fasilitas = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (Exception $e) {}
+} catch (Exception $e) {
+  error_log($e->getMessage());
+}
 
 $jadwal = [];
 try {

@@ -4,9 +4,17 @@ include '../../api/db.php';
 $action = $_POST['action'] ?? '';
 
 if ($action == 'list') {
-    $id_trx = $_POST['id_trx'] ?? 0;
-    $stmt = $pdo->prepare('SELECT * FROM tb_catatan_tentor WHERE id_trx = ? ORDER BY tanggal ASC, id ASC');
-    $stmt->execute([$id_trx]);
+    $id_siswa = $_POST['id_siswa'] ?? 0;
+    $kode_mapel = $_POST['kode_mapel'] ?? '';
+    if ($id_siswa && $kode_mapel) {
+        $stmt = $pdo->prepare('SELECT * FROM tb_catatan_tentor WHERE id_siswa = ? AND kode_mapel = ? ORDER BY tanggal ASC, id ASC');
+        $stmt->execute([$id_siswa, $kode_mapel]);
+    } else {
+        // fallback lama jika filter tidak dikirim
+        $id_trx = $_POST['id_trx'] ?? 0;
+        $stmt = $pdo->prepare('SELECT * FROM tb_catatan_tentor WHERE id_trx = ? ORDER BY tanggal ASC, id ASC');
+        $stmt->execute([$id_trx]);
+    }
     $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     echo json_encode(['success'=>true, 'data'=>$data]);
     exit;
@@ -14,13 +22,15 @@ if ($action == 'list') {
 
 if ($action == 'add') {
     $id_trx = $_POST['id_trx'] ?? 0;
+    $id_siswa = $_POST['id_siswa'] ?? 0;
+    $kode_mapel = $_POST['kode_mapel'] ?? '';
     $tanggal = $_POST['tanggal'] ?? '';
     $catatan = $_POST['catatan'] ?? '';
-    if (!$id_trx || !$tanggal || !$catatan) {
+    if (!$id_trx || !$id_siswa || !$kode_mapel || !$tanggal || !$catatan) {
         echo json_encode(['success'=>false, 'msg'=>'Field wajib diisi']); exit;
     }
-    $stmt = $pdo->prepare('INSERT INTO tb_catatan_tentor (id_trx, catatan, tanggal) VALUES (?, ?, ?)');
-    $sukses = $stmt->execute([$id_trx, $catatan, $tanggal]);
+    $stmt = $pdo->prepare('INSERT INTO tb_catatan_tentor (id_trx, id_siswa, kode_mapel, catatan, tanggal) VALUES (?, ?, ?, ?, ?)');
+    $sukses = $stmt->execute([$id_trx, $id_siswa, $kode_mapel, $catatan, $tanggal]);
     echo json_encode(['success'=>$sukses]);
     exit;
 }
@@ -47,4 +57,4 @@ if ($action == 'delete') {
     exit;
 }
 
-echo json_encode(['success'=>false, 'msg'=>'Aksi tidak dikenali']); 
+echo json_encode(['success'=>false, 'msg'=>'Aksi tidak dikenali']);

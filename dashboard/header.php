@@ -75,6 +75,9 @@ try {
           <i class="fa-solid fa-user-gear"></i><span>Data User</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Laporan</div>
+        <a href="laporan_perkembangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-chart-line"></i><span>laporan Perkembangan Siswa</span>
+        </a>
         <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fa-solid fa-cash-register"></i><span>Keuangan</span>
         </a>
