@@ -43,6 +43,7 @@
         $('#user-id').val('<?= $_SESSION['user_id'] ?? '' ?>');
         $('#user-email').val('<?= $_SESSION['user_email'] ?? '' ?>').prop('readonly', true);
         $('#user-nama').val('<?= $_SESSION['user_nama'] ?? '' ?>');
+        $('#user-hp').val('<?= $_SESSION['user_hp'] ?? '' ?>');
         if (typeof setRoleDropdown === 'function') setRoleDropdown();
         $('#user-role').val('<?= $_SESSION['user_role'] ?? 'user' ?>');
         $('#modal-title').text('Edit Profil');
@@ -87,10 +88,15 @@
         <input type="text" name="nama" id="user-nama" class="w-full border rounded px-2 py-1" required>
       </div>
       <div class="mb-2">
+        <label class="block text-sm font-bold mb-1">HP</label>
+        <input type="text" name="hp" id="user-hp" class="w-full border rounded px-2 py-1" required>
+      </div>
+      <div class="mb-2">
         <label class="block text-sm font-bold mb-1">Role</label>
         <select name="role" id="user-role" class="w-full border rounded px-2 py-1">
           <option value="s_admin">Super Admin</option>
           <option value="admin">Admin</option>
+          <option value="tentor">Tentor</option>
           <option value="user">User</option>
         </select>
       </div>

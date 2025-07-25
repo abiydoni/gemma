@@ -1,12 +1,21 @@
 <?php
 session_start();
+include '../api/db.php';
 if (!isset($_SESSION['user_id'])) {
   header('Location: ../login.php');
   exit;
 }
+if (!isset($_SESSION['user_hp'])) {
+  $user_id = $_SESSION['user_id'] ?? 0;
+  if ($user_id) {
+    $stmt = $pdo->prepare('SELECT hp FROM tb_user WHERE id = ?');
+    $stmt->execute([$user_id]);
+    $row = $stmt->fetch();
+    $_SESSION['user_hp'] = $row ? $row['hp'] : '';
+  }
+}
 $user_nama = $_SESSION['user_nama'] ?? ($_SESSION['user_email'] ?? '');
 $user_role = $_SESSION['user_role'] ?? '';
-include '../api/db.php';
 $total_siswa = 0;
 try {
   $stmt = $pdo->query('SELECT COUNT(email) as jumlah FROM tb_siswa');
@@ -68,6 +77,12 @@ try {
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Laporan</div>
         <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fa-solid fa-cash-register"></i><span>Keuangan</span>
+        </a>
+        <a href="catatan_tentor_input.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-clipboard-list"></i><span>Catatan Tentor</span>
+        </a>
+        <a href="nilai_mapel_input.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-table-list"></i><span>Nilai Mapel</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
         <a href="setting_fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
