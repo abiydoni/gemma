@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 26 Jul 2025 pada 16.19
+-- Waktu pembuatan: 26 Jul 2025 pada 21.24
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -44,6 +44,28 @@ INSERT INTO `tb_fasilitas` (`id`, `nama`, `keterangan`, `ikon`, `tanggal`) VALUE
 (2, 'Free Konsultasi', 'Konsultasi akademik & non-akademik gratis untuk siswa.', 'fa-comments', '2025-07-15 03:05:06'),
 (3, 'Laporan Bulanan', 'Laporan perkembangan dan evaluasi bulanan untuk orang tua.', 'fa-clipboard-list', '2025-07-15 03:05:34'),
 (4, 'Terpercaya', 'Lembaga bimbel terpercaya dengan berbagai program unggulan.', 'fa-certificate', '2025-07-15 03:05:58');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tb_gaji_tentor`
+--
+
+CREATE TABLE `tb_gaji_tentor` (
+  `id` int(11) NOT NULL,
+  `id_tentor` int(11) NOT NULL,
+  `id_trx` int(11) NOT NULL,
+  `email_siswa` varchar(100) NOT NULL,
+  `mapel` int(11) NOT NULL,
+  `total_pembayaran` decimal(10,2) NOT NULL,
+  `presentase_gaji` decimal(5,2) NOT NULL,
+  `jumlah_gaji` decimal(10,2) NOT NULL,
+  `bulan` varchar(7) NOT NULL,
+  `status_pembayaran` enum('pending','dibayar') DEFAULT 'pending',
+  `tanggal_pembayaran` date DEFAULT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -144,7 +166,8 @@ INSERT INTO `tb_keuangan` (`id`, `tanggal`, `keterangan`, `debet`, `kredit`, `wa
 (3, '2025-07-17', '[AUTO] Pembayaran Siswa ID: 6', 70000.00, 0.00, '2025-07-17 02:55:06'),
 (4, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 70000.00, 0.00, '2025-07-17 02:58:38'),
 (5, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 100000.00, 0.00, '2025-07-17 03:18:27'),
-(6, '2025-07-19', '[AUTO] Bayar - Siswa: Doni Abiyantoro', 60000.00, 0.00, '2025-07-19 11:30:19');
+(6, '2025-07-19', '[AUTO] Bayar - Siswa: Doni Abiyantoro', 60000.00, 0.00, '2025-07-19 11:30:19'),
+(7, '2025-07-26', '[AUTO] Bayar - Siswa: Doni Abiyantoro', 120000.00, 0.00, '2025-07-26 16:41:34');
 
 -- --------------------------------------------------------
 
@@ -199,6 +222,29 @@ INSERT INTO `tb_mapel` (`id`, `kode`, `nama`, `keterangan`, `status`, `tanggal`)
 (3, 'GE003', 'Matematika SMP', 'Matematika SMP', 1, '2025-07-16 06:48:28'),
 (4, 'GE004', 'Matematika SMA', 'Matematika SMA', 1, '2025-07-16 06:48:26'),
 (6, 'GE003', 'Lainnya', '-', 0, '2025-07-16 06:50:20');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tb_mapel_tentor`
+--
+
+CREATE TABLE `tb_mapel_tentor` (
+  `id` int(11) NOT NULL,
+  `mapel` varchar(100) NOT NULL,
+  `id_tentor` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tb_mapel_tentor`
+--
+
+INSERT INTO `tb_mapel_tentor` (`id`, `mapel`, `id_tentor`, `created_at`) VALUES
+(1, 'GE001', 4, '2025-07-26 16:56:34'),
+(2, 'GE002', 5, '2025-07-26 16:56:34'),
+(3, 'GE003', 4, '2025-07-26 16:56:34'),
+(4, 'GE004', 5, '2025-07-26 16:56:34');
 
 -- --------------------------------------------------------
 
@@ -294,6 +340,34 @@ INSERT INTO `tb_profile` (`id`, `nama`, `keterangan`, `alamat`, `email`, `wa`, `
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `tb_setting_gaji`
+--
+
+CREATE TABLE `tb_setting_gaji` (
+  `id` int(11) NOT NULL,
+  `mapel` int(11) NOT NULL,
+  `presentase_gaji` decimal(5,2) NOT NULL,
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tb_setting_gaji`
+--
+
+INSERT INTO `tb_setting_gaji` (`id`, `mapel`, `presentase_gaji`, `keterangan`, `created_at`) VALUES
+(1, 1, 30.00, 'CALISTUNG/TEMATIK - 30%', '2025-07-26 16:30:00'),
+(2, 2, 25.00, 'Matematika SD - 25%', '2025-07-26 16:30:00'),
+(3, 3, 25.00, 'Matematika SMP - 25%', '2025-07-26 16:30:00'),
+(4, 4, 25.00, 'Matematika SMA - 25%', '2025-07-26 16:30:00'),
+(1, 1, 30.00, 'CALISTUNG/TEMATIK - 30%', '2025-07-26 16:30:00'),
+(2, 2, 25.00, 'Matematika SD - 25%', '2025-07-26 16:30:00'),
+(3, 3, 25.00, 'Matematika SMP - 25%', '2025-07-26 16:30:00'),
+(4, 4, 25.00, 'Matematika SMA - 25%', '2025-07-26 16:30:00');
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `tb_siswa`
 --
 
@@ -340,8 +414,8 @@ CREATE TABLE `tb_trx` (
 --
 
 INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `status`, `tanggal`, `id_tentor`) VALUES
-(19, 'abiydoni@gmail.com', 'KL001', 'GE002', 60000, 60000, 1, '2025-07-19 11:30:19', 4),
-(22, 'abiydoni@gmail.com', 'PR002', 'GE001', 120000, 0, 0, '2025-07-26 11:55:26', 5);
+(19, 'abiydoni@gmail.com', 'KL001', 'GE002', 60000, 60000, 1, '2025-07-26 16:50:12', 5),
+(22, 'abiydoni@gmail.com', 'PR002', 'GE001', 120000, 120000, 1, '2025-07-26 16:50:19', 4);
 
 -- --------------------------------------------------------
 
@@ -395,78 +469,6 @@ INSERT INTO `tb_user` (`id`, `email`, `nama`, `password`, `hp`, `role`, `tanggal
 (4, 'tentor@gmail.com', 'Budi Kurniawan', '$2y$10$GVXlP4GrPBDrt/GJ6olF0uSiaFAe0o7h7nURTeoy3bgmYfSV4pBee', '08512341234', 'tentor', '2025-07-26 11:46:37'),
 (5, 'tentor2@gmail.com', 'Septi Fira', '$2y$10$5nx/QNzKaTfLbwiRFf32wuk9LM4xWvPI3Icwk8gaQ/zjbjdhUwWim', '085198765432', 'tentor', '2025-07-26 11:46:37');
 
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_gaji_tentor`
---
-
-CREATE TABLE `tb_gaji_tentor` (
-  `id` int(11) NOT NULL,
-  `id_tentor` int(11) NOT NULL,
-  `id_trx` int(11) NOT NULL,
-  `email_siswa` varchar(100) NOT NULL,
-  `mapel` int(11) NOT NULL,
-  `total_pembayaran` decimal(10,2) NOT NULL,
-  `presentase_gaji` decimal(5,2) NOT NULL,
-  `jumlah_gaji` decimal(10,2) NOT NULL,
-  `bulan` varchar(7) NOT NULL,
-  `status_pembayaran` enum('pending','dibayar') DEFAULT 'pending',
-  `tanggal_pembayaran` date DEFAULT NULL,
-  `keterangan` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_setting_gaji`
---
-
-CREATE TABLE `tb_setting_gaji` (
-  `id` int(11) NOT NULL,
-  `mapel` int(11) NOT NULL,
-  `presentase_gaji` decimal(5,2) NOT NULL,
-  `keterangan` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `tb_setting_gaji`
---
-
-INSERT INTO `tb_setting_gaji` (`id`, `mapel`, `presentase_gaji`, `keterangan`, `created_at`) VALUES
-(1, 1, 30.00, 'CALISTUNG/TEMATIK - 30%', '2025-07-26 16:30:00'),
-(2, 2, 25.00, 'Matematika SD - 25%', '2025-07-26 16:30:00'),
-(3, 3, 25.00, 'Matematika SMP - 25%', '2025-07-26 16:30:00'),
-(4, 4, 25.00, 'Matematika SMA - 25%', '2025-07-26 16:30:00');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_mapel_tentor`
---
-
-CREATE TABLE `tb_mapel_tentor` (
-  `id` int(11) NOT NULL,
-  `mapel` varchar(100) NOT NULL,
-  `id_tentor` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `tb_mapel_tentor`
---
-
-INSERT INTO `tb_mapel_tentor` (`id`, `mapel`, `id_tentor`) VALUES
-(1, 'GE001', 4),
-(2, 'GE002', 5),
-(3, 'GE003', 4),
-(4, 'GE004', 5),
-(5, 'GE005', 4);
-
--- --------------------------------------------------------
-
 --
 -- Indexes for dumped tables
 --
@@ -515,6 +517,14 @@ ALTER TABLE `tb_mapel`
   ADD KEY `kode` (`kode`);
 
 --
+-- Indeks untuk tabel `tb_mapel_tentor`
+--
+ALTER TABLE `tb_mapel_tentor`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `mapel` (`mapel`),
+  ADD KEY `id_tentor` (`id_tentor`);
+
+--
 -- Indeks untuk tabel `tb_paket`
 --
 ALTER TABLE `tb_paket`
@@ -547,7 +557,8 @@ ALTER TABLE `tb_siswa`
 --
 ALTER TABLE `tb_trx`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `email` (`email`);
+  ADD KEY `email` (`email`),
+  ADD KEY `tb_trx_ibfk_1` (`id_tentor`);
 
 --
 -- Indeks untuk tabel `tb_trx_tanggal`
@@ -561,31 +572,6 @@ ALTER TABLE `tb_trx_tanggal`
 --
 ALTER TABLE `tb_user`
   ADD PRIMARY KEY (`id`);
-
---
--- Indeks untuk tabel `tb_gaji_tentor`
---
-ALTER TABLE `tb_gaji_tentor`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `id_tentor` (`id_tentor`),
-  ADD KEY `id_trx` (`id_trx`),
-  ADD KEY `email_siswa` (`email_siswa`),
-  ADD KEY `mapel` (`mapel`);
-
---
--- Indeks untuk tabel `tb_setting_gaji`
---
-ALTER TABLE `tb_setting_gaji`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `mapel` (`mapel`);
-
---
--- Indeks untuk tabel `tb_mapel_tentor`
---
-ALTER TABLE `tb_mapel_tentor`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `mapel` (`mapel`),
-  ADD KEY `id_tentor` (`id_tentor`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
@@ -619,7 +605,7 @@ ALTER TABLE `tb_jenjang`
 -- AUTO_INCREMENT untuk tabel `tb_keuangan`
 --
 ALTER TABLE `tb_keuangan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `tb_kondisi`
@@ -632,6 +618,12 @@ ALTER TABLE `tb_kondisi`
 --
 ALTER TABLE `tb_mapel`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT untuk tabel `tb_mapel_tentor`
+--
+ALTER TABLE `tb_mapel_tentor`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `tb_paket`
@@ -676,28 +668,29 @@ ALTER TABLE `tb_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT untuk tabel `tb_gaji_tentor`
---
-ALTER TABLE `tb_gaji_tentor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `tb_setting_gaji`
---
-ALTER TABLE `tb_setting_gaji`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT untuk tabel `tb_mapel_tentor`
---
-ALTER TABLE `tb_mapel_tentor`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
 -- Ketidakleluasaan untuk tabel `tb_perkembangan_siswa`
 --
-ALTER TABLE `
+ALTER TABLE `tb_perkembangan_siswa`
+  ADD CONSTRAINT `tb_perkembangan_siswa_ibfk_1` FOREIGN KEY (`mapel`) REFERENCES `tb_mapel` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tb_perkembangan_siswa_ibfk_2` FOREIGN KEY (`id_jenis_penilaian`) REFERENCES `tb_jenis_penilaian` (`id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `tb_trx`
+--
+ALTER TABLE `tb_trx`
+  ADD CONSTRAINT `tb_trx_ibfk_1` FOREIGN KEY (`id_tentor`) REFERENCES `tb_user` (`id`);
+
+--
+-- Ketidakleluasaan untuk tabel `tb_trx_tanggal`
+--
+ALTER TABLE `tb_trx_tanggal`
+  ADD CONSTRAINT `tb_trx_tanggal_ibfk_1` FOREIGN KEY (`id_trx`) REFERENCES `tb_trx` (`id`) ON DELETE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
