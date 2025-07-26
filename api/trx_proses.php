@@ -50,17 +50,55 @@ if (isset($_GET['action']) && $_GET['action'] == 'get_jadwal' && !empty($_GET['i
     exit;
 }
 
+if (isset($_POST['action']) && $_POST['action'] == 'detail' && !empty($_POST['id'])) {
+    $id = $_POST['id'];
+    
+    try {
+        $stmt = $pdo->prepare("
+            SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel, u.nama as nama_tentor
+            FROM tb_trx t
+            LEFT JOIN tb_paket p ON t.paket = p.kode
+            LEFT JOIN tb_mapel m ON t.mapel = m.kode
+            LEFT JOIN tb_user u ON t.id_tentor = u.id
+            WHERE t.id = ?
+        ");
+        $stmt->execute([$id]);
+        $transaksi = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($transaksi) {
+            // Ambil jadwal les untuk transaksi ini
+            $stmt_jadwal = $pdo->prepare("
+                SELECT * FROM tb_trx_tanggal 
+                WHERE id_trx = ? 
+                ORDER BY tanggal ASC
+            ");
+            $stmt_jadwal->execute([$transaksi['id']]);
+            $jadwal_list = $stmt_jadwal->fetchAll(PDO::FETCH_ASSOC);
+            
+            $transaksi['jadwal'] = $jadwal_list;
+            
+            echo json_encode(['status' => 'ok', 'data' => $transaksi]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Transaksi tidak ditemukan']);
+        }
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 $email = $_POST['email'] ?? '';
 $paket = $_POST['paket'] ?? '';
 $mapel = $_POST['mapel'] ?? '';
 $harga = $_POST['harga'] ?? 0;
+$tentor = $_POST['tentor'] ?? '';
 $mode_jadwal = $_POST['mode_jadwal'] ?? 'otomatis';
 $tanggal_les = $_POST['tanggal_les'] ?? [];
 $jam_les = $_POST['jam_les'] ?? [];
 
 if ($mode_jadwal === 'custom') {
     if(
-      !$email || !$paket || !$mapel || !$harga ||
+      !$email || !$paket || !$mapel || !$harga || !$tentor ||
       !is_array($tanggal_les) || count(array_filter($tanggal_les)) == 0 ||
       !is_array($jam_les) || count(array_filter($jam_les)) == 0
     ) {
@@ -71,7 +109,7 @@ if ($mode_jadwal === 'custom') {
     $hari = $_POST['hari'] ?? '';
     $jam = $_POST['jam'] ?? '';
     $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
-    if(!$email || !$paket || !$mapel || !$harga || !$hari || !$jam || !$tanggal_mulai) {
+    if(!$email || !$paket || !$mapel || !$harga || !$tentor || !$hari || !$jam || !$tanggal_mulai) {
         echo json_encode(['status'=>'fail','msg'=>'Data wajib diisi lengkap!']);
         exit;
     }
@@ -79,8 +117,8 @@ if ($mode_jadwal === 'custom') {
 
 try {
     // Insert ke tb_trx (field minimal, tanpa hari, jam, mulai)
-    $stmt = $pdo->prepare("INSERT INTO tb_trx (email, paket, mapel, harga, bayar, status, tanggal) VALUES (?,?,?,?,0,0,NOW())");
-    $stmt->execute([$email, $paket, $mapel, $harga]);
+    $stmt = $pdo->prepare("INSERT INTO tb_trx (email, paket, mapel, harga, bayar, status, tanggal, id_tentor) VALUES (?,?,?,?,0,0,NOW(),?)");
+    $stmt->execute([$email, $paket, $mapel, $harga, $tentor]);
     $id_trx = $pdo->lastInsertId();
 
     if ($mode_jadwal === 'custom') {

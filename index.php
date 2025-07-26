@@ -283,6 +283,58 @@ $wa_link = preg_replace('/[^0-9]/', '', $wa_link);
   <div class="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-30"></div>
 </section>
 
+    <!-- Section Promo -->
+    <section id="promo" class="py-20 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6 flex items-center justify-center gap-3">
+                    <i class="fa-solid fa-user-graduate text-yellow-300"></i>
+                    Cek Data Siswa
+                </h2>
+                <p class="text-xl text-blue-100 max-w-3xl mx-auto">
+                    Masukkan email dan tanggal lahir untuk melihat data transaksi dan perkembangan pembelajaran Anda
+                </p>
+            </div>
+            
+            <!-- Form Pencarian Siswa -->
+            <div class="max-w-2xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-2xl p-8">
+                    <form id="form-cari-siswa" class="space-y-6">
+                        <div>
+                            <label for="email-siswa" class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fa-solid fa-envelope text-blue-600 mr-2"></i>Email Siswa
+                            </label>
+                            <input type="email" id="email-siswa" name="email" required 
+                                   class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                                   placeholder="Masukkan email yang terdaftar">
+                        </div>
+                        
+                        <div>
+                            <label for="tgl-lahir-siswa" class="block text-sm font-bold text-gray-700 mb-2">
+                                <i class="fa-solid fa-calendar-days text-blue-600 mr-2"></i>Tanggal Lahir
+                            </label>
+                            <input type="text" id="tgl-lahir-siswa" name="tgl_lahir" required 
+                                   class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                                   placeholder="DDMMYYYY (contoh: 15012010)"
+                                   maxlength="8" pattern="[0-9]{8}">
+                            <p class="text-xs text-gray-500 mt-1">Format: DDMMYYYY (tanpa spasi atau tanda hubung)</p>
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3 px-6 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-search"></i>
+                            Cek Data Siswa
+                        </button>
+                    </form>
+                    
+                    <div id="hasil-pencarian" class="mt-6 hidden">
+                        <!-- Hasil pencarian akan ditampilkan di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Paket Bimbel - Design Premium -->
     <section id="paket" class="relative py-20 px-6 overflow-hidden">
         <!-- Background dengan gradient elegan -->
@@ -329,3 +381,122 @@ $wa_link = preg_replace('/[^0-9]/', '', $wa_link);
     </section>
 
 <?php include "includes/footer.php"; ?>
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-opacity-95', 'backdrop-blur-sm');
+            } else {
+                navbar.classList.remove('bg-opacity-95', 'backdrop-blur-sm');
+            }
+        });
+
+        // Form pencarian siswa
+        document.getElementById('form-cari-siswa').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email-siswa').value.trim();
+            const tglLahir = document.getElementById('tgl-lahir-siswa').value.trim();
+            
+            // Validasi format tanggal lahir
+            if (!/^\d{8}$/.test(tglLahir)) {
+                Swal.fire({
+                    title: 'Format Tanggal Salah!',
+                    text: 'Tanggal lahir harus dalam format DDMMYYYY (8 digit angka)',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Validasi tanggal yang masuk akal
+            const day = parseInt(tglLahir.substring(0, 2));
+            const month = parseInt(tglLahir.substring(2, 4));
+            const year = parseInt(tglLahir.substring(4, 8));
+            
+            if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > new Date().getFullYear()) {
+                Swal.fire({
+                    title: 'Tanggal Tidak Valid!',
+                    text: 'Masukkan tanggal lahir yang valid',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
+            
+            // Tampilkan loading
+            Swal.fire({
+                title: 'Mencari Data Siswa...',
+                text: 'Mohon tunggu sebentar',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // Kirim request ke API untuk validasi
+            fetch('api/cek_siswa.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `email=${encodeURIComponent(email)}&tgl_lahir=${encodeURIComponent(tglLahir)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    Swal.fire({
+                        title: 'Data Ditemukan!',
+                        text: `Selamat datang, ${data.data.nama}!`,
+                        icon: 'success',
+                        confirmButtonText: 'Lihat Detail',
+                        showCancelButton: true,
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Redirect ke detail siswa
+                            window.location.href = `detail_siswa.php?email=${encodeURIComponent(email)}`;
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Data Tidak Ditemukan!',
+                        text: data.message || 'Email atau tanggal lahir tidak sesuai dengan data yang terdaftar',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan pada sistem. Silakan coba lagi.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+        
+        // Format input tanggal lahir
+        document.getElementById('tgl-lahir-siswa').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Hanya angka
+            if (value.length > 8) {
+                value = value.substring(0, 8);
+            }
+            e.target.value = value;
+        });
+        
+        // Smooth scroll untuk anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>

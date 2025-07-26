@@ -81,11 +81,14 @@ try {
         <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fa-solid fa-cash-register"></i><span>Keuangan</span>
         </a>
-        <a href="catatan_tentor_input.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fa-solid fa-clipboard-list"></i><span>Catatan Tentor</span>
+        <a href="setting_gaji.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-cog"></i><span>Setting Gaji</span>
         </a>
-        <a href="nilai_mapel_input.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
-          <i class="fa-solid fa-table-list"></i><span>Nilai Mapel</span>
+        <a href="daftar_gaji.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-money-bill-wave"></i><span>Daftar Gaji</span>
+        </a>
+        <a href="mapel_tentor.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-link"></i><span>Mapping Mapel-Tentor</span>
         </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
         <a href="setting_fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">

@@ -62,100 +62,218 @@ try {
 ?>
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100 py-10 px-2">
   <div class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-blue-100 relative mx-auto">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-      <!-- Card Data Siswa & Orang Tua -->
-      <div class="bg-white rounded-2xl shadow p-6 border border-blue-100 flex flex-col items-start">
-        <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-36 h-36 rounded-full object-cover border-4 border-blue-200 shadow-lg mb-2">
-        <div class="text-2xl md:text-3xl font-extrabold text-blue-700 flex items-center gap-2 mt-2 mb-4 text-left">
-          <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
-        </div>
-        <div class="text-left text-lg font-bold text-blue-700 mb-2">Data Siswa</div>
-        <table class="w-full text-base mb-4">
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-venus-mars text-pink-400 mr-2"></i>Gender:</td><td class="py-1"> <?= htmlspecialchars($siswa['gender']) ?></td></tr>
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-calendar-days text-blue-400 mr-2"></i>Tanggal Lahir:</td><td class="py-1"> <?= htmlspecialchars($siswa['tgl_lahir']) ?></td></tr>
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-location-dot text-blue-400 mr-2"></i>Alamat:</td><td class="py-1"> <?= htmlspecialchars($siswa['alamat']) ?></td></tr>
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-envelope text-indigo-400 mr-2"></i>Email:</td><td class="py-1"> <?= htmlspecialchars($siswa['email']) ?></td></tr>
-        </table>
-        <div class="text-lg font-bold text-blue-700 mb-2 mt-4">Data Orang Tua</div>
-        <table class="w-full text-base">
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-user-group text-green-500 mr-2"></i>Orang Tua:</td><td class="py-1"> <?= htmlspecialchars($siswa['ortu']) ?></td></tr>
-          <tr><td class="py-1 pr-3"><i class="fa-solid fa-phone text-green-600 mr-2"></i>HP Ortu:</td><td class="py-1"> <?= htmlspecialchars($siswa['hp_ortu']) ?></td></tr>
-        </table>
+    
+    <!-- Header dengan Foto dan Data Siswa -->
+    <div class="text-center mb-8">
+      <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-lg mx-auto mb-4">
+      <div class="text-3xl font-extrabold text-blue-700 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
       </div>
-      <!-- Card Transaksi -->
-      <div class="bg-white rounded-2xl shadow p-6 border border-blue-100">
-        <!-- Tombol Tambah dengan id unik -->
-        <div class="flex items-center justify-between mb-4">
-          <div class="text-base font-bold text-blue-700">Informasi Transaksi</div>
-          <button id="btn-tambah-trx" class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow hover:scale-105 hover:shadow-lg transition flex items-center gap-1 text-sm whitespace-nowrap">
-            <i class="fa-solid fa-plus"></i> Tambah Jadwal Les
-          </button>
-        </div>
-        <?php if (empty($trx)): ?>
-          <div class="text-gray-500 italic">Belum ada transaksi untuk siswa ini.</div>
-        <?php else: ?>
+      <p class="text-gray-600 mt-2"><?= htmlspecialchars($siswa['email']) ?></p>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6">
+      <button onclick="showTab('transaksi')" class="px-6 py-3 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all">
+        <i class="fa-solid fa-receipt mr-2"></i>Informasi Transaksi
+      </button>
+      <button onclick="showTab('perkembangan')" class="px-6 py-3 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 transition-all">
+        <i class="fa-solid fa-chart-line mr-2"></i>Laporan Perkembangan
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="tab-content-transaksi" class="block">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Transaksi</h3>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Kolom Kiri: Data Siswa & Orang Tua -->
           <div class="space-y-4">
-            <?php foreach($trx as $t): 
-              $sisa = $t['harga'] - $t['bayar'];
-              $lunas = $sisa <= 0;
-              $cardBg = $lunas ? 'from-green-50 to-green-100 border-green-200' : 'from-orange-50 to-pink-50 border-orange-200';
-              $badgeBg = $lunas ? 'bg-green-100 text-green-700 border border-green-300' : 'bg-orange-100 text-orange-700 border border-orange-300';
-              $icon = $lunas ? 'fa-circle-check text-green-500' : 'fa-circle-exclamation text-orange-500';
-              $statusText = $lunas ? 'Lunas' : 'Belum Lunas';
-              $sisaColor = $lunas ? 'text-green-600' : 'text-red-600';
-              $subjudul = htmlspecialchars(($t['nama_paket'] ?? $t['paket']) . ($t['nama_mapel'] ? ' - ' . $t['nama_mapel'] : ''));
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h4 class="font-semibold text-gray-800 mb-3">Data Siswa</h4>
+              <table class="w-full text-sm">
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-venus-mars text-pink-400 mr-2"></i>Gender:</td><td class="py-1"> <?= htmlspecialchars($siswa['gender']) ?></td></tr>
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-calendar-days text-blue-400 mr-2"></i>Tanggal Lahir:</td><td class="py-1"> <?= htmlspecialchars($siswa['tgl_lahir']) ?></td></tr>
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-location-dot text-blue-400 mr-2"></i>Alamat:</td><td class="py-1"> <?= htmlspecialchars($siswa['alamat']) ?></td></tr>
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-envelope text-indigo-400 mr-2"></i>Email:</td><td class="py-1"> <?= htmlspecialchars($siswa['email']) ?></td></tr>
+              </table>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-4">
+              <h4 class="font-semibold text-gray-800 mb-3">Data Orang Tua</h4>
+              <table class="w-full text-sm">
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-user-group text-green-500 mr-2"></i>Orang Tua:</td><td class="py-1"> <?= htmlspecialchars($siswa['ortu']) ?></td></tr>
+                <tr><td class="py-1 pr-3"><i class="fa-solid fa-phone text-green-600 mr-2"></i>HP Ortu:</td><td class="py-1"> <?= htmlspecialchars($siswa['hp_ortu']) ?></td></tr>
+              </table>
+            </div>
+            
+            <?php 
+            $total_sisa = array_sum(array_map(function($t) { return max(0, $t['harga'] - $t['bayar']); }, $trx));
             ?>
-            <div class="flex flex-col md:flex-row md:items-center justify-between bg-gradient-to-r <?= $cardBg ?> rounded-xl p-4 shadow border max-w-full overflow-visible relative pt-8 pb-8">
-              <?php if(isset($t['id'])): ?>
-                <button class="absolute -top-4 -right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-pink-600 text-white border-2 border-white shadow-lg hover:scale-110 transition z-50 btn-hapus-trx<?php if($lunas) echo ' opacity-50 cursor-not-allowed'; ?>" data-id="<?= htmlspecialchars($t['id']) ?>" title="Hapus Transaksi" <?php if($lunas) echo 'disabled'; ?>>
-                  <i class="fa-solid fa-xmark text-base"></i>
-                </button>
-              <?php endif; ?>
-              <div class="min-w-0 w-full md:w-auto">
-                <div class="flex items-center gap-2 min-w-0 flex-col items-start text-left w-full">
-                  <span class="font-bold text-blue-800 text-base truncate whitespace-nowrap overflow-hidden max-w-full" title="<?= $subjudul ?>">
-                    <i class="fa-solid <?= $icon ?>"></i> <?= $subjudul ?>
-                  </span>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg p-4 border border-green-200 shadow-sm">
+              <h4 class="font-semibold text-green-800 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-wave text-green-600"></i>Status Pembayaran
+              </h4>
+              <div class="text-center">
+                <?php if ($total_sisa > 0): ?>
+                <div class="text-2xl font-bold text-green-700 mb-2">
+                  Rp<?= number_format($total_sisa,0,',','.') ?>
                 </div>
-                <div class="text-sm text-gray-600">Harga: <span class="font-semibold text-blue-700">Rp<?= number_format($t['harga'],0,',','.') ?></span></div>
-                <div class="text-sm text-gray-600">Bayar: <span class="font-semibold text-green-700">Rp<?= number_format($t['bayar'],0,',','.') ?></span></div>
-                <div class="text-sm text-gray-600">Sisa: <span class="font-semibold <?= $sisaColor ?>">Rp<?= number_format(max($sisa,0),0,',','.') ?></span></div>
-              </div>
-              <div class="flex flex-col items-end mt-2 md:mt-0 min-w-0 w-full md:w-auto">
-                <?php if (!empty($t['jadwal'])): ?>
-                  <button type="button" class="btn-detail-jadwal mb-2 px-3 py-1 bg-blue-500 text-white rounded text-xs font-bold" data-jadwal='<?= json_encode($t['jadwal']) ?>' data-mapel="<?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?>">Detail</button>
-                <?php endif; ?>
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold <?= $badgeBg ?> max-w-full overflow-hidden mt-2">
-                  <i class="fa-solid <?= $icon ?>"></i> <?= $statusText ?>
-                </span>
-                <?php if (isset($t['tanggal'])): ?>
-                  <span class="text-xs text-gray-400 mt-1 truncate whitespace-nowrap overflow-hidden block max-w-[160px] md:max-w-[200px]" title="<?= htmlspecialchars($t['mulai'] ?? $t['tanggal']) ?>">Mulai: <?= htmlspecialchars($t['mulai'] ?? $t['tanggal']) ?></span>
+                <p class="text-sm text-green-600">Yang harus dibayar</p>
+                <?php else: ?>
+                <div class="text-lg font-bold text-blue-700 mb-2">
+                  ✅ Lunas
+                </div>
+                <p class="text-sm text-blue-600">Semua pembayaran sudah lunas</p>
                 <?php endif; ?>
               </div>
             </div>
-            <?php endforeach; ?>
           </div>
-          <?php
-            $total_harga = 0;
-            $total_bayar = 0;
-            foreach($trx as $t) {
-              $total_harga += $t['harga'];
-              $total_bayar += $t['bayar'];
-            }
-            $total_sisa = $total_harga - $total_bayar;
-          ?>
-          <div class="mt-6 flex items-center justify-end">
-            <span class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-50 border border-blue-200 shadow text-lg font-bold text-blue-800">
-              <i class="fa-solid fa-money-bill-wave text-green-500 text-xl"></i>
-              Total yang harus dibayar:
-              <span class="ml-2 text-green-700">Rp<?= number_format(max($total_sisa,0),0,',','.') ?></span>
-            </span>
+          
+          <!-- Kolom Kanan: Data Transaksi -->
+          <div class="bg-gray-50 rounded-lg p-4">
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="font-semibold text-gray-800">Data Transaksi</h4>
+              <button id="btn-tambah-trx" class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow hover:scale-105 hover:shadow-lg transition flex items-center gap-1 text-sm whitespace-nowrap">
+                <i class="fa-solid fa-plus"></i> Tambah Jadwal Les
+              </button>
+            </div>
+            
+            <?php if (empty($trx)): ?>
+              <div class="text-gray-500 italic text-center py-8">Belum ada transaksi untuk siswa ini.</div>
+            <?php else: ?>
+              <?php
+              // Pisahkan transaksi lunas dan belum lunas
+              $trx_lunas = [];
+              $trx_belum_lunas = [];
+              
+              foreach($trx as $t) {
+                $sisa = $t['harga'] - $t['bayar'];
+                if ($sisa <= 0) {
+                  $trx_lunas[] = $t;
+                } else {
+                  $trx_belum_lunas[] = $t;
+                }
+              }
+              
+              // Tentukan transaksi yang akan ditampilkan
+              $trx_to_show = [];
+              
+              if (empty($trx_belum_lunas)) {
+                // Semua lunas - tampilkan maksimal 3
+                $trx_to_show = array_slice($trx_lunas, 0, 3);
+              } elseif (count($trx_belum_lunas) == 1 && count($trx_lunas) >= 2) {
+                // Hanya 1 belum lunas - tampilkan 3 baris (1 belum lunas + 2 lunas)
+                $trx_to_show = array_merge($trx_belum_lunas, array_slice($trx_lunas, 0, 2));
+              } elseif (count($trx_belum_lunas) == 2 && count($trx_lunas) >= 1) {
+                // Ada 2 belum lunas - tampilkan 3 baris (2 belum lunas + 1 lunas)
+                $trx_to_show = array_merge($trx_belum_lunas, array_slice($trx_lunas, 0, 1));
+              } elseif (count($trx_belum_lunas) == 3) {
+                // Ada 3 belum lunas - tampilkan 3 baris (3 belum lunas)
+                $trx_to_show = $trx_belum_lunas;
+              } else {
+                // Ada lebih dari 3 belum lunas - tampilkan semua yang belum lunas saja
+                $trx_to_show = $trx_belum_lunas;
+              }
+              ?>
+              
+              <div class="space-y-4">
+                <?php foreach($trx_to_show as $t): 
+                  $sisa = $t['harga'] - $t['bayar'];
+                  $lunas = $sisa <= 0;
+                ?>
+                  <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 relative">
+                    <!-- Tombol Hapus di Pojok Kanan Atas -->
+                    <button onclick="<?= $lunas ? 'return false;' : 'hapusTransaksi(' . $t['id'] . ')' ?>" 
+                            class="absolute -top-2 -right-2 w-6 h-6 <?= $lunas ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600' ?> text-white rounded-full flex items-center justify-center text-xs transition-all duration-200 <?= $lunas ? '' : 'hover:scale-110' ?> shadow-lg"
+                            <?= $lunas ? 'disabled title="Transaksi lunas tidak dapat dihapus"' : '' ?>>
+                      <i class="fa-solid fa-times"></i>
+                    </button>
+                    
+                    <div class="flex justify-between items-start mb-4">
+                      <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                          <?= strtoupper(substr($t['nama_mapel'], 0, 2)) ?>
+                        </div>
+                        <div>
+                          <h4 class="font-bold text-gray-800 text-lg"><?= htmlspecialchars($t['nama_paket']) ?> - <?= htmlspecialchars($t['nama_mapel']) ?></h4>
+                          <p class="text-sm text-gray-600">Mulai: <?= date('d/m/Y H:i', strtotime($t['tanggal'])) ?></p>
+                        </div>
+                      </div>
+                      <div class="text-right">
+                        <div class="text-lg font-bold text-gray-800">Rp<?= number_format($t['harga'],0,',','.') ?></div>
+                        <div class="text-sm text-gray-600">Bayar: Rp<?= number_format($t['bayar'],0,',','.') ?></div>
+                        <div class="text-sm <?= $lunas ? 'text-green-600' : 'text-red-600' ?> font-semibold">
+                          Sisa: Rp<?= number_format($sisa,0,',','.') ?>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                      <div class="flex items-center gap-3">
+                        <span class="px-3 py-1 rounded-full text-xs font-bold <?= $lunas ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-orange-100 text-orange-800 border border-orange-300' ?>">
+                          <?= $lunas ? '✅ Lunas' : '⚠️ Belum Lunas' ?>
+                        </span>
+                        <span class="text-xs text-gray-500">ID: <?= $t['id'] ?></span>
+                      </div>
+                      <div class="flex gap-2">
+                        <button onclick="viewTransaksiDetail(<?= $t['id'] ?>)" class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-1">
+                          <i class="fa-solid fa-eye"></i> Detail
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+              
+              <?php if (count($trx) > count($trx_to_show)): ?>
+                <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p class="text-blue-800 text-sm text-center">
+                    <i class="fa-solid fa-info-circle mr-1"></i>
+                    Menampilkan <?= count($trx_to_show) ?> dari <?= count($trx) ?> transaksi
+                    <?php if (empty($trx_belum_lunas)): ?>
+                      (semua lunas)
+                    <?php elseif (count($trx_belum_lunas) == 1): ?>
+                      (1 belum lunas + 2 lunas terbaru)
+                    <?php elseif (count($trx_belum_lunas) == 2): ?>
+                      (2 belum lunas + 1 lunas terbaru)
+                    <?php elseif (count($trx_belum_lunas) == 3): ?>
+                      (3 belum lunas)
+                    <?php else: ?>
+                      (semua yang belum lunas)
+                    <?php endif; ?>
+                  </p>
+                </div>
+              <?php endif; ?>
+            <?php endif; ?>
           </div>
-        <?php endif; ?>
+        </div>
       </div>
     </div>
-    <div class="flex gap-4 mt-10 justify-end">
-      <a href="javascript:history.back()" class="px-6 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 font-bold rounded-full shadow hover:scale-105 hover:shadow-xl transition flex items-center gap-2">
+
+    <div id="tab-content-perkembangan" class="hidden">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
+          <i class="fa-solid fa-chart-line text-blue-600"></i>
+          Laporan Perkembangan Siswa
+        </h3>
+        
+        <div id="perkembangan-content">
+          <div class="text-center py-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+              <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xl"></i>
+            </div>
+            <p class="text-gray-600 font-medium">Memuat data perkembangan...</p>
+            <p class="text-sm text-gray-500 mt-2">Email: <?= htmlspecialchars($siswa['email']) ?></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Tombol Kembali -->
+    <div class="flex justify-center mt-8">
+      <a href="javascript:history.back()" class="px-6 py-3 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 font-bold rounded-full shadow hover:scale-105 hover:shadow-xl transition flex items-center gap-2">
         <i class="fa-solid fa-arrow-left"></i> Kembali
       </a>
     </div>
@@ -185,11 +303,30 @@ try {
             </div>
             <div>
               <label class="block text-sm font-bold text-blue-700 mb-1">Mapel</label>
-              <select name="mapel" required class="input-form-modal">
+              <select name="mapel" id="mapel-select" required class="input-form-modal" onchange="setTentorByMapel()">
                 <option value="">Pilih Mapel</option>
                 <?php foreach($list_mapel as $m): ?>
                   <option value="<?= htmlspecialchars($m['kode']) ?>">
                     <?= htmlspecialchars($m['nama']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-bold text-blue-700 mb-1">Tentor</label>
+              <select name="tentor" id="tentor-select" required class="input-form-modal" readonly>
+                <option value="">Pilih Mapel terlebih dahulu</option>
+                <?php 
+                // Ambil data tentor
+                $tentor = [];
+                try {
+                    $stmt = $pdo->query("SELECT id, nama FROM tb_user WHERE role='tentor' ORDER BY nama ASC");
+                    $tentor = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                } catch (Exception $e) {}
+                ?>
+                <?php foreach($tentor as $t): ?>
+                  <option value="<?= $t['id'] ?>">
+                    <?= htmlspecialchars($t['nama']) ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -591,6 +728,592 @@ function isiJamEditJadwal(tanggal, jam) {
   const selectJam = document.getElementById('editJadwalJam');
   selectJam.value = jam;
 }
+
+function setTentorByMapel() {
+  const mapelSelect = document.getElementById('mapel-select');
+  const tentorSelect = document.getElementById('tentor-select');
+  const selectedMapel = mapelSelect.value;
+  tentorSelect.innerHTML = '<option value="">Pilih Mapel terlebih dahulu</option>'; // Reset pilihan
+
+  if (selectedMapel) {
+    fetch('api/tentor_mapel.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'mapel=' + encodeURIComponent(selectedMapel)
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        data.data.forEach(tentor => {
+          const option = document.createElement('option');
+          option.value = tentor.id;
+          option.textContent = tentor.nama;
+          tentorSelect.appendChild(option);
+        });
+      } else {
+        tentorSelect.innerHTML = '<option value="">Tidak ada tentor untuk mapel ini.</option>';
+      }
+    })
+    .catch(err => {
+      tentorSelect.innerHTML = '<option value="">Gagal mengambil data tentor.</option>';
+    });
+  } else {
+    tentorSelect.innerHTML = '<option value="">Pilih Mapel terlebih dahulu</option>';
+  }
+}
+
+// Tab Management untuk detail_siswa.php root
+function showTab(tabName) {
+  console.log('Showing tab:', tabName);
+  
+  // Hide all tab contents
+  document.querySelectorAll('[id^="tab-content-"]').forEach(content => {
+    content.classList.add('hidden');
+  });
+  
+  // Reset all tab buttons
+  document.querySelectorAll('[onclick^="showTab"]').forEach(btn => {
+    btn.className = 'px-6 py-3 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 transition-all';
+  });
+  
+  // Show selected tab content
+  const selectedContent = document.getElementById(`tab-content-${tabName}`);
+  if (selectedContent) {
+    selectedContent.classList.remove('hidden');
+  }
+  
+  // Highlight selected tab button
+  const selectedBtn = event.target;
+  if (selectedBtn) {
+    selectedBtn.className = 'px-6 py-3 rounded-lg text-sm font-medium bg-blue-600 text-white transition-all';
+  }
+  
+  // Load data for the selected tab
+  if (tabName === 'perkembangan') {
+    loadPerkembanganData('<?= htmlspecialchars($siswa['email']) ?>');
+  }
+}
+
+function loadTabData(tabName) {
+  const email = '<?= htmlspecialchars($siswa['email']) ?>';
+  console.log('Loading data for tab:', tabName, 'email:', email);
+  
+  // Sekarang hanya load perkembangan data
+  loadPerkembanganData(email);
+}
+
+// Load Perkembangan Data
+function loadPerkembanganData(email) {
+  const content = document.getElementById('perkembangan-content');
+  content.innerHTML = `
+    <div class="text-center py-8">
+      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+        <i class="fa-solid fa-spinner fa-spin text-blue-600 text-xl"></i>
+      </div>
+      <p class="text-gray-600 font-medium">Memuat data perkembangan...</p>
+      <p class="text-sm text-gray-500 mt-2">Email: ${email}</p>
+    </div>
+  `;
+  
+  // Gunakan API dari dashboard yang sudah ada
+  fetch('dashboard/api/laporan_proses.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=list&email=${encodeURIComponent(email)}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok' && data.data.length > 0) {
+      let html = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      `;
+      
+      data.data.forEach(item => {
+        const rataNilai = item.rata_nilai || 'N/A';
+        const statusClass = rataNilai !== 'N/A' ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200';
+        const statusIcon = rataNilai !== 'N/A' ? 'fa-chart-line text-green-600' : 'fa-clock text-gray-500';
+        const nilaiColor = rataNilai !== 'N/A' ? 'text-green-600' : 'text-gray-400';
+        
+        html += `
+          <div class="bg-white rounded-xl border ${statusClass} p-6 shadow-sm hover:shadow-md transition-all duration-300">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                  ${(item.nama_mapel || 'MP').substring(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <h4 class="font-bold text-gray-800 text-lg">${item.nama_mapel || 'Mata Pelajaran'}</h4>
+                  <p class="text-sm text-gray-600">${item.nama_tentor || 'Tentor'}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-bold ${nilaiColor}">
+                  ${rataNilai}
+                </div>
+                <p class="text-xs text-gray-500">Nilai Rata-rata</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid ${statusIcon}"></i>
+                <span class="text-sm text-gray-600">${item.tanggal}</span>
+              </div>
+              <button onclick="viewPerkembanganDetail('${item.id}')" 
+                      class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 flex items-center gap-1">
+                <i class="fa-solid fa-eye"></i> Detail
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      
+      html += `</div>`;
+      
+      // Tambahkan summary card
+      const totalMapel = data.data.length;
+      const mapelDenganNilai = data.data.filter(item => item.rata_nilai !== 'N/A').length;
+      const rataRataUmum = data.data
+        .filter(item => item.rata_nilai !== 'N/A')
+        .reduce((sum, item) => sum + parseFloat(item.rata_nilai), 0) / mapelDenganNilai || 0;
+      
+      html += `
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white">
+                <i class="fa-solid fa-book text-lg"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-blue-700">${totalMapel}</div>
+                <div class="text-sm text-blue-600">Total Mapel</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center text-white">
+                <i class="fa-solid fa-chart-line text-lg"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-green-700">${mapelDenganNilai}</div>
+                <div class="text-sm text-green-600">Mapel Dinilai</div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border border-purple-200">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center text-white">
+                <i class="fa-solid fa-star text-lg"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-purple-700">${mapelDenganNilai > 0 ? rataRataUmum.toFixed(1) : 'N/A'}</div>
+                <div class="text-sm text-purple-600">Rata-rata Umum</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      content.innerHTML = html;
+    } else {
+      content.innerHTML = `
+        <div class="text-center py-12">
+          <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full mb-6">
+            <i class="fa-solid fa-chart-line text-gray-400 text-2xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Data Perkembangan</h3>
+          <p class="text-gray-500 mb-4">Siswa ini belum memiliki data perkembangan pembelajaran.</p>
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+            <p class="text-blue-800 text-sm">
+              <i class="fa-solid fa-info-circle mr-2"></i>
+              Data perkembangan akan muncul setelah tentor memberikan penilaian.
+            </p>
+          </div>
+        </div>
+      `;
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    content.innerHTML = `
+      <div class="text-center py-12">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
+          <i class="fa-solid fa-exclamation-triangle text-red-500 text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-semibold text-red-700 mb-2">Gagal Memuat Data</h3>
+        <p class="text-gray-500 mb-4">Terjadi kesalahan saat memuat data perkembangan.</p>
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 max-w-md mx-auto">
+          <p class="text-red-800 text-sm">
+            <i class="fa-solid fa-exclamation-circle mr-2"></i>
+            Error: ${error.message}
+          </p>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// View Perkembangan Detail
+function viewPerkembanganDetail(id) {
+  fetch('dashboard/api/laporan_proses.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=detail&id=${id}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      Swal.fire({
+        title: 'Detail Laporan Perkembangan',
+        html: `
+          <div class="space-y-6 text-left">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-user-graduate text-blue-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Siswa</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.nama_siswa || data.data.email}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-green-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-book-open-reader text-green-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Mapel</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.nama_mapel}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-yellow-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-calendar-days text-yellow-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Tanggal</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.tanggal}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-purple-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-chalkboard-user text-purple-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Tentor</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.tentor}</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-star text-yellow-500"></i> Penilaian
+              </label>
+              <div class="bg-gray-50 p-1 rounded-lg shadow">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-600">
+                      <th class="py-1 px-3 text-left">No</th>
+                      <th class="py-1 px-3 text-left">Jenis Penilaian</th>
+                      <th class="py-1 px-3 text-left">Nilai</th>
+                      <th class="py-1 px-3 text-left">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm">
+                    ${(data.data.nilai || []).map((n, i) => `
+                      <tr>
+                        <td class="py-1 px-3">${i+1}</td>
+                        <td class="py-1 px-3 font-medium text-gray-700">${(data.data.jenis_penilaian && data.data.jenis_penilaian[i]) ? data.data.jenis_penilaian[i] : '-'}</td>
+                        <td class="py-1 px-3 font-bold text-blue-700 flex items-center gap-1">
+                          <i class="fa-solid fa-star text-yellow-400"></i> ${n}
+                        </td>
+                        <td class="py-1 px-3">${(data.data.keterangan && data.data.keterangan[i]) ? data.data.keterangan[i] : '-'}</td>
+                      </tr>
+                    `).join('')}
+                    <tr class="bg-gray-100 font-semibold">
+                      <td class="py-1 px-3" colspan="2">Rata-rata</td>
+                      <td class="py-1 px-3 text-blue-700">${data.data.rata_nilai ?? '-'}</td>
+                      <td class="py-1 px-3">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        `,
+        width: '800px',
+        confirmButtonText: 'Tutup',
+        confirmButtonColor: '#6b7280',
+        showCloseButton: true,
+        customClass: {
+          container: 'swal2-custom-container',
+          popup: 'swal2-custom-popup',
+          content: 'swal2-custom-content'
+        }
+      });
+    } else {
+      Swal.fire({
+        title: 'Error!',
+        text: data.msg || 'Gagal mengambil detail laporan!',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire({
+      title: 'Error!',
+      text: 'Terjadi kesalahan pada sistem!',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  });
+}
+
+// View Transaksi Detail
+function viewTransaksiDetail(id) {
+  console.log('Viewing transaksi detail for ID:', id);
+  
+  // Tampilkan loading
+  Swal.fire({
+    title: 'Memuat Detail Transaksi...',
+    text: 'Mohon tunggu sebentar',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    }
+  });
+  
+  // Ambil data detail transaksi
+  fetch('api/trx_proses.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=detail&id=${id}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      const transaksi = data.data;
+      let jadwalHtml = '';
+      
+      if (transaksi.jadwal && transaksi.jadwal.length > 0) {
+        jadwalHtml = `
+          <div class="mt-4">
+            <h4 class="font-semibold text-gray-800 mb-2">Jadwal Les:</h4>
+            <div class="max-h-40 overflow-y-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="px-3 py-2 text-left">No</th>
+                    <th class="px-3 py-2 text-left">Tanggal</th>
+                    <th class="px-3 py-2 text-left">Jam</th>
+                    <th class="px-3 py-2 text-left">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${transaksi.jadwal.map((jadwal, index) => {
+                    const jadwalDate = new Date(jadwal.tanggal);
+                    const today = new Date();
+                    const isPast = jadwalDate < today;
+                    const isToday = jadwalDate.toDateString() === today.toDateString();
+                    
+                    let statusClass = 'bg-gray-100 text-gray-800';
+                    let statusText = 'Belum';
+                    
+                    if (isPast) {
+                      statusClass = 'bg-green-100 text-green-800';
+                      statusText = 'Selesai';
+                    } else if (isToday) {
+                      statusClass = 'bg-blue-100 text-blue-800';
+                      statusText = 'Hari Ini';
+                    }
+                    
+                    return `
+                      <tr class="border-b">
+                        <td class="px-3 py-2">${index + 1}</td>
+                        <td class="px-3 py-2">${new Date(jadwal.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
+                        <td class="px-3 py-2">${jadwal.jam_trx || 'TBD'}</td>
+                        <td class="px-3 py-2">
+                          <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusClass}">
+                            ${statusText}
+                          </span>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else {
+        jadwalHtml = `
+          <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p class="text-yellow-800 text-sm">
+              <i class="fa-solid fa-info-circle mr-1"></i>
+              Belum ada jadwal les yang diatur untuk transaksi ini.
+            </p>
+          </div>
+        `;
+      }
+      
+      Swal.fire({
+        title: 'Detail Transaksi',
+        html: `
+          <div class="text-left">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <p class="text-sm text-gray-600">Paket:</p>
+                <p class="font-semibold">${transaksi.nama_paket}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Mapel:</p>
+                <p class="font-semibold">${transaksi.nama_mapel}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Tentor:</p>
+                <p class="font-semibold">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Email:</p>
+                <p class="font-semibold">${transaksi.email}</p>
+              </div>
+            </div>
+            
+            <div class="bg-gray-50 p-3 rounded-lg mb-4">
+              <h4 class="font-semibold text-gray-800 mb-2">Informasi Pembayaran:</h4>
+              <div class="grid grid-cols-3 gap-4 text-sm">
+                <div>
+                  <p class="text-gray-600">Total Harga:</p>
+                  <p class="font-bold text-lg">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</p>
+                </div>
+                <div>
+                  <p class="text-gray-600">Sudah Bayar:</p>
+                  <p class="font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</p>
+                </div>
+                <div>
+                  <p class="text-gray-600">Sisa:</p>
+                  <p class="font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
+                    Rp${Number(transaksi.harga - transaksi.bayar).toLocaleString('id-ID')}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            ${jadwalHtml}
+          </div>
+        `,
+        width: '600px',
+        confirmButtonText: 'Tutup',
+        confirmButtonColor: '#3b82f6'
+      });
+    } else {
+      Swal.fire(
+        'Error!',
+        data.message || 'Gagal memuat detail transaksi.',
+        'error'
+      );
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire(
+      'Error!',
+      'Terjadi kesalahan pada sistem.',
+      'error'
+    );
+  });
+}
+
+// Hapus Transaksi
+function hapusTransaksi(id) {
+  console.log('Deleting transaksi with ID:', id);
+  
+  Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Apakah Anda yakin ingin menghapus transaksi dengan ID: ${id}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Kirim request hapus ke API
+      fetch('api/hapus_trx.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${id}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          Swal.fire(
+            'Berhasil!',
+            'Transaksi berhasil dihapus.',
+            'success'
+          ).then(() => {
+            // Reload halaman untuk refresh data
+            location.reload();
+          });
+        } else {
+          Swal.fire(
+            'Gagal!',
+            data.message || 'Terjadi kesalahan saat menghapus transaksi.',
+            'error'
+          );
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        Swal.fire(
+          'Error!',
+          'Terjadi kesalahan pada sistem.',
+          'error'
+        );
+      });
+    }
+  });
+}
+
+// Load initial data when page loads
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing detail siswa...');
+  
+  // Ensure transaksi tab is visible initially
+  const transaksiTab = document.getElementById('tab-content-transaksi');
+  if (transaksiTab) {
+    transaksiTab.classList.remove('hidden');
+    console.log('Transaksi tab activated');
+  }
+  
+  // Add click handlers for tab buttons
+  document.querySelectorAll('[onclick^="showTab"]').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const tabName = this.getAttribute('onclick').match(/showTab\('([^']+)'\)/)[1];
+      showTab(tabName);
+    });
+  });
+});
+
+// Fallback function if onclick doesn't work
+function showTabFallback(tabName) {
+  console.log('Fallback showTab called:', tabName);
+  showTab(tabName);
+}
+
+// Initialize everything when page loads
+window.addEventListener('load', function() {
+  console.log('Page fully loaded');
+  
+  // Show alert to confirm JavaScript is working
+  console.log('JavaScript is working!');
+  
+  // Ensure transaksi tab is visible initially
+  const transaksiTab = document.getElementById('tab-content-transaksi');
+  if (transaksiTab) {
+    transaksiTab.classList.remove('hidden');
+    console.log('Transaksi tab activated');
+  }
+});
 </script>
 <style>
 .input-form-modal {
@@ -610,28 +1333,101 @@ function isiJamEditJadwal(tanggal, jam) {
   border-color: #2563eb;
   background: #f0f6ff;
 }
+
+/* Simple Tab Styling */
+.tab-btn {
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.tab-btn:hover {
+  opacity: 0.8;
+}
+
+/* Rapor Styling */
+.rapor-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.rapor-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.nilai-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
 .btn-hapus-baris {
   min-width: 28px;
-  min-height: 28px;
-  width: 28px;
   height: 28px;
-  padding: 0 !important;
-  margin-left: 6px;
-  margin-right: 6px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
   cursor: pointer;
-  z-index: 2;
-  position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background: #ef4444;
-  transition: background 0.2s, box-shadow 0.2s;
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+  font-size: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
 }
-.btn-hapus-baris:hover, .btn-hapus-baris:focus {
-  background: #b91c1c;
-  box-shadow: 0 4px 16px 0 rgba(239,68,68,0.15);
+
+.btn-hapus-baris:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Custom SweetAlert2 Styling */
+.swal2-custom-popup {
+  border-radius: 1rem !important;
+  padding: 2rem !important;
+}
+
+.swal2-custom-content {
+  text-align: left !important;
+}
+
+.swal2-popup {
+  max-width: 800px !important;
+  width: 90% !important;
+}
+
+.swal2-title {
+  color: #1e40af !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.swal2-html-container {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.swal2-confirm {
+  background: #6b7280 !important;
+  border-radius: 0.5rem !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+  transition: all 0.2s !important;
+}
+
+.swal2-confirm:hover {
+  background: #4b5563 !important;
+  transform: translateY(-1px) !important;
 }
 </style>
 <?php include 'includes/footer.php'; ?> 
