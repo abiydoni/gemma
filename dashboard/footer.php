@@ -91,6 +91,7 @@
         <select name="role" id="user-role" class="w-full border rounded px-2 py-1">
           <option value="s_admin">Super Admin</option>
           <option value="admin">Admin</option>
+          <option value="tentor">Tentor</option>
           <option value="user">User</option>
         </select>
       </div>

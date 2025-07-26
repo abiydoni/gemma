@@ -69,6 +69,9 @@ try {
         <a href="keuangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fa-solid fa-cash-register"></i><span>Keuangan</span>
         </a>
+        <a href="laporan_perkembangan.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
+          <i class="fa-solid fa-cash-register"></i><span>Laporan Perkembangan</span>
+        </a>
         <div class="uppercase text-xs font-bold text-blue-200 mt-6 mb-2 tracking-widest">Setting</div>
         <a href="setting_fasilitas.php" class="flex items-center space-x-3 rounded-lg px-4 py-1 text-sm transition hover:bg-blue-700/80">
           <i class="fa-solid fa-building-wheat"></i><span>Setting Fasilitas</span>

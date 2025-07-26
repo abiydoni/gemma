@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 18, 2025 at 05:51 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Waktu pembuatan: 26 Jul 2025 pada 13.52
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_fasilitas`
+-- Struktur dari tabel `tb_fasilitas`
 --
 
 CREATE TABLE `tb_fasilitas` (
@@ -36,7 +36,7 @@ CREATE TABLE `tb_fasilitas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_fasilitas`
+-- Dumping data untuk tabel `tb_fasilitas`
 --
 
 INSERT INTO `tb_fasilitas` (`id`, `nama`, `keterangan`, `ikon`, `tanggal`) VALUES
@@ -48,7 +48,7 @@ INSERT INTO `tb_fasilitas` (`id`, `nama`, `keterangan`, `ikon`, `tanggal`) VALUE
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_jadwal`
+-- Struktur dari tabel `tb_jadwal`
 --
 
 CREATE TABLE `tb_jadwal` (
@@ -60,7 +60,7 @@ CREATE TABLE `tb_jadwal` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_jadwal`
+-- Dumping data untuk tabel `tb_jadwal`
 --
 
 INSERT INTO `tb_jadwal` (`id`, `hari`, `buka`, `tutup`, `tanggal`) VALUES
@@ -75,7 +75,31 @@ INSERT INTO `tb_jadwal` (`id`, `hari`, `buka`, `tutup`, `tanggal`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_jenjang`
+-- Struktur dari tabel `tb_jenis_penilaian`
+--
+
+CREATE TABLE `tb_jenis_penilaian` (
+  `id` int(11) NOT NULL,
+  `nama_penilaian` varchar(100) NOT NULL,
+  `urutan` int(11) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tb_jenis_penilaian`
+--
+
+INSERT INTO `tb_jenis_penilaian` (`id`, `nama_penilaian`, `urutan`, `created_at`) VALUES
+(1, 'Disiplin', 1, '2025-07-26 11:24:07'),
+(2, 'Pemahaman Materi', 2, '2025-07-26 11:24:07'),
+(3, 'Kerjasama', 3, '2025-07-26 11:24:07'),
+(4, 'Kreativitas', 4, '2025-07-26 11:24:07'),
+(5, 'Tanggung Jawab', 5, '2025-07-26 11:24:07');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tb_jenjang`
 --
 
 CREATE TABLE `tb_jenjang` (
@@ -86,7 +110,7 @@ CREATE TABLE `tb_jenjang` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_jenjang`
+-- Dumping data untuk tabel `tb_jenjang`
 --
 
 INSERT INTO `tb_jenjang` (`id`, `nama`, `keterangan`, `tanggal`) VALUES
@@ -98,7 +122,7 @@ INSERT INTO `tb_jenjang` (`id`, `nama`, `keterangan`, `tanggal`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_keuangan`
+-- Struktur dari tabel `tb_keuangan`
 --
 
 CREATE TABLE `tb_keuangan` (
@@ -111,7 +135,7 @@ CREATE TABLE `tb_keuangan` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_keuangan`
+-- Dumping data untuk tabel `tb_keuangan`
 --
 
 INSERT INTO `tb_keuangan` (`id`, `tanggal`, `keterangan`, `debet`, `kredit`, `waktu_update`) VALUES
@@ -120,13 +144,12 @@ INSERT INTO `tb_keuangan` (`id`, `tanggal`, `keterangan`, `debet`, `kredit`, `wa
 (3, '2025-07-17', '[AUTO] Pembayaran Siswa ID: 6', 70000.00, 0.00, '2025-07-17 02:55:06'),
 (4, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 70000.00, 0.00, '2025-07-17 02:58:38'),
 (5, '2025-07-17', '[AUTO] Pembayaran Siswa: Doni Abiyantoro', 100000.00, 0.00, '2025-07-17 03:18:27'),
-(6, '2025-07-18', '[PEMBAYARAN] Siswa: Aviana Ariestasya Sari (pipin@gmail.com)', 30000.00, 0.00, '2025-07-18 12:51:28'),
-(7, '2025-07-18', '[AUTO] Bayar - Siswa: Aviana Ariestasya Sari', 30000.00, 0.00, '2025-07-18 12:55:55');
+(6, '2025-07-19', '[AUTO] Bayar - Siswa: Doni Abiyantoro', 60000.00, 0.00, '2025-07-19 11:30:19');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_kondisi`
+-- Struktur dari tabel `tb_kondisi`
 --
 
 CREATE TABLE `tb_kondisi` (
@@ -137,7 +160,7 @@ CREATE TABLE `tb_kondisi` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_kondisi`
+-- Dumping data untuk tabel `tb_kondisi`
 --
 
 INSERT INTO `tb_kondisi` (`id`, `kode`, `nama`, `tanggal`) VALUES
@@ -154,7 +177,7 @@ INSERT INTO `tb_kondisi` (`id`, `kode`, `nama`, `tanggal`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_mapel`
+-- Struktur dari tabel `tb_mapel`
 --
 
 CREATE TABLE `tb_mapel` (
@@ -167,7 +190,7 @@ CREATE TABLE `tb_mapel` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_mapel`
+-- Dumping data untuk tabel `tb_mapel`
 --
 
 INSERT INTO `tb_mapel` (`id`, `kode`, `nama`, `keterangan`, `status`, `tanggal`) VALUES
@@ -180,7 +203,7 @@ INSERT INTO `tb_mapel` (`id`, `kode`, `nama`, `keterangan`, `status`, `tanggal`)
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_paket`
+-- Struktur dari tabel `tb_paket`
 --
 
 CREATE TABLE `tb_paket` (
@@ -195,7 +218,7 @@ CREATE TABLE `tb_paket` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_paket`
+-- Dumping data untuk tabel `tb_paket`
 --
 
 INSERT INTO `tb_paket` (`id`, `Kode`, `nama`, `keterangan`, `jenjang`, `harga`, `status`, `tanggal`) VALUES
@@ -211,7 +234,36 @@ INSERT INTO `tb_paket` (`id`, `Kode`, `nama`, `keterangan`, `jenjang`, `harga`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_profile`
+-- Struktur dari tabel `tb_perkembangan_siswa`
+--
+
+CREATE TABLE `tb_perkembangan_siswa` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mapel` int(11) NOT NULL,
+  `tanggal` date NOT NULL,
+  `tentor` varchar(100) NOT NULL,
+  `id_jenis_penilaian` int(11) NOT NULL,
+  `nilai` int(1) NOT NULL CHECK (`nilai` >= 1 and `nilai` <= 5),
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tb_perkembangan_siswa`
+--
+
+INSERT INTO `tb_perkembangan_siswa` (`id`, `email`, `mapel`, `tanggal`, `tentor`, `id_jenis_penilaian`, `nilai`, `keterangan`, `created_at`) VALUES
+(1, 'abiydoni@gmail.com', 4, '2025-07-26', 'Budi', 1, 3, 'Selalu disiplin', '2025-07-26 11:32:47'),
+(2, 'abiydoni@gmail.com', 4, '2025-07-26', 'Budi', 2, 5, 'Sangat Paham', '2025-07-26 11:32:47'),
+(3, 'abiydoni@gmail.com', 4, '2025-07-26', 'Budi', 3, 3, 'Cukup', '2025-07-26 11:32:47'),
+(4, 'abiydoni@gmail.com', 4, '2025-07-26', 'Budi', 4, 3, 'Cukup', '2025-07-26 11:32:47'),
+(5, 'abiydoni@gmail.com', 4, '2025-07-26', 'Budi', 5, 3, 'Cukup', '2025-07-26 11:32:47');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `tb_profile`
 --
 
 CREATE TABLE `tb_profile` (
@@ -228,7 +280,7 @@ CREATE TABLE `tb_profile` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_profile`
+-- Dumping data untuk tabel `tb_profile`
 --
 
 INSERT INTO `tb_profile` (`id`, `nama`, `keterangan`, `alamat`, `email`, `wa`, `ig`, `logo1`, `logo2`, `tanggal`) VALUES
@@ -237,7 +289,7 @@ INSERT INTO `tb_profile` (`id`, `nama`, `keterangan`, `alamat`, `email`, `wa`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_siswa`
+-- Struktur dari tabel `tb_siswa`
 --
 
 CREATE TABLE `tb_siswa` (
@@ -254,17 +306,16 @@ CREATE TABLE `tb_siswa` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_siswa`
+-- Dumping data untuk tabel `tb_siswa`
 --
 
 INSERT INTO `tb_siswa` (`id`, `nama`, `gender`, `tgl_lahir`, `ortu`, `hp_ortu`, `alamat`, `email`, `foto`, `created_at`) VALUES
-(1, 'Doni Abiyantoro', 'Laki-laki', '2025-06-29', 'Sutini', '085225106200', 'Salatiga', 'abiydoni@gmail.com', 'siswa_1752576209_9413.jpg', '2025-07-14 11:20:21'),
-(2, 'Aviana Ariestasya Sari', 'Perempuan', '2025-06-30', 'Yuli Astuti', '+62 856-4330-6224', 'Salatiga', 'pipin@gmail.com', 'siswa_1752576234_3208.jpeg', '2025-07-15 07:33:18');
+(1, 'Doni Abiyantoro', 'Laki-laki', '2025-06-29', 'Sutini', '085225106200', 'Salatiga', 'abiydoni@gmail.com', 'siswa_1752576209_9413.jpg', '2025-07-14 11:20:21');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_trx`
+-- Struktur dari tabel `tb_trx`
 --
 
 CREATE TABLE `tb_trx` (
@@ -279,17 +330,17 @@ CREATE TABLE `tb_trx` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_trx`
+-- Dumping data untuk tabel `tb_trx`
 --
 
 INSERT INTO `tb_trx` (`id`, `email`, `paket`, `mapel`, `harga`, `bayar`, `status`, `tanggal`) VALUES
-(9, 'pipin@gmail.com', 'KL001', 'GE001', 30000, 30000, 1, '2025-07-18 12:55:55'),
-(11, 'abiydoni@gmail.com', 'PR002', 'GE004', 120000, 120000, 1, '2025-07-18 03:03:48');
+(19, 'abiydoni@gmail.com', 'KL001', 'GE002', 60000, 60000, 1, '2025-07-19 11:30:19'),
+(20, 'abiydoni@gmail.com', 'PR001', 'GE002', 135000, 0, 0, '2025-07-19 07:18:17');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_trx_tanggal`
+-- Struktur dari tabel `tb_trx_tanggal`
 --
 
 CREATE TABLE `tb_trx_tanggal` (
@@ -300,22 +351,20 @@ CREATE TABLE `tb_trx_tanggal` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_trx_tanggal`
+-- Dumping data untuk tabel `tb_trx_tanggal`
 --
 
 INSERT INTO `tb_trx_tanggal` (`id`, `id_trx`, `jam_trx`, `tanggal`) VALUES
-(1, 9, '19:00', '2025-07-17'),
-(2, 9, '17:00', '2025-07-26'),
-(8, 11, '14:00', '2025-07-22'),
-(9, 11, '14:00', '2025-07-29'),
-(10, 11, '14:00', '2025-08-05'),
-(11, 11, '14:00', '2025-08-12'),
-(12, 11, '14:00', '2025-08-19');
+(16, 19, '13:00', '2025-07-30'),
+(17, 19, '16:00', '2025-07-20'),
+(18, 20, '16:00', '2025-07-21'),
+(19, 20, '17:00', '2025-07-31'),
+(20, 20, '18:00', '2025-07-28');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tb_user`
+-- Struktur dari tabel `tb_user`
 --
 
 CREATE TABLE `tb_user` (
@@ -323,178 +372,217 @@ CREATE TABLE `tb_user` (
   `email` varchar(100) NOT NULL,
   `nama` varchar(100) NOT NULL,
   `password` varchar(100) NOT NULL,
+  `hp` varchar(20) NOT NULL,
   `role` varchar(50) NOT NULL,
   `tanggal` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `tb_user`
+-- Dumping data untuk tabel `tb_user`
 --
 
-INSERT INTO `tb_user` (`id`, `email`, `nama`, `password`, `role`, `tanggal`) VALUES
-(1, 'abiydoni@gmail.com', 'Doni Abiyantoro', '$2y$10$Xkk4KxJJP/14KuKkl3szgu509UwL.6eCmgqsvTNyxqccDPhnJWaqS', 's_admin', '2025-07-14 07:33:47');
+INSERT INTO `tb_user` (`id`, `email`, `nama`, `password`, `hp`, `role`, `tanggal`) VALUES
+(1, 'abiydoni@gmail.com', 'Doni Abiyantoro', '$2y$10$Xkk4KxJJP/14KuKkl3szgu509UwL.6eCmgqsvTNyxqccDPhnJWaqS', '085225106200', 's_admin', '2025-07-26 11:44:23'),
+(3, 'bimbelgemma@gmail.com', 'Aviana AS', '$2y$10$yHOlSZHjfUlYm3GDHv5F2uVDHCikcbDqv1Dkyb5k6MJIpaM2NsIji', '085000000112', 'admin', '2025-07-26 11:48:33'),
+(4, 'tentor@gmail.com', 'Budi Kurniawan', '$2y$10$GVXlP4GrPBDrt/GJ6olF0uSiaFAe0o7h7nURTeoy3bgmYfSV4pBee', '08512341234', 'tentor', '2025-07-26 11:46:37'),
+(5, 'tentor2@gmail.com', 'Septi Fira', '$2y$10$5nx/QNzKaTfLbwiRFf32wuk9LM4xWvPI3Icwk8gaQ/zjbjdhUwWim', '085198765432', 'tentor', '2025-07-26 11:46:37');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `tb_fasilitas`
+-- Indeks untuk tabel `tb_fasilitas`
 --
 ALTER TABLE `tb_fasilitas`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_jadwal`
+-- Indeks untuk tabel `tb_jadwal`
 --
 ALTER TABLE `tb_jadwal`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_jenjang`
+-- Indeks untuk tabel `tb_jenis_penilaian`
+--
+ALTER TABLE `tb_jenis_penilaian`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indeks untuk tabel `tb_jenjang`
 --
 ALTER TABLE `tb_jenjang`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_keuangan`
+-- Indeks untuk tabel `tb_keuangan`
 --
 ALTER TABLE `tb_keuangan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_kondisi`
+-- Indeks untuk tabel `tb_kondisi`
 --
 ALTER TABLE `tb_kondisi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_mapel`
+-- Indeks untuk tabel `tb_mapel`
 --
 ALTER TABLE `tb_mapel`
   ADD PRIMARY KEY (`id`),
   ADD KEY `kode` (`kode`);
 
 --
--- Indexes for table `tb_paket`
+-- Indeks untuk tabel `tb_paket`
 --
 ALTER TABLE `tb_paket`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_profile`
+-- Indeks untuk tabel `tb_perkembangan_siswa`
+--
+ALTER TABLE `tb_perkembangan_siswa`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email` (`email`),
+  ADD KEY `mapel` (`mapel`),
+  ADD KEY `tanggal` (`tanggal`),
+  ADD KEY `id_jenis_penilaian` (`id_jenis_penilaian`);
+
+--
+-- Indeks untuk tabel `tb_profile`
 --
 ALTER TABLE `tb_profile`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_siswa`
+-- Indeks untuk tabel `tb_siswa`
 --
 ALTER TABLE `tb_siswa`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `tb_trx`
+-- Indeks untuk tabel `tb_trx`
 --
 ALTER TABLE `tb_trx`
   ADD PRIMARY KEY (`id`),
   ADD KEY `email` (`email`);
 
 --
--- Indexes for table `tb_trx_tanggal`
+-- Indeks untuk tabel `tb_trx_tanggal`
 --
 ALTER TABLE `tb_trx_tanggal`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_trx` (`id_trx`);
 
 --
--- Indexes for table `tb_user`
+-- Indeks untuk tabel `tb_user`
 --
 ALTER TABLE `tb_user`
   ADD PRIMARY KEY (`id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT untuk tabel yang dibuang
 --
 
 --
--- AUTO_INCREMENT for table `tb_fasilitas`
+-- AUTO_INCREMENT untuk tabel `tb_fasilitas`
 --
 ALTER TABLE `tb_fasilitas`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `tb_jadwal`
+-- AUTO_INCREMENT untuk tabel `tb_jadwal`
 --
 ALTER TABLE `tb_jadwal`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
--- AUTO_INCREMENT for table `tb_jenjang`
+-- AUTO_INCREMENT untuk tabel `tb_jenis_penilaian`
+--
+ALTER TABLE `tb_jenis_penilaian`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `tb_jenjang`
 --
 ALTER TABLE `tb_jenjang`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `tb_keuangan`
+-- AUTO_INCREMENT untuk tabel `tb_keuangan`
 --
 ALTER TABLE `tb_keuangan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `tb_kondisi`
+-- AUTO_INCREMENT untuk tabel `tb_kondisi`
 --
 ALTER TABLE `tb_kondisi`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `tb_mapel`
+-- AUTO_INCREMENT untuk tabel `tb_mapel`
 --
 ALTER TABLE `tb_mapel`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `tb_paket`
+-- AUTO_INCREMENT untuk tabel `tb_paket`
 --
 ALTER TABLE `tb_paket`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT for table `tb_profile`
+-- AUTO_INCREMENT untuk tabel `tb_perkembangan_siswa`
+--
+ALTER TABLE `tb_perkembangan_siswa`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT untuk tabel `tb_profile`
 --
 ALTER TABLE `tb_profile`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `tb_siswa`
+-- AUTO_INCREMENT untuk tabel `tb_siswa`
 --
 ALTER TABLE `tb_siswa`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `tb_trx`
+-- AUTO_INCREMENT untuk tabel `tb_trx`
 --
 ALTER TABLE `tb_trx`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `tb_trx_tanggal`
+-- AUTO_INCREMENT untuk tabel `tb_trx_tanggal`
 --
 ALTER TABLE `tb_trx_tanggal`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `tb_user`
+-- AUTO_INCREMENT untuk tabel `tb_user`
 --
 ALTER TABLE `tb_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- Constraints for dumped tables
+-- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Constraints for table `tb_trx_tanggal`
+-- Ketidakleluasaan untuk tabel `tb_perkembangan_siswa`
+--
+ALTER TABLE `tb_perkembangan_siswa`
+  ADD CONSTRAINT `tb_perkembangan_siswa_ibfk_1` FOREIGN KEY (`mapel`) REFERENCES `tb_mapel` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `tb_perkembangan_siswa_ibfk_2` FOREIGN KEY (`id_jenis_penilaian`) REFERENCES `tb_jenis_penilaian` (`id`) ON DELETE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `tb_trx_tanggal`
 --
 ALTER TABLE `tb_trx_tanggal`
   ADD CONSTRAINT `tb_trx_tanggal_ibfk_1` FOREIGN KEY (`id_trx`) REFERENCES `tb_trx` (`id`) ON DELETE CASCADE;

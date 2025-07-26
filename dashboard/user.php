@@ -44,6 +44,7 @@ include 'header.php';
         <select name="role" id="user-role" class="w-full border rounded px-2 py-1">
           <option value="s_admin">Super Admin</option>
           <option value="admin">Admin</option>
+          <option value="tentor">Tentor</option>
           <option value="user">User</option>
         </select>
       </div>
@@ -97,17 +98,23 @@ function loadUser() {
 }
 
 function getAllowedRoles() {
-  // Role user login dari PHP ke JS
   const myRole = '<?= $_SESSION['user_role'] ?? 'user' ?>';
   if (myRole === 's_admin') {
     return [
-      {value:'s_admin', label:'Super Admin', level:3},
-      {value:'admin', label:'Admin', level:2},
+      {value:'s_admin', label:'Super Admin', level:4},
+      {value:'admin', label:'Admin', level:3},
+      {value:'tentor', label:'Tentor', level:2},
       {value:'user', label:'User', level:1}
     ];
   } else if (myRole === 'admin') {
     return [
-      {value:'admin', label:'Admin', level:2},
+      {value:'admin', label:'Admin', level:3},
+      {value:'tentor', label:'Tentor', level:2},
+      {value:'user', label:'User', level:1}
+    ];
+  } else if (myRole === 'tentor') {
+    return [
+      {value:'tentor', label:'Tentor', level:2},
       {value:'user', label:'User', level:1}
     ];
   } else {

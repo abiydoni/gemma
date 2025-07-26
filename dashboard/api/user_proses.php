@@ -9,8 +9,9 @@ if ($action == 'list') {
   $my_id = $_SESSION['user_id'] ?? 0;
   $role_level = [
     'user' => 1,
-    'admin' => 2,
-    's_admin' => 3
+    'tentor' => 2,
+    'admin' => 3,
+    's_admin' => 4
   ];
   $my_level = $role_level[$my_role] ?? 1;
   $data = [];
