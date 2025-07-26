@@ -15,6 +15,7 @@ include 'header.php';
           <th class="py-3 px-3 border-b border-blue-200 rounded-tl-xl">No</th>
           <th class="py-3 px-3 border-b border-blue-200">Email</th>
           <th class="py-3 px-3 border-b border-blue-200">Nama</th>
+          <th class="py-3 px-3 border-b border-blue-200">HP</th>
           <th class="py-3 px-3 border-b border-blue-200">Role</th>
           <th class="py-3 px-3 border-b border-blue-200 rounded-tr-xl text-center">Aksi</th>
         </tr>
@@ -38,6 +39,10 @@ include 'header.php';
       <div class="mb-2">
         <label class="block text-sm font-bold mb-1">Nama</label>
         <input type="text" name="nama" id="user-nama" class="w-full border rounded px-2 py-1" required>
+      </div>
+      <div class="mb-2">
+        <label class="block text-sm font-bold mb-1">HP</label>
+        <input type="text" name="hp" id="user-hp" class="w-full border rounded px-2 py-1" required>
       </div>
       <div class="mb-2">
         <label class="block text-sm font-bold mb-1">Role</label>
@@ -84,6 +89,7 @@ function loadUser() {
           <td class='py-2 px-3 border-blue-100 text-center'>${i+1}</td>
           <td class='py-2 px-3 border-blue-100'>${row.email}</td>
           <td class='py-2 px-3 border-blue-100'>${row.nama}</td>
+          <td class='py-2 px-3 border-blue-100'>${row.hp||''}</td>
           <td class='py-2 px-3 border-blue-100 capitalize'>${row.role.replace('_',' ')}</td>
           <td class="text-center py-2 px-3 border-blue-100">
             <button class='btn-edit text-blue-600 hover:text-blue-900 mr-2' data-id='${row.id}'><i class='fa fa-pen'></i></button>
@@ -186,6 +192,7 @@ $(document).ready(function(){
           $('#user-id').val(row.id);
           $('#user-email').val(row.email).prop('readonly', true);
           $('#user-nama').val(row.nama);
+          $('#user-hp').val(row.hp||'');
           setRoleDropdown();
           $('#user-role').val(row.role);
           $('#modal-title').text('Edit User');
