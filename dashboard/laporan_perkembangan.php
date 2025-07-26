@@ -503,23 +503,30 @@ function viewDetail(id) {
                   </div>
                   <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><i class="fa-solid fa-star text-yellow-500"></i> Penilaian</label>
-                    <div class="bg-gray-50 p-4 rounded-lg shadow">
+                    <div class="bg-gray-50 p-1 rounded-lg shadow">
                       <table class="w-full text-sm">
                         <thead>
                           <tr class="text-gray-600">
-                            <th class="py-2 px-3 text-left">No</th>
-                            <th class="py-2 px-3 text-left">Nilai</th>
-                            <th class="py-2 px-3 text-left">Keterangan</th>
+                            <th class="py-1 px-3 text-left">No</th>
+                            <th class="py-1 px-3 text-left">Jenis Penilaian</th>
+                            <th class="py-1 px-3 text-left">Nilai</th>
+                            <th class="py-1 px-3 text-left">Keterangan</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          ${data.data.nilai.map((n, i) => `
+                        <tbody class="text-sm">
+                          ${(data.data.nilai || []).map((n, i) => `
                             <tr>
-                              <td class="py-2 px-3">${i+1}</td>
-                              <td class="py-2 px-3 font-bold text-blue-700 flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400"></i> ${n}</td>
-                              <td class="py-2 px-3">${data.data.keterangan[i] || '-'}</td>
+                              <td class="py-1 px-3">${i+1}</td>
+                              <td class="py-1 px-3 font-medium text-gray-700">${(data.data.jenis_penilaian && data.data.jenis_penilaian[i]) ? data.data.jenis_penilaian[i] : '-'}</td>
+                              <td class="py-1 px-3 font-bold text-blue-700 flex items-center gap-1"><i class="fa-solid fa-star text-yellow-400"></i> ${n}</td>
+                              <td class="py-1 px-3">${(data.data.keterangan && data.data.keterangan[i]) ? data.data.keterangan[i] : '-'}</td>
                             </tr>
                           `).join('')}
+                          <tr class="bg-gray-100 font-semibold">
+                            <td class="py-1 px-3" colspan="2">Rata-rata</td>
+                            <td class="py-1 px-3 text-blue-700">${data.data.rata_nilai ?? '-'}</td>
+                            <td class="py-1 px-3">-</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>

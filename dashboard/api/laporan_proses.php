@@ -210,6 +210,9 @@ elseif ($action === 'detail') {
                 $total += floatval($row['nilai']);
             }
             $result['rata_nilai'] = count($data) ? round($total/count($data),2) : 0;
+            $result['nilai'] = array_column($data, 'nilai');
+            $result['keterangan'] = array_column($data, 'keterangan');
+            $result['jenis_penilaian'] = array_column($data, 'nama_penilaian');
             echo json_encode(['status' => 'ok', 'data' => $result]);
         } else {
             echo json_encode(['status' => 'fail', 'msg' => 'Data tidak ditemukan!']);
