@@ -1094,114 +1094,186 @@ function viewTransaksiDetail(id) {
       
       if (transaksi.jadwal && transaksi.jadwal.length > 0) {
         jadwalHtml = `
-          <div class="mt-4">
-            <h4 class="font-semibold text-gray-800 mb-2">Jadwal Les:</h4>
-            <div class="max-h-40 overflow-y-auto">
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="bg-gray-50">
-                    <th class="px-3 py-2 text-left">No</th>
-                    <th class="px-3 py-2 text-left">Tanggal</th>
-                    <th class="px-3 py-2 text-left">Jam</th>
-                    <th class="px-3 py-2 text-left">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${transaksi.jadwal.map((jadwal, index) => {
-                    const jadwalDate = new Date(jadwal.tanggal);
-                    const today = new Date();
-                    const isPast = jadwalDate < today;
-                    const isToday = jadwalDate.toDateString() === today.toDateString();
-                    
-                    let statusClass = 'bg-gray-100 text-gray-800';
-                    let statusText = 'Belum';
-                    
-                    if (isPast) {
-                      statusClass = 'bg-green-100 text-green-800';
-                      statusText = 'Selesai';
-                    } else if (isToday) {
-                      statusClass = 'bg-blue-100 text-blue-800';
-                      statusText = 'Hari Ini';
-                    }
-                    
-                    return `
-                      <tr class="border-b">
-                        <td class="px-3 py-2">${index + 1}</td>
-                        <td class="px-3 py-2">${new Date(jadwal.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td>
-                        <td class="px-3 py-2">${jadwal.jam_trx || 'TBD'}</td>
-                        <td class="px-3 py-2">
-                          <span class="px-2 py-1 rounded-full text-xs font-semibold ${statusClass}">
-                            ${statusText}
-                          </span>
-                        </td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            </div>
+          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                  <th class="px-4 py-3 text-left font-semibold">No</th>
+                  <th class="px-4 py-3 text-left font-semibold">Tanggal</th>
+                  <th class="px-4 py-3 text-left font-semibold">Jam</th>
+                  <th class="px-4 py-3 text-left font-semibold">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${transaksi.jadwal.map((jadwal, index) => {
+                  const jadwalDate = new Date(jadwal.tanggal);
+                  const today = new Date();
+                  const isPast = jadwalDate < today;
+                  const isToday = jadwalDate.toDateString() === today.toDateString();
+                  
+                  let statusClass = 'bg-gray-100 text-gray-700 border-gray-200';
+                  let statusText = 'Belum';
+                  let statusIcon = 'fa-solid fa-clock';
+                  
+                  if (isPast) {
+                    statusClass = 'bg-green-100 text-green-700 border-green-200';
+                    statusText = 'Selesai';
+                    statusIcon = 'fa-solid fa-check-circle';
+                  } else if (isToday) {
+                    statusClass = 'bg-blue-100 text-blue-700 border-blue-200';
+                    statusText = 'Hari Ini';
+                    statusIcon = 'fa-solid fa-star';
+                  }
+                  
+                  return `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+                      <td class="px-4 py-3 font-medium text-gray-700">${index + 1}</td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                          <i class="fa-solid fa-calendar text-blue-500"></i>
+                          <span class="font-medium">${new Date(jadwal.tanggal).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <div class="flex items-center gap-2">
+                          <i class="fa-solid fa-clock text-purple-500"></i>
+                          <span class="font-medium">${jadwal.jam_trx || 'TBD'}</span>
+                        </div>
+                      </td>
+                      <td class="px-4 py-3">
+                        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border ${statusClass}">
+                          <i class="${statusIcon}"></i>
+                          ${statusText}
+                        </span>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
           </div>
         `;
       } else {
         jadwalHtml = `
-          <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p class="text-yellow-800 text-sm">
-              <i class="fa-solid fa-info-circle mr-1"></i>
-              Belum ada jadwal les yang diatur untuk transaksi ini.
-            </p>
+          <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg p-6 border border-yellow-200">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                <i class="fa-solid fa-info-circle text-white text-lg"></i>
+              </div>
+              <div>
+                <p class="text-yellow-800 font-semibold">Belum Ada Jadwal</p>
+                <p class="text-yellow-700 text-sm">Jadwal les belum diatur untuk transaksi ini.</p>
+              </div>
+            </div>
           </div>
         `;
       }
       
       Swal.fire({
-        title: 'Detail Transaksi',
+        title: '<div class="flex items-center justify-center gap-3 mb-4"><div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-receipt text-white text-xl"></i></div><span class="text-2xl font-bold text-gray-800">Detail Transaksi</span></div>',
         html: `
-          <div class="text-left">
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <p class="text-sm text-gray-600">Paket:</p>
-                <p class="font-semibold">${transaksi.nama_paket}</p>
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100 shadow-lg">
+            <!-- Transaction Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-gift text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-semibold text-gray-600">Paket</span>
+                </div>
+                <p class="text-lg font-bold text-gray-800">${transaksi.nama_paket}</p>
               </div>
-              <div>
-                <p class="text-sm text-gray-600">Mapel:</p>
-                <p class="font-semibold">${transaksi.nama_mapel}</p>
+              
+              <div class="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-semibold text-gray-600">Mapel</span>
+                </div>
+                <p class="text-lg font-bold text-gray-800">${transaksi.nama_mapel}</p>
               </div>
-              <div>
-                <p class="text-sm text-gray-600">Tentor:</p>
-                <p class="font-semibold">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
+              
+              <div class="bg-white rounded-xl p-4 shadow-sm border border-green-100">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-chalkboard-user text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-semibold text-gray-600">Tentor</span>
+                </div>
+                <p class="text-lg font-bold text-gray-800">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
               </div>
-              <div>
-                <p class="text-sm text-gray-600">Email:</p>
-                <p class="font-semibold">${transaksi.email}</p>
+              
+              <div class="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-envelope text-white text-sm"></i>
+                  </div>
+                  <span class="text-sm font-semibold text-gray-600">Email</span>
+                </div>
+                <p class="text-lg font-bold text-gray-800">${transaksi.email}</p>
               </div>
             </div>
             
-            <div class="bg-gray-50 p-3 rounded-lg mb-4">
-              <h4 class="font-semibold text-gray-800 mb-2">Informasi Pembayaran:</h4>
-              <div class="grid grid-cols-3 gap-4 text-sm">
-                <div>
-                  <p class="text-gray-600">Total Harga:</p>
-                  <p class="font-bold text-lg">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</p>
+            <!-- Payment Information -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 shadow-sm mb-6">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-money-bill-wave text-white text-lg"></i>
                 </div>
-                <div>
-                  <p class="text-gray-600">Sudah Bayar:</p>
-                  <p class="font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</p>
+                <h4 class="text-lg font-bold text-gray-800">Informasi Pembayaran</h4>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <div class="text-sm text-gray-600 mb-1">Total Harga</div>
+                  <div class="text-xl font-bold text-gray-800">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</div>
                 </div>
-                <div>
-                  <p class="text-gray-600">Sisa:</p>
-                  <p class="font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <div class="text-sm text-gray-600 mb-1">Sudah Bayar</div>
+                  <div class="text-xl font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</div>
+                </div>
+                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
+                  <div class="text-sm text-gray-600 mb-1">Sisa</div>
+                  <div class="text-xl font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
                     Rp${Number(transaksi.harga - transaksi.bayar).toLocaleString('id-ID')}
-                  </p>
+                  </div>
                 </div>
+              </div>
+              
+              <!-- Payment Status Badge -->
+              <div class="mt-4 text-center">
+                ${transaksi.harga - transaksi.bayar > 0 ? 
+                  '<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-700 font-semibold"><i class="fa-solid fa-exclamation-triangle"></i>Belum Lunas</span>' :
+                  '<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold"><i class="fa-solid fa-check-circle"></i>Lunas</span>'
+                }
               </div>
             </div>
             
-            ${jadwalHtml}
+            <!-- Schedule Section -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 shadow-sm">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-calendar-days text-white text-lg"></i>
+                </div>
+                <h4 class="text-lg font-bold text-gray-800">Jadwal Les</h4>
+              </div>
+              
+              ${jadwalHtml}
+            </div>
           </div>
         `,
-        width: '600px',
-        confirmButtonText: 'Tutup',
-        confirmButtonColor: '#3b82f6'
+        width: '700px',
+        confirmButtonText: '<i class="fa-solid fa-times mr-2"></i>Tutup',
+        confirmButtonColor: '#6b7280',
+        showCloseButton: true,
+        customClass: {
+          popup: 'swal2-custom-popup',
+          title: 'swal2-custom-title',
+          htmlContainer: 'swal2-custom-html',
+          confirmButton: 'swal2-custom-confirm'
+        }
       });
     } else {
       Swal.fire(
