@@ -6,7 +6,7 @@ $action = $_POST['action'] ?? '';
 
 if ($action === 'list') {
     try {
-        $stmt = $pdo->query('SELECT mt.*, m.nama as nama_mapel, u.nama as nama_tentor FROM tb_mapel_tentor mt LEFT JOIN tb_mapel m ON mt.mapel = m.kode LEFT JOIN tb_user u ON mt.id_tentor = u.id ORDER BY m.nama ASC');
+        $stmt = $pdo->query('SELECT mt.*, m.nama as nama_mapel, u.nama as nama_tentor FROM tb_mapel_tentor mt LEFT JOIN tb_mapel m ON mt.mapel = m.id LEFT JOIN tb_user u ON mt.id_tentor = u.id ORDER BY m.nama ASC');
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['status' => 'ok', 'data' => $data]);
     } catch (Exception $e) {

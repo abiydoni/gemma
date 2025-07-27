@@ -6,7 +6,7 @@ $action = $_POST['action'] ?? '';
 
 if ($action === 'list_setting') {
     try {
-        $stmt = $pdo->query('SELECT sg.*, m.nama as nama_mapel FROM tb_setting_gaji sg LEFT JOIN tb_mapel m ON sg.mapel = m.id ORDER BY m.nama ASC');
+        $stmt = $pdo->query('SELECT sg.*, m.nama as nama_mapel FROM tb_setting_gaji sg LEFT JOIN tb_mapel m ON sg.mapel = m.id ORDER BY m.id ASC');
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['status' => 'ok', 'data' => $data]);
     } catch (Exception $e) {

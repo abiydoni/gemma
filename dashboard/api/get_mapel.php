@@ -7,7 +7,7 @@ $mapel = [];
 
 if ($email) {
     try {
-        $stmt = $pdo->prepare('SELECT DISTINCT t.mapel as kode, m.id, m.nama FROM tb_trx t LEFT JOIN tb_mapel m ON m.kode = t.mapel WHERE t.email = ?');
+        $stmt = $pdo->prepare('SELECT DISTINCT t.mapel as kode, m.id, m.nama FROM tb_trx t LEFT JOIN tb_mapel m ON m.id = t.mapel WHERE t.email = ?');
         $stmt->execute([$email]);
         $mapel = $stmt->fetchAll(PDO::FETCH_ASSOC);
         

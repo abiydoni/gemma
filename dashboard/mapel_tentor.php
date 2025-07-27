@@ -34,7 +34,7 @@ try {
                     <select name="mapel" id="mapping-mapel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                         <option value="">Pilih Mapel</option>
                         <?php foreach($mapel as $m): ?>
-                        <option value="<?= $m['kode'] ?>"><?= htmlspecialchars($m['nama']) ?></option>
+                        <option value="<?= $m['id'] ?>"><?= htmlspecialchars($m['nama']) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>

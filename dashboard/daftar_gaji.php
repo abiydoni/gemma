@@ -10,27 +10,27 @@ try {
 } catch (Exception $e) {}
 ?>
 
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Daftar Gaji Tentor</h1>
-        <p class="text-gray-600">Kelola dan lihat daftar gaji tentor berdasarkan pembayaran siswa</p>
+<div class="w-full px-2 sm:px-4 py-6">
+    <div class="mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Daftar Gaji Tentor</h1>
+        <p class="text-gray-600 text-sm">Kelola dan lihat daftar gaji tentor berdasarkan pembayaran siswa</p>
     </div>
 
     <!-- Tombol Hitung Gaji -->
-    <div class="mb-6">
-        <button id="btn-hitung-gaji" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition duration-200 flex items-center">
+    <div class="mb-4">
+        <button id="btn-hitung-gaji" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200 flex items-center text-sm">
             <i class="fas fa-calculator mr-2"></i>
             Hitung Gaji Tentor
         </button>
     </div>
 
     <!-- Filter -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4">Filter Data</h2>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="bg-white rounded-lg shadow-md p-3 mb-4">
+        <h2 class="text-base font-semibold text-gray-800 mb-2">Filter Data</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Tentor</label>
-                <select id="filter-tentor" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Tentor</label>
+                <select id="filter-tentor" class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Semua Tentor</option>
                     <?php foreach($tentor as $t): ?>
                     <option value="<?= $t['id'] ?>"><?= htmlspecialchars($t['nama']) ?></option>
@@ -38,49 +38,107 @@ try {
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
-                <input type="month" id="filter-bulan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Bulan</label>
+                <input type="month" id="filter-bulan" class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select id="filter-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+                <select id="filter-status" class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="">Semua Status</option>
                     <option value="pending">Pending</option>
                     <option value="dibayar">Dibayar</option>
                 </select>
             </div>
             <div class="flex items-end">
-                <button id="btn-refresh" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition duration-200">
-                    <i class="fas fa-refresh mr-2"></i>Refresh
+                <button id="btn-refresh" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 text-xs rounded font-medium transition duration-200">
+                    <i class="fas fa-refresh mr-1"></i>Refresh
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Tabel Gaji Tentor -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="w-full bg-white rounded-lg shadow-lg p-2 sm:p-4 border border-gray-200">
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tentor</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siswa</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mapel</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Pembayaran</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Presentase</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jumlah Gaji</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bulan</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-gaji-tentor" class="bg-white divide-y divide-gray-200">
-                    <!-- Data akan di-load via AJAX -->
-                </tbody>
-            </table>
+            <table class="w-full divide-y divide-gray-200 text-xs sm:text-sm" id="tabel-gaji-tentor">
+                        <thead class="bg-gray-50 text-gray-700">
+                            <tr>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Tentor</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Siswa</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Mapel</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Total Pembayaran</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Presentase</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Jumlah Gaji</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Bulan</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Status</th>
+                                <th class="px-2 py-2 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-gaji-tentor" class="bg-white divide-y divide-gray-200">
+                            <!-- Data akan di-load via AJAX -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+/* Custom styles untuk tabel responsive */
+#tabel-gaji-tentor {
+    min-width: 900px; /* Lebih compact untuk memastikan semua kolom terlihat */
+}
+
+@media (max-width: 768px) {
+    #tabel-gaji-tentor {
+        min-width: 800px; /* Lebih kecil untuk mobile */
+    }
+}
+
+/* Memastikan container tidak overflow */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling di iOS */
+    border-radius: 0.5rem;
+}
+
+/* Sticky header untuk tabel panjang */
+#tabel-gaji-tentor thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Memastikan container tidak melebihi screen */
+.w-full {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* Responsive padding dan spacing */
+@media (max-width: 640px) {
+    .px-2 {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    
+    .py-6 {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+}
+
+/* Compact table styling */
+#tabel-gaji-tentor td, #tabel-gaji-tentor th {
+    padding: 0.5rem 0.25rem;
+}
+
+@media (min-width: 640px) {
+    #tabel-gaji-tentor td, #tabel-gaji-tentor th {
+        padding: 0.5rem;
+    }
+}
+</style>
 
 <!-- Modal Bayar Gaji -->
 <div id="modal-bayar-gaji" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
@@ -159,21 +217,21 @@ function loadGajiTentor() {
             data.data.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${item.nama_tentor}</div>
+                    <td class="px-2 py-2 whitespace-nowrap">
+                        <div class="text-xs font-medium text-gray-900">${item.nama_tentor}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.email_siswa}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.nama_mapel}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Rp ${parseInt(item.total_pembayaran).toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.presentase_gaji}%</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">Rp ${parseInt(item.jumlah_gaji).toLocaleString()}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${item.bulan}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status_pembayaran === 'dibayar' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                    <td class="px-2 py-2 whitespace-nowrap text-xs text-gray-900">${item.email_siswa}</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-xs text-gray-900">${item.nama_mapel}</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-xs text-gray-900">Rp ${parseInt(item.total_pembayaran).toLocaleString()}</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-xs text-gray-900">${item.presentase_gaji}%</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-xs font-bold text-green-600">Rp ${parseInt(item.jumlah_gaji).toLocaleString()}</td>
+                    <td class="px-2 py-2 whitespace-nowrap text-xs text-gray-900">${item.bulan}</td>
+                    <td class="px-2 py-2 whitespace-nowrap">
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium ${item.status_pembayaran === 'dibayar' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
                             ${item.status_pembayaran === 'dibayar' ? 'Dibayar' : 'Pending'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td class="px-2 py-2 whitespace-nowrap text-xs font-medium">
                         ${item.status_pembayaran === 'pending' ? `
                             <button onclick="bayarGaji(${item.id})" class="text-green-600 hover:text-green-900" title="Bayar Gaji">
                                 <i class="fas fa-money-bill-wave"></i>
@@ -184,7 +242,7 @@ function loadGajiTentor() {
                 tbody.appendChild(row);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Tidak ada data</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="px-2 py-2 text-center text-gray-500 text-xs">Tidak ada data</td></tr>';
         }
     })
     .catch(error => {

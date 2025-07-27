@@ -58,7 +58,7 @@ if (isset($_POST['action']) && $_POST['action'] == 'detail' && !empty($_POST['id
             SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel, u.nama as nama_tentor
             FROM tb_trx t
             LEFT JOIN tb_paket p ON t.paket = p.kode
-            LEFT JOIN tb_mapel m ON t.mapel = m.kode
+            LEFT JOIN tb_mapel m ON t.mapel = m.id
             LEFT JOIN tb_user u ON t.id_tentor = u.id
             WHERE t.id = ?
         ");
@@ -131,7 +131,7 @@ try {
                 $cek->execute([$tgl, $jamx, $mapel, 'PR']);
                 $bentrok = $cek->fetch(PDO::FETCH_ASSOC);
                 if ($bentrok) {
-                    $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE kode = ? LIMIT 1');
+                    $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE id = ? LIMIT 1');
                     $stmtMapel->execute([$bentrok['mapel']]);
                     $namaMapel = $stmtMapel->fetchColumn() ?: $bentrok['mapel'];
                     echo json_encode(['status'=>'fail','msg'=>'Jadwal Privat bentrok!','detail'=>'Tanggal: '.$bentrok['tanggal'].' Jam: '.$bentrok['jam_trx'].' Mapel: '.$namaMapel.' (sudah ada Privat)']);
@@ -143,7 +143,7 @@ try {
                 $cek->execute([$tgl, $jamx, $mapel]);
                 $bentrok = $cek->fetch(PDO::FETCH_ASSOC);
                 if ($bentrok) {
-                    $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE kode = ? LIMIT 1');
+                    $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE id = ? LIMIT 1');
                     $stmtMapel->execute([$bentrok['mapel']]);
                     $namaMapel = $stmtMapel->fetchColumn() ?: $bentrok['mapel'];
                     echo json_encode(['status'=>'fail','msg'=>'Jadwal bentrok!','detail'=>'Tanggal: '.$bentrok['tanggal'].' Jam: '.$bentrok['jam_trx'].' Mapel: '.$namaMapel]);
@@ -171,7 +171,7 @@ try {
                         $cek->execute([date('Y-m-d',$d), $jam, $mapel, 'PR']);
                         $bentrok = $cek->fetch(PDO::FETCH_ASSOC);
                         if ($bentrok) {
-                            $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE kode = ? LIMIT 1');
+                            $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE id = ? LIMIT 1');
                             $stmtMapel->execute([$bentrok['mapel']]);
                             $namaMapel = $stmtMapel->fetchColumn() ?: $bentrok['mapel'];
                             echo json_encode(['status'=>'fail','msg'=>'Jadwal Privat bentrok!','detail'=>'Tanggal: '.$bentrok['tanggal'].' Jam: '.$bentrok['jam_trx'].' Mapel: '.$namaMapel.' (sudah ada Privat)']);
@@ -183,7 +183,7 @@ try {
                         $cek->execute([date('Y-m-d',$d), $jam, $mapel]);
                         $bentrok = $cek->fetch(PDO::FETCH_ASSOC);
                         if ($bentrok) {
-                            $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE kode = ? LIMIT 1');
+                            $stmtMapel = $pdo->prepare('SELECT nama FROM tb_mapel WHERE id = ? LIMIT 1');
                             $stmtMapel->execute([$bentrok['mapel']]);
                             $namaMapel = $stmtMapel->fetchColumn() ?: $bentrok['mapel'];
                             echo json_encode(['status'=>'fail','msg'=>'Jadwal bentrok!','detail'=>'Tanggal: '.$bentrok['tanggal'].' Jam: '.$bentrok['jam_trx'].' Mapel: '.$namaMapel]);

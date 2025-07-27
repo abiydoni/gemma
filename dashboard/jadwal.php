@@ -28,7 +28,7 @@ $mapelColors = [
 ];
 $mapelList = [];
 try {
-  $stmt = $pdo->query("SELECT kode, nama FROM tb_mapel ORDER BY kode");
+  $stmt = $pdo->query("SELECT id, nama FROM tb_mapel ORDER BY id");
   $i=0;
   while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     $colorKeys = array_keys($mapelColors);
@@ -49,7 +49,7 @@ try {
     FROM tb_trx_tanggal tgl
     JOIN tb_trx tr ON tgl.id_trx = tr.id
     LEFT JOIN tb_siswa s ON tr.email = s.email
-    LEFT JOIN tb_mapel m ON tr.mapel = m.kode
+    LEFT JOIN tb_mapel m ON tr.mapel = m.id
     WHERE tgl.tanggal BETWEEN ? AND ?
   ");
   $stmt->execute([date('Y-m-01', $start), date('Y-m-t', $start)]);

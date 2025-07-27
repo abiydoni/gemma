@@ -35,7 +35,7 @@ $trx = [];
 if (!empty($siswa['email'])) {
   try {
     // Ambil semua transaksi siswa (tanpa join tb_trx_tanggal)
-    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, p.nama as nama_paket, t.mapel, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode LEFT JOIN tb_mapel m ON t.mapel = m.kode WHERE t.email = ? ORDER BY t.tanggal DESC');
+    $stmt = $pdo->prepare('SELECT t.id, t.paket, t.harga, t.bayar, t.status, t.tanggal, p.nama as nama_paket, t.mapel, m.nama as nama_mapel FROM tb_trx t LEFT JOIN tb_paket p ON t.paket = p.kode LEFT JOIN tb_mapel m ON t.mapel = m.id WHERE t.email = ? ORDER BY t.tanggal DESC');
     $stmt->execute([$siswa['email']]);
     $trx = $stmt->fetchAll(PDO::FETCH_ASSOC);
     foreach ($trx as $i => $t) {
@@ -56,7 +56,7 @@ try {
 // Ambil data mapel untuk dropdown modal
 $list_mapel = [];
 try {
-  $stmt_mapel = $pdo->query('SELECT kode, nama FROM tb_mapel WHERE status=1 ORDER BY kode ASC');
+  $stmt_mapel = $pdo->query('SELECT id, nama FROM tb_mapel WHERE status=1 ORDER BY id ASC');
   $list_mapel = $stmt_mapel->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 ?>
@@ -306,7 +306,7 @@ try {
               <select name="mapel" id="mapel-select" required class="input-form-modal" onchange="setTentorByMapel()">
                 <option value="">Pilih Mapel</option>
                 <?php foreach($list_mapel as $m): ?>
-                  <option value="<?= htmlspecialchars($m['kode']) ?>">
+                  <option value="<?= htmlspecialchars($m['id']) ?>">
                     <?= htmlspecialchars($m['nama']) ?>
                   </option>
                 <?php endforeach; ?>

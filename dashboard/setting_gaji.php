@@ -5,7 +5,7 @@ include '../api/db.php';
 // Ambil data mapel untuk setting gaji
 $mapel = [];
 try {
-    $stmt = $pdo->query('SELECT id, nama FROM tb_mapel WHERE status = 1 ORDER BY nama ASC');
+    $stmt = $pdo->query('SELECT id, nama FROM tb_mapel WHERE status = 1 ORDER BY id ASC');
     $mapel = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 ?>
