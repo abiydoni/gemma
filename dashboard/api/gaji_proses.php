@@ -177,11 +177,39 @@ elseif ($action === 'bayar_gaji') {
     }
     
     try {
+        $pdo->beginTransaction();
+        
+        // Ambil detail gaji untuk jurnal
+        $stmt = $pdo->prepare("SELECT gt.*, u.nama as nama_tentor, m.nama as nama_mapel FROM tb_gaji_tentor gt LEFT JOIN tb_user u ON gt.id_tentor = u.id LEFT JOIN tb_mapel m ON gt.mapel = m.id WHERE gt.id = ?");
+        $stmt->execute([$id]);
+        $gaji = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$gaji) {
+            throw new Exception('Data gaji tidak ditemukan!');
+        }
+        
+        // Update status pembayaran gaji
         $stmt = $pdo->prepare('UPDATE tb_gaji_tentor SET status_pembayaran = ?, tanggal_pembayaran = ?, keterangan = ? WHERE id = ?');
         $stmt->execute(['dibayar', $tanggalPembayaran, $keterangan, $id]);
         
-        echo json_encode(['status' => 'ok', 'msg' => 'Gaji berhasil dibayar!']);
+        // Buat jurnal pengeluaran gaji otomatis
+        $namaTentor = $gaji['nama_tentor'] ?? 'Tentor';
+        $namaMapel = $gaji['nama_mapel'] ?? 'Mapel';
+        $jumlahGaji = $gaji['jumlah_gaji'];
+        $keteranganJurnal = "[AUTO] Pengeluaran Gaji - {$namaTentor} ({$namaMapel})";
+        
+        if ($keterangan) {
+            $keteranganJurnal .= " - {$keterangan}";
+        }
+        
+        // Insert ke jurnal keuangan sebagai pengeluaran (kredit)
+        $stmt = $pdo->prepare('INSERT INTO tb_keuangan (tanggal, keterangan, debet, kredit) VALUES (?, ?, 0, ?)');
+        $stmt->execute([$tanggalPembayaran, $keteranganJurnal, $jumlahGaji]);
+        
+        $pdo->commit();
+        echo json_encode(['status' => 'ok', 'msg' => 'Gaji berhasil dibayar dan jurnal pengeluaran dibuat!']);
     } catch (Exception $e) {
+        $pdo->rollBack();
         echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
     }
 }
