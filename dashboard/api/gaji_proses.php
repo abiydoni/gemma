@@ -74,10 +74,12 @@ elseif ($action === 'list_gaji') {
     $sql = "SELECT 
                 gt.*,
                 u.nama as nama_tentor,
-                m.nama as nama_mapel
+                m.nama as nama_mapel,
+                s.nama as nama_siswa
             FROM tb_gaji_tentor gt
             LEFT JOIN tb_user u ON gt.id_tentor = u.id
             LEFT JOIN tb_mapel m ON gt.mapel = m.id
+            LEFT JOIN tb_siswa s ON gt.email_siswa = s.email
             $whereClause
             ORDER BY gt.created_at DESC";
     
@@ -152,7 +154,7 @@ elseif ($action === 'detail_gaji') {
     }
     
     try {
-        $stmt = $pdo->prepare("SELECT gt.*, u.nama as nama_tentor, m.nama as nama_mapel FROM tb_gaji_tentor gt LEFT JOIN tb_user u ON gt.id_tentor = u.id LEFT JOIN tb_mapel m ON gt.mapel = m.id WHERE gt.id = ?");
+        $stmt = $pdo->prepare("SELECT gt.*, u.nama as nama_tentor, m.nama as nama_mapel, s.nama as nama_siswa FROM tb_gaji_tentor gt LEFT JOIN tb_user u ON gt.id_tentor = u.id LEFT JOIN tb_mapel m ON gt.mapel = m.id LEFT JOIN tb_siswa s ON gt.email_siswa = s.email WHERE gt.id = ?");
         $stmt->execute([$id]);
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -180,7 +182,7 @@ elseif ($action === 'bayar_gaji') {
         $pdo->beginTransaction();
         
         // Ambil detail gaji untuk jurnal
-        $stmt = $pdo->prepare("SELECT gt.*, u.nama as nama_tentor, m.nama as nama_mapel FROM tb_gaji_tentor gt LEFT JOIN tb_user u ON gt.id_tentor = u.id LEFT JOIN tb_mapel m ON gt.mapel = m.id WHERE gt.id = ?");
+        $stmt = $pdo->prepare("SELECT gt.*, u.nama as nama_tentor, m.nama as nama_mapel, s.nama as nama_siswa FROM tb_gaji_tentor gt LEFT JOIN tb_user u ON gt.id_tentor = u.id LEFT JOIN tb_mapel m ON gt.mapel = m.id LEFT JOIN tb_siswa s ON gt.email_siswa = s.email WHERE gt.id = ?");
         $stmt->execute([$id]);
         $gaji = $stmt->fetch(PDO::FETCH_ASSOC);
         

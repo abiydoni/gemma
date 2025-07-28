@@ -572,8 +572,8 @@ function lihatDetailGaji(namaTentor, items) {
                 <div class="px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                     <h3 class="text-base font-semibold text-gray-800">Detail Les</h3>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs">
+                <div class="overflow-x-auto" style="max-width:100%">
+                    <table class="min-w-max text-xs">
                         <thead>
                             <tr class="bg-gray-50">
                                 <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Siswa</th>
@@ -594,10 +594,10 @@ function lihatDetailGaji(namaTentor, items) {
                 <td class="px-2 py-2 text-xs text-gray-900">
                     <div class="flex items-center">
                         <div class="w-5 h-5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center mr-1">
-                            <span class="text-white text-xs font-medium">${item.email_siswa.charAt(0).toUpperCase()}</span>
+                            <span class="text-white text-xs font-medium">${(item.nama_siswa || item.email_siswa).charAt(0).toUpperCase()}</span>
                         </div>
                         <div>
-                            <p class="font-medium text-gray-900 text-xs truncate max-w-[80px]">${item.email_siswa}</p>
+                            <p class="font-medium text-gray-900 text-xs truncate max-w-[80px]">${item.nama_siswa || item.email_siswa}</p>
                         </div>
                     </div>
                 </td>
@@ -629,7 +629,7 @@ function lihatDetailGaji(namaTentor, items) {
                 </td>
                 <td class="px-2 py-2 text-xs">
                     ${item.status_pembayaran === 'pending' ? `
-                        <button onclick="bayarGajiPerLes(${item.id}, '${item.nama_tentor}', '${item.email_siswa}', '${item.nama_mapel}', ${item.jumlah_gaji})" 
+                        <button onclick="bayarGajiPerLes(${item.id}, '${item.nama_tentor}', '${item.email_siswa}', '${item.nama_siswa || item.email_siswa}', '${item.nama_mapel}', ${item.jumlah_gaji})" 
                                 class="inline-flex items-center px-1.5 py-0.5 border border-transparent text-xs font-medium rounded-md text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-sm" 
                                 title="Bayar Les Ini">
                             <i class="fas fa-credit-card mr-1"></i>
@@ -676,7 +676,7 @@ function lihatDetailGaji(namaTentor, items) {
     const modal = document.createElement('div');
     modal.className = 'fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4';
     modal.innerHTML = `
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-100">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl mx-4 max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-100">
             <div class="sticky top-0 bg-white rounded-t-2xl px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-gray-800">Detail Gaji Tentor</h3>
                 <button onclick="this.closest('.fixed').remove()" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200">
@@ -713,13 +713,13 @@ function lihatDetailGaji(namaTentor, items) {
 }
 
 // Bayar gaji per les
-function bayarGajiPerLes(id, namaTentor, emailSiswa, namaMapel, jumlahGaji) {
+function bayarGajiPerLes(id, namaTentor, emailSiswa, namaSiswa, namaMapel, jumlahGaji) {
     Swal.fire({
         title: 'Bayar Gaji Per Les?',
         html: `
             <div class="text-left">
                 <p><strong>Tentor:</strong> ${namaTentor}</p>
-                <p><strong>Siswa:</strong> ${emailSiswa}</p>
+                <p><strong>Siswa:</strong> ${namaSiswa}</p>
                 <p><strong>Mapel:</strong> ${namaMapel}</p>
                 <p><strong>Jumlah Gaji:</strong> Rp ${parseInt(jumlahGaji).toLocaleString()}</p>
             </div>

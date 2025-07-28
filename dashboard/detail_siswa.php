@@ -214,7 +214,7 @@ try {
       </div>
       
       <!-- Debug Info -->
-      <div class="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+      <!-- <div class="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
         <strong>Debug Info:</strong> Section Rapor Siswa Lengkap sudah ditambahkan. 
         Jika tab tidak berfungsi, cek console browser untuk error JavaScript.
         <br><br>
@@ -225,7 +225,7 @@ try {
         <strong>Email Siswa:</strong> <?= htmlspecialchars($siswa['email']) ?>
         <br>
         <strong>Status:</strong> Section ini seharusnya muncul di bawah data transaksi
-      </div>
+      </div> -->
     </div>
 
     <div class="flex gap-4 mt-10 justify-end">
@@ -1189,12 +1189,12 @@ window.addEventListener('load', function() {
     console.log('Rapor section is visible');
     
     // Show alert to confirm section exists
-    setTimeout(function() {
-      alert('Section Rapor Siswa Lengkap sudah ditambahkan! Cek halaman untuk melihatnya.');
-    }, 1000);
+    // setTimeout(function() {
+    //   alert('Section Rapor Siswa Lengkap sudah ditambahkan! Cek halaman untuk melihatnya.');
+    // }, 1000);
   } else {
     console.error('Rapor section not found!');
-    alert('ERROR: Section rapor tidak ditemukan!');
+    // alert('ERROR: Section rapor tidak ditemukan!');
   }
   
   // Force show first tab
