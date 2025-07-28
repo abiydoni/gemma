@@ -55,11 +55,12 @@ if (isset($_POST['action']) && $_POST['action'] == 'detail' && !empty($_POST['id
     
     try {
         $stmt = $pdo->prepare("
-            SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel, u.nama as nama_tentor
+            SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel, u.nama as nama_tentor, s.nama as nama_siswa
             FROM tb_trx t
             LEFT JOIN tb_paket p ON t.paket = p.kode
             LEFT JOIN tb_mapel m ON t.mapel = m.id
             LEFT JOIN tb_user u ON t.id_tentor = u.id
+            LEFT JOIN tb_siswa s ON t.email = s.email
             WHERE t.id = ?
         ");
         $stmt->execute([$id]);

@@ -1172,99 +1172,99 @@ function viewTransaksiDetail(id) {
       Swal.fire({
         title: '<div class="flex items-center justify-center gap-3 mb-4"><div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-receipt text-white text-xl"></i></div><span class="text-2xl font-bold text-gray-800">Detail Transaksi</span></div>',
         html: `
-          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100 shadow-lg">
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg">
             <!-- Transaction Info Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-gift text-white text-sm"></i>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-blue-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-gift text-white text-xs"></i>
                   </div>
-                  <span class="text-sm font-semibold text-gray-600">Paket</span>
+                  <span class="text-xs font-semibold text-gray-600">Paket</span>
                 </div>
-                <p class="text-lg font-bold text-gray-800">${transaksi.nama_paket}</p>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_paket}</p>
               </div>
               
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-purple-100">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-book-open text-white text-sm"></i>
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-purple-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-white text-xs"></i>
                   </div>
-                  <span class="text-sm font-semibold text-gray-600">Mapel</span>
+                  <span class="text-xs font-semibold text-gray-600">Mapel</span>
                 </div>
-                <p class="text-lg font-bold text-gray-800">${transaksi.nama_mapel}</p>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_mapel}</p>
               </div>
               
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-green-100">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-chalkboard-user text-white text-sm"></i>
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-green-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-chalkboard-user text-white text-xs"></i>
                   </div>
-                  <span class="text-sm font-semibold text-gray-600">Tentor</span>
+                  <span class="text-xs font-semibold text-gray-600">Tentor</span>
                 </div>
-                <p class="text-lg font-bold text-gray-800">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
               </div>
               
-              <div class="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
-                <div class="flex items-center gap-3 mb-3">
-                  <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                    <i class="fa-solid fa-envelope text-white text-sm"></i>
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-orange-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-user text-white text-xs"></i>
                   </div>
-                  <span class="text-sm font-semibold text-gray-600">Email</span>
+                  <span class="text-xs font-semibold text-gray-600">Nama Siswa</span>
                 </div>
-                <p class="text-lg font-bold text-gray-800">${transaksi.email}</p>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_siswa}</p>
               </div>
             </div>
             
             <!-- Payment Information -->
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200 shadow-sm mb-6">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-                  <i class="fa-solid fa-money-bill-wave text-white text-lg"></i>
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200 shadow-sm mb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-money-bill-wave text-white text-xs"></i>
                 </div>
-                <h4 class="text-lg font-bold text-gray-800">Informasi Pembayaran</h4>
+                <h4 class="text-sm font-bold text-gray-800">Informasi Pembayaran</h4>
               </div>
               
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-                  <div class="text-sm text-gray-600 mb-1">Total Harga</div>
-                  <div class="text-xl font-bold text-gray-800">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Total Harga</div>
+                  <div class="text-sm font-bold text-gray-800">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</div>
                 </div>
-                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-                  <div class="text-sm text-gray-600 mb-1">Sudah Bayar</div>
-                  <div class="text-xl font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</div>
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Sudah Bayar</div>
+                  <div class="text-sm font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</div>
                 </div>
-                <div class="bg-white rounded-lg p-4 text-center shadow-sm">
-                  <div class="text-sm text-gray-600 mb-1">Sisa</div>
-                  <div class="text-xl font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Sisa</div>
+                  <div class="text-sm font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
                     Rp${Number(transaksi.harga - transaksi.bayar).toLocaleString('id-ID')}
                   </div>
                 </div>
               </div>
               
               <!-- Payment Status Badge -->
-              <div class="mt-4 text-center">
+              <div class="mt-2 text-center">
                 ${transaksi.harga - transaksi.bayar > 0 ? 
-                  '<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-100 text-red-700 font-semibold"><i class="fa-solid fa-exclamation-triangle"></i>Belum Lunas</span>' :
-                  '<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-700 font-semibold"><i class="fa-solid fa-check-circle"></i>Lunas</span>'
+                  '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold text-xs"><i class="fa-solid fa-exclamation-triangle"></i>Belum Lunas</span>' :
+                  '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-xs"><i class="fa-solid fa-check-circle"></i>Lunas</span>'
                 }
               </div>
             </div>
             
             <!-- Schedule Section -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 shadow-sm">
-              <div class="flex items-center gap-3 mb-4">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <i class="fa-solid fa-calendar-days text-white text-lg"></i>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200 shadow-sm">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-calendar-days text-white text-xs"></i>
                 </div>
-                <h4 class="text-lg font-bold text-gray-800">Jadwal Les</h4>
+                <h4 class="text-sm font-bold text-gray-800">Jadwal Les</h4>
               </div>
               
               ${jadwalHtml}
             </div>
           </div>
         `,
-        width: '700px',
+        width: '400px',
         confirmButtonText: '<i class="fa-solid fa-times mr-2"></i>Tutup',
         confirmButtonColor: '#6b7280',
         showCloseButton: true,
