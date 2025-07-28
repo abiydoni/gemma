@@ -147,86 +147,7 @@ try {
       </div>
     </div>
 
-    <!-- Section Rapor Siswa Lengkap -->
-    <div class="mt-10 bg-white rounded-lg shadow-md p-6" id="rapor-section" style="display: block !important; visibility: visible !important; opacity: 1 !important;">
-      <h2 class="text-2xl font-bold text-blue-700 mb-6 flex items-center gap-2">
-        <i class="fa-solid fa-chart-line"></i> Rapor Siswa Lengkap
-      </h2>
-      
-      <!-- Fallback jika JavaScript tidak berjalan -->
-      <noscript>
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong>JavaScript diperlukan!</strong> Untuk melihat rapor lengkap, pastikan JavaScript diaktifkan di browser Anda.
-        </div>
-      </noscript>
-      
-      <!-- Simple Tab Navigation -->
-      <div class="flex space-x-1 bg-gray-100 p-1 rounded-lg mb-6">
-        <button onclick="showTab('perkembangan')" class="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white">
-          <i class="fa-solid fa-chart-line mr-2"></i>Perkembangan
-        </button>
-        <button onclick="showTab('nilai')" class="px-4 py-2 rounded-md text-sm font-medium bg-gray-200 text-gray-700">
-          <i class="fa-solid fa-star mr-2"></i>Nilai Mapel
-        </button>
-        <button onclick="showTab('catatan')" class="px-4 py-2 rounded-md text-sm font-medium bg-gray-200 text-gray-700">
-          <i class="fa-solid fa-clipboard-list mr-2"></i>Catatan Tentor
-        </button>
-      </div>
 
-      <!-- Tab Content - Always visible -->
-      <div id="tab-content-perkembangan" class="block">
-        <div class="bg-gray-50 rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Laporan Perkembangan Siswa</h3>
-          <div id="perkembangan-content">
-            <div class="text-center py-8 text-gray-500">
-              <i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl mb-2"></i>
-              <p>Memuat data perkembangan...</p>
-              <p class="text-sm mt-2">Email: <?= htmlspecialchars($siswa['email']) ?></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-content-nilai" class="hidden">
-        <div class="bg-gray-50 rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Nilai Mata Pelajaran</h3>
-          <div id="nilai-content">
-            <div class="text-center py-8 text-gray-500">
-              <i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl mb-2"></i>
-              <p>Memuat data nilai...</p>
-              <p class="text-sm mt-2">Email: <?= htmlspecialchars($siswa['email']) ?></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-content-catatan" class="hidden">
-        <div class="bg-gray-50 rounded-lg p-4">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Catatan Tentor</h3>
-          <div id="catatan-content">
-            <div class="text-center py-8 text-gray-500">
-              <i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl mb-2"></i>
-              <p>Memuat data catatan...</p>
-              <p class="text-sm mt-2">Email: <?= htmlspecialchars($siswa['email']) ?></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Debug Info -->
-      <!-- <div class="mt-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-        <strong>Debug Info:</strong> Section Rapor Siswa Lengkap sudah ditambahkan. 
-        Jika tab tidak berfungsi, cek console browser untuk error JavaScript.
-        <br><br>
-        <strong>Posisi:</strong> Setelah data transaksi, sebelum tombol kembali.
-        <br>
-        <strong>ID Section:</strong> rapor-section
-        <br>
-        <strong>Email Siswa:</strong> <?= htmlspecialchars($siswa['email']) ?>
-        <br>
-        <strong>Status:</strong> Section ini seharusnya muncul di bawah data transaksi
-      </div> -->
-    </div>
 
     <div class="flex gap-4 mt-10 justify-end">
       <a href="siswa.php" class="px-6 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 font-bold rounded-full shadow hover:scale-105 hover:shadow-xl transition flex items-center gap-2">
@@ -453,7 +374,14 @@ try {
 <div id="modal-detail-jadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
   <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative">
     <button id="close-modal-detail-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa fa-xmark"></i></button>
-    <div class="text-xl font-extrabold text-blue-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-400"></i> Detail Jadwal Les</div>
+    <div class="text-xl font-extrabold text-blue-700 mb-4 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-calendar-days text-blue-400"></i> Detail Jadwal Les
+      </div>
+      <button id="btnPrintDetailJadwal" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700">
+        <i class="fa fa-print"></i> Print
+      </button>
+    </div>
     <div id="isi-modal-detail-jadwal"></div>
   </div>
 </div>
@@ -861,6 +789,16 @@ document.addEventListener('click', function(e) {
     html += '</tbody></table>';
     document.getElementById('isi-modal-detail-jadwal').innerHTML = html;
     document.getElementById('modal-detail-jadwal').classList.remove('hidden');
+    
+    // Simpan data untuk print
+    window.currentJadwalData = {
+      jadwal: jadwal,
+      mapel: mapel,
+      siswa: {
+        nama: '<?= htmlspecialchars($siswa['nama']) ?>',
+        email: '<?= htmlspecialchars($siswa['email']) ?>'
+      }
+    };
     return;
   }
   // Handler tombol edit jadwal di modal detail
@@ -883,6 +821,16 @@ document.addEventListener('click', function(e) {
   // Handler tombol close modal detail jadwal
   if (e.target.closest('#close-modal-detail-jadwal')) {
     document.getElementById('modal-detail-jadwal').classList.add('hidden');
+    return;
+  }
+  
+  // Handler tombol print detail jadwal
+  if (e.target.closest('#btnPrintDetailJadwal')) {
+    if (window.currentJadwalData) {
+      const data = window.currentJadwalData;
+      const encodedData = encodeURIComponent(JSON.stringify(data));
+      window.open(`print/print_detail_jadwal.php?data=${encodedData}`, '_blank');
+    }
     return;
   }
 });
@@ -1021,193 +969,6 @@ document.getElementById('form-bayar-trx').addEventListener('submit', async funct
   }
   btn.disabled = false;
   btn.innerHTML = '<i class="fa-solid fa-money-bill"></i> Bayar';
-});
-</script>
-
-<script>
-// Rapor Siswa Lengkap JavaScript
-// Simple Tab Management
-function showTab(tabName) {
-  console.log('Showing tab:', tabName);
-  
-  // Hide all tab contents
-  document.querySelectorAll('[id^="tab-content-"]').forEach(content => {
-    content.classList.add('hidden');
-  });
-  
-  // Reset all tab buttons
-  document.querySelectorAll('[onclick^="showTab"]').forEach(btn => {
-    btn.className = 'px-4 py-2 rounded-md text-sm font-medium bg-gray-200 text-gray-700';
-  });
-  
-  // Show selected tab content
-  const selectedContent = document.getElementById(`tab-content-${tabName}`);
-  if (selectedContent) {
-    selectedContent.classList.remove('hidden');
-  }
-  
-  // Highlight selected tab button
-  const selectedBtn = event.target;
-  if (selectedBtn) {
-    selectedBtn.className = 'px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white';
-  }
-  
-  // Load data for the selected tab
-  loadTabData(tabName);
-}
-
-function loadTabData(tabName) {
-  const email = '<?= htmlspecialchars($siswa['email']) ?>';
-  console.log('Loading data for tab:', tabName, 'email:', email);
-  
-  if (tabName === 'perkembangan') {
-    loadPerkembanganData(email);
-  } else if (tabName === 'nilai') {
-    loadNilaiData(email);
-  } else if (tabName === 'catatan') {
-    loadCatatanData(email);
-  }
-}
-
-// Load Perkembangan Data
-function loadPerkembanganData(email) {
-  const content = document.getElementById('perkembangan-content');
-  content.innerHTML = '<div class="text-center py-4"><i class="fa-solid fa-spinner fa-spin text-blue-500 text-xl"></i> Loading...</div>';
-  
-  fetch('../api/laporan_proses.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=list&email=${encodeURIComponent(email)}`
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'ok' && data.data.length > 0) {
-      let html = '';
-      data.data.forEach(item => {
-        html += `
-          <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="font-semibold text-gray-800">${item.nama_mapel}</h4>
-                <p class="text-sm text-gray-600">Tentor: ${item.nama_tentor}</p>
-                <p class="text-sm text-gray-600">Tanggal: ${item.tanggal}</p>
-              </div>
-              <button onclick="viewPerkembanganDetail(${item.id})" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                <i class="fa-solid fa-eye mr-1"></i>Detail
-              </button>
-            </div>
-            <div class="text-sm text-gray-700">${item.keterangan}</div>
-          </div>
-        `;
-      });
-      content.innerHTML = html;
-    } else {
-      content.innerHTML = '<div class="text-center py-8 text-gray-500">Belum ada data perkembangan untuk siswa ini.</div>';
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    content.innerHTML = '<div class="text-center py-8 text-red-500">Gagal memuat data perkembangan.</div>';
-  });
-}
-
-
-
-// View Perkembangan Detail
-function viewPerkembanganDetail(id) {
-  fetch('../api/laporan_proses.php', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `action=detail&id=${id}`
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'ok') {
-      let detailHtml = `
-        <div class="bg-white rounded-lg p-6 max-w-2xl mx-auto">
-          <h3 class="text-lg font-semibold text-gray-800 mb-4">Detail Perkembangan</h3>
-          <div class="space-y-3">
-            <div><strong>Mapel:</strong> ${data.data.nama_mapel}</div>
-            <div><strong>Tentor:</strong> ${data.data.nama_tentor}</div>
-            <div><strong>Tanggal:</strong> ${data.data.tanggal}</div>
-            <div><strong>Keterangan:</strong> ${data.data.keterangan}</div>
-          </div>
-          <div class="mt-4 pt-4 border-t">
-            <h4 class="font-semibold mb-2">Nilai Detail:</h4>
-            <div class="bg-gray-50 p-3 rounded">
-              ${data.data.nilai ? data.data.nilai.map((n, i) => `
-                <div class="flex justify-between items-center py-1">
-                  <span>${data.data.jenis_penilaian && data.data.jenis_penilaian[i] ? data.data.jenis_penilaian[i] : 'Nilai ' + (i+1)}:</span>
-                  <span class="font-bold text-blue-600">${n}</span>
-                </div>
-              `).join('') : 'Tidak ada data nilai'}
-              ${data.data.rata_nilai ? `<div class="flex justify-between items-center py-1 border-t mt-2 pt-2"><strong>Rata-rata:</strong><span class="font-bold text-green-600">${data.data.rata_nilai}</span></div>` : ''}
-            </div>
-          </div>
-        </div>
-      `;
-      
-      Swal.fire({
-        title: 'Detail Perkembangan',
-        html: detailHtml,
-        width: '600px',
-        confirmButtonText: 'Tutup'
-      });
-    } else {
-      Swal.fire({
-        title: 'Error!',
-        text: data.msg || 'Gagal mengambil detail perkembangan!',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    Swal.fire({
-      title: 'Error!',
-      text: 'Terjadi kesalahan pada sistem!',
-      icon: 'error',
-      confirmButtonText: 'OK'
-    });
-  });
-}
-
-// Initialize everything when page loads
-window.addEventListener('load', function() {
-  console.log('Page fully loaded');
-  
-  // Show alert to confirm JavaScript is working
-  console.log('JavaScript is working!');
-  
-  // Ensure rapor section is visible
-  const raporSection = document.getElementById('rapor-section');
-  if (raporSection) {
-    raporSection.style.display = 'block';
-    raporSection.style.visibility = 'visible';
-    raporSection.style.opacity = '1';
-    console.log('Rapor section is visible');
-    
-    // Show alert to confirm section exists
-    // setTimeout(function() {
-    //   alert('Section Rapor Siswa Lengkap sudah ditambahkan! Cek halaman untuk melihatnya.');
-    // }, 1000);
-  } else {
-    console.error('Rapor section not found!');
-    // alert('ERROR: Section rapor tidak ditemukan!');
-  }
-  
-  // Force show first tab
-  setTimeout(function() {
-    const firstTab = document.getElementById('tab-content-perkembangan');
-    if (firstTab) {
-      firstTab.classList.remove('hidden');
-      console.log('First tab activated');
-    }
-    
-    // Load initial data
-    loadTabData('perkembangan');
-  }, 500);
 });
 </script>
 

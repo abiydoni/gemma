@@ -132,7 +132,20 @@ $(document).ready(function(){
   
   // Print button
   $('#btnPrint').click(function(){
-    window.open('print/print_keuangan.php', '_blank');
+    const filterAwal = $('#filter-awal').val();
+    const filterAkhir = $('#filter-akhir').val();
+    
+    let url = 'print/print_keuangan.php';
+    const params = [];
+    
+    if (filterAwal) params.push(`tanggal_awal=${encodeURIComponent(filterAwal)}`);
+    if (filterAkhir) params.push(`tanggal_akhir=${encodeURIComponent(filterAkhir)}`);
+    
+    if (params.length > 0) {
+        url += '?' + params.join('&');
+    }
+    
+    window.open(url, '_blank');
   });
   // Event tombol Filter
   $('#btn-filter').on('click', function(){

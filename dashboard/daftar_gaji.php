@@ -682,9 +682,15 @@ function lihatDetailGaji(namaTentor, items) {
         <div class="bg-white rounded-2xl shadow-2xl max-w-5xl mx-4 max-h-[85vh] overflow-y-auto transform transition-all duration-300 scale-100">
             <div class="sticky top-0 bg-white rounded-t-2xl px-4 py-3 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-gray-800">Detail Gaji Tentor</h3>
-                <button onclick="this.closest('.fixed').remove()" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200">
-                    <i class="fas fa-times text-gray-600 text-sm"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="printDetailGaji('${namaTentor}', ${JSON.stringify(items).replace(/"/g, '&quot;')})" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition-colors duration-200 flex items-center gap-1">
+                        <i class="fas fa-print"></i>
+                        Print
+                    </button>
+                    <button onclick="this.closest('.fixed').remove()" class="w-7 h-7 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200">
+                        <i class="fas fa-times text-gray-600 text-sm"></i>
+                    </button>
+                </div>
             </div>
             <div class="p-4">
                 ${detailHtml}
@@ -1009,13 +1015,43 @@ document.getElementById('btn-refresh').addEventListener('click', function() {
     loadGajiTentor();
 });
 
+// Print detail gaji tentor
+function printDetailGaji(namaTentor, items) {
+    // Buat data untuk print
+    const printData = {
+        namaTentor: namaTentor,
+        items: items
+    };
+    
+    // Encode data untuk URL
+    const encodedData = encodeURIComponent(JSON.stringify(printData));
+    
+    // Buka print page
+    window.open(`print/print_detail_gaji.php?data=${encodedData}`, '_blank');
+}
+
 // Load data saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
     loadGajiTentor();
     
     // Print button
     document.getElementById('btnPrint').addEventListener('click', function() {
-        window.open('print/print_daftar_gaji.php', '_blank');
+        const filterTentor = document.getElementById('filter-tentor').value;
+        const filterBulan = document.getElementById('filter-bulan').value;
+        const filterStatus = document.getElementById('filter-status').value;
+        
+        let url = 'print/print_daftar_gaji.php';
+        const params = [];
+        
+        if (filterTentor) params.push(`tentor=${encodeURIComponent(filterTentor)}`);
+        if (filterBulan) params.push(`bulan=${encodeURIComponent(filterBulan)}`);
+        if (filterStatus) params.push(`status=${encodeURIComponent(filterStatus)}`);
+        
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+        
+        window.open(url, '_blank');
     });
 });
 

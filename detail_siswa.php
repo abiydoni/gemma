@@ -1271,15 +1271,116 @@ function viewTransaksiDetail(id) {
           </div>
         `,
         width: '400px',
-        confirmButtonText: '<i class="fa-solid fa-times mr-2"></i>Tutup',
-        confirmButtonColor: '#6b7280',
+        showConfirmButton: false,
         showCloseButton: true,
         customClass: {
           popup: 'swal2-custom-popup',
           title: 'swal2-custom-title',
-          htmlContainer: 'swal2-custom-html',
-          confirmButton: 'swal2-custom-confirm'
-        }
+          htmlContainer: 'swal2-custom-html'
+        },
+        html: `
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg">
+            <!-- Transaction Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-blue-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-gift text-white text-xs"></i>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-600">Paket</span>
+                </div>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_paket}</p>
+              </div>
+              
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-purple-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-book-open text-white text-xs"></i>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-600">Mapel</span>
+                </div>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_mapel}</p>
+              </div>
+              
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-green-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-chalkboard-user text-white text-xs"></i>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-600">Tentor</span>
+                </div>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_tentor || 'Belum ditentukan'}</p>
+              </div>
+              
+              <div class="bg-white rounded-xl p-2 shadow-sm border border-orange-100">
+                <div class="flex items-center gap-1 mb-1">
+                  <div class="w-5 h-5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                    <i class="fa-solid fa-user text-white text-xs"></i>
+                  </div>
+                  <span class="text-xs font-semibold text-gray-600">Nama Siswa</span>
+                </div>
+                <p class="text-sm font-bold text-gray-800">${transaksi.nama_siswa}</p>
+              </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200 shadow-sm mb-3">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-money-bill-wave text-white text-xs"></i>
+                </div>
+                <h4 class="text-sm font-bold text-gray-800">Informasi Pembayaran</h4>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Total Harga</div>
+                  <div class="text-sm font-bold text-gray-800">Rp${Number(transaksi.harga).toLocaleString('id-ID')}</div>
+                </div>
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Sudah Bayar</div>
+                  <div class="text-sm font-bold text-green-600">Rp${Number(transaksi.bayar).toLocaleString('id-ID')}</div>
+                </div>
+                <div class="bg-white rounded-lg p-2 text-center shadow-sm">
+                  <div class="text-xs text-gray-600 mb-1">Sisa</div>
+                  <div class="text-sm font-bold ${transaksi.harga - transaksi.bayar > 0 ? 'text-red-600' : 'text-green-600'}">
+                    Rp${Number(transaksi.harga - transaksi.bayar).toLocaleString('id-ID')}
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Payment Status Badge -->
+              <div class="mt-2 text-center">
+                ${transaksi.harga - transaksi.bayar > 0 ? 
+                  '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold text-xs"><i class="fa-solid fa-exclamation-triangle"></i>Belum Lunas</span>' :
+                  '<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold text-xs"><i class="fa-solid fa-check-circle"></i>Lunas</span>'
+                }
+              </div>
+            </div>
+            
+            <!-- Schedule Section -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200 shadow-sm">
+              <div class="flex items-center gap-2 mb-2">
+                <div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                  <i class="fa-solid fa-calendar-days text-white text-xs"></i>
+                </div>
+                <h4 class="text-sm font-bold text-gray-800">Jadwal Les</h4>
+              </div>
+              
+              ${jadwalHtml}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex justify-center gap-2 mt-4">
+              <button onclick="printDetailTransaksi(${id})" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold text-sm hover:bg-green-700 transition-colors">
+                <i class="fa fa-print mr-2"></i>Print
+              </button>
+              <button onclick="Swal.close()" class="px-4 py-2 bg-gray-500 text-white rounded-lg font-semibold text-sm hover:bg-gray-600 transition-colors">
+                <i class="fa-solid fa-times mr-2"></i>Tutup
+              </button>
+            </div>
+          </div>
+        `
       });
     } else {
       Swal.fire(
@@ -1508,10 +1609,37 @@ window.addEventListener('load', function() {
   transform: translateY(-1px) !important;
 }
 
+</style>
+
+<script>
 // Print button
 document.getElementById('btnPrint').addEventListener('click', function() {
     const id = <?= $siswa['id'] ?>;
     window.open(`dashboard/print/print_detail_siswa.php?id=${id}`, '_blank');
 });
-</style>
+
+// Print Detail Transaksi
+function printDetailTransaksi(id) {
+  // Ambil data transaksi untuk print
+  fetch('api/trx_proses.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=detail&id=${id}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === 'ok') {
+      const transaksi = data.data;
+      const encodedData = encodeURIComponent(JSON.stringify(transaksi));
+      window.open(`dashboard/print/print_detail_transaksi.php?data=${encodedData}`, '_blank');
+    } else {
+      Swal.fire('Error!', 'Gagal memuat data untuk print', 'error');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    Swal.fire('Error!', 'Terjadi kesalahan pada sistem.', 'error');
+  });
+}
+</script>
 <?php include 'includes/footer.php'; ?> 

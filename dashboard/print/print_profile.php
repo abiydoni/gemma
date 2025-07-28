@@ -26,7 +26,6 @@ $profil = $stmt->fetch(PDO::FETCH_ASSOC);
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -82,7 +81,12 @@ $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>PROFILE LEMBAGA</h2>
   
@@ -110,6 +114,26 @@ $profil = $stmt->fetch(PDO::FETCH_ASSOC);
     <div class="profile-item">
       <div class="profile-label">Deskripsi:</div>
       <div class="profile-value"><?= htmlspecialchars($profil['deskripsi'] ?? '-') ?></div>
+    </div>
+    <div class="profile-item">
+      <div class="profile-label">Logo 1:</div>
+      <div class="profile-value">
+        <?php if (!empty($profil['logo1'])): ?>
+          <img src="../../assets/img/<?= htmlspecialchars($profil['logo1']) ?>" alt="Logo 1" style="height: 40px; max-width: 200px;">
+        <?php else: ?>
+          -
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="profile-item">
+      <div class="profile-label">Logo 2:</div>
+      <div class="profile-value">
+        <?php if (!empty($profil['logo2'])): ?>
+          <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo 2" style="height: 40px; max-width: 200px;">
+        <?php else: ?>
+          -
+        <?php endif; ?>
+      </div>
     </div>
   </div>
   

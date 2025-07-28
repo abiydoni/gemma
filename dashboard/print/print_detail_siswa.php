@@ -20,28 +20,27 @@ if (!$siswa) {
 
 // Ambil data transaksi siswa
 $stmt = $pdo->prepare("
-  SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel, j.nama as nama_jenjang
+  SELECT t.*, p.nama as nama_paket, m.nama as nama_mapel
   FROM tb_trx t
-  LEFT JOIN tb_paket p ON t.id_paket = p.id
-  LEFT JOIN tb_mapel m ON t.id_mapel = m.id
-  LEFT JOIN tb_jenjang j ON t.id_jenjang = j.id
-  WHERE t.id_siswa = ?
+  LEFT JOIN tb_paket p ON t.paket = p.kode
+  LEFT JOIN tb_mapel m ON t.mapel = m.kode
+  WHERE t.email = ?
   ORDER BY t.tanggal DESC
 ");
-$stmt->execute([$id_siswa]);
+$stmt->execute([$siswa['email']]);
 $transaksi_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Ambil data jadwal siswa
 $stmt = $pdo->prepare("
-  SELECT tt.*, t.total as total_les, p.nama as nama_paket, m.nama as nama_mapel
+  SELECT tt.*, t.bayar as total_les, p.nama as nama_paket, m.nama as nama_mapel
   FROM tb_trx_tanggal tt
   LEFT JOIN tb_trx t ON tt.id_trx = t.id
-  LEFT JOIN tb_paket p ON t.id_paket = p.id
-  LEFT JOIN tb_mapel m ON t.id_mapel = m.id
-  WHERE t.id_siswa = ?
+  LEFT JOIN tb_paket p ON t.paket = p.kode
+  LEFT JOIN tb_mapel m ON t.mapel = m.kode
+  WHERE t.email = ?
   ORDER BY tt.tanggal DESC, tt.jam_trx ASC
 ");
-$stmt->execute([$id_siswa]);
+$stmt->execute([$siswa['email']]);
 $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
@@ -65,7 +64,6 @@ $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -149,7 +147,12 @@ $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>DETAIL SISWA</h2>
   
@@ -184,7 +187,6 @@ $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th class="tanggal">Tanggal</th>
         <th>Paket</th>
         <th>Mapel</th>
-        <th>Jenjang</th>
         <th class="harga">Total</th>
         <th class="status">Status</th>
       </tr>
@@ -196,8 +198,7 @@ $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td class="tanggal"><?= date('d/m/Y', strtotime($trx['tanggal'])) ?></td>
         <td><?= htmlspecialchars($trx['nama_paket']) ?></td>
         <td><?= htmlspecialchars($trx['nama_mapel']) ?></td>
-        <td><?= htmlspecialchars($trx['nama_jenjang']) ?></td>
-        <td class="harga">Rp <?= number_format($trx['total'], 0, ',', '.') ?></td>
+        <td class="harga">Rp <?= number_format($trx['bayar'], 0, ',', '.') ?></td>
         <td class="status"><?= $trx['status'] == 1 ? 'Lunas' : 'Belum Lunas' ?></td>
       </tr>
       <?php endforeach; ?>

@@ -535,7 +535,10 @@ function viewDetail(id) {
                     </div>
                   </div>
                 </div>
-                <div class="mt-8 flex justify-end">
+                <div class="mt-8 flex justify-end gap-2">
+                  <button onclick="printDetailLaporan(${id})" class="px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                    <i class="fa fa-print"></i> Print
+                  </button>
                   <button onclick="document.getElementById('modal-detail-laporan').classList.add('hidden')" class="px-5 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 flex items-center gap-2">
                     <i class="fa fa-xmark"></i> Tutup
                   </button>
@@ -560,6 +563,11 @@ function viewDetail(id) {
             confirmButtonText: 'OK'
         });
     });
+}
+
+// Fungsi untuk print detail laporan
+function printDetailLaporan(id) {
+    window.open(`print/print_detail_laporan.php?id=${id}`, '_blank');
 }
 
 // Close modal detail
@@ -606,7 +614,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Print button
     document.getElementById('btnPrint').addEventListener('click', function() {
-        window.open('print/print_laporan_perkembangan.php', '_blank');
+        const filterSiswa = document.getElementById('filter-siswa').value;
+        const filterMapel = document.getElementById('filter-mapel').value;
+        const filterTanggal = document.getElementById('filter-tanggal').value;
+        
+        let url = 'print/print_laporan_perkembangan.php';
+        const params = [];
+        
+        if (filterSiswa) params.push(`email=${encodeURIComponent(filterSiswa)}`);
+        if (filterMapel) params.push(`mapel=${encodeURIComponent(filterMapel)}`);
+        if (filterTanggal) params.push(`tanggal=${encodeURIComponent(filterTanggal)}`);
+        
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+        
+        window.open(url, '_blank');
     });
 });
 

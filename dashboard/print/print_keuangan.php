@@ -5,22 +5,51 @@ include '../../api/db.php';
 $stmt = $pdo->query("SELECT * FROM tb_profile LIMIT 1");
 $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Ambil data transaksi
-$stmt = $pdo->query("
-  SELECT t.*, s.nama as nama_siswa, p.nama as nama_paket, m.nama as nama_mapel, j.nama as nama_jenjang
-  FROM tb_trx t
-  LEFT JOIN tb_siswa s ON t.id_siswa = s.id
-  LEFT JOIN tb_paket p ON t.id_paket = p.id
-  LEFT JOIN tb_mapel m ON t.id_mapel = m.id
-  LEFT JOIN tb_jenjang j ON t.id_jenjang = j.id
-  ORDER BY t.tanggal DESC
+// Ambil parameter filter
+$filter_tanggal_awal = isset($_GET['tanggal_awal']) ? $_GET['tanggal_awal'] : '';
+$filter_tanggal_akhir = isset($_GET['tanggal_akhir']) ? $_GET['tanggal_akhir'] : '';
+
+// Debug: tampilkan parameter yang diterima
+// echo "Filter awal: " . $filter_tanggal_awal . "<br>";
+// echo "Filter akhir: " . $filter_tanggal_akhir . "<br>";
+
+// Buat query dengan filter
+$where_conditions = [];
+$params = [];
+
+if (!empty($filter_tanggal_awal)) {
+    $where_conditions[] = "tanggal >= ?";
+    $params[] = $filter_tanggal_awal;
+}
+
+if (!empty($filter_tanggal_akhir)) {
+    $where_conditions[] = "tanggal <= ?";
+    $params[] = $filter_tanggal_akhir;
+}
+
+$where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
+
+// Ambil data keuangan dengan filter
+$stmt = $pdo->prepare("
+  SELECT *
+  FROM tb_keuangan
+  $where_clause
+  ORDER BY tanggal, id
 ");
-$trx_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->execute($params);
+$keuangan_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Debug: tampilkan jumlah data yang ditemukan
+// echo "Jumlah data: " . count($keuangan_list) . "<br>";
+// echo "Query: SELECT * FROM tb_keuangan $where_clause ORDER BY tanggal DESC, id DESC<br>";
+// echo "Params: " . implode(', ', $params) . "<br>";
 
 // Hitung total
-$total_pendapatan = 0;
-foreach($trx_list as $trx) {
-  $total_pendapatan += $trx['total'];
+$total_debet = 0;
+$total_kredit = 0;
+foreach($keuangan_list as $keuangan) {
+  $total_debet += $keuangan['debet'];
+  $total_kredit += $keuangan['kredit'];
 }
 ?>
 <!DOCTYPE html>
@@ -44,7 +73,6 @@ foreach($trx_list as $trx) {
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -115,13 +143,35 @@ foreach($trx_list as $trx) {
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>LAPORAN KEUANGAN</h2>
+  <?php if (!empty($filter_tanggal_awal) || !empty($filter_tanggal_akhir)): ?>
+    <p style="text-align:center;margin:0 0 12px 0;font-size:10px;color:#666;">
+      Filter: 
+      <?php 
+      $filter_info = [];
+      if (!empty($filter_tanggal_awal)) {
+        $filter_info[] = "Dari: " . date('d/m/Y', strtotime($filter_tanggal_awal));
+      }
+      if (!empty($filter_tanggal_akhir)) {
+        $filter_info[] = "Sampai: " . date('d/m/Y', strtotime($filter_tanggal_akhir));
+      }
+      echo implode(' | ', $filter_info);
+      ?>
+    </p>
+  <?php endif; ?>
   
   <div class="summary">
-    <div>Total Transaksi: <?= count($trx_list) ?></div>
-    <div>Total Pendapatan: Rp <?= number_format($total_pendapatan, 0, ',', '.') ?></div>
+    <div>Total Transaksi: <?= count($keuangan_list) ?></div>
+    <div>Total Debet: <?= number_format($total_debet, 0, ',', '.') ?></div>
+    <div>Total Kredit: <?= number_format($total_kredit, 0, ',', '.') ?></div>
+    <div>Saldo: <?= number_format($total_debet - $total_kredit, 0, ',', '.') ?></div>
   </div>
   
   <table>
@@ -129,25 +179,25 @@ foreach($trx_list as $trx) {
       <tr>
         <th class="no">No</th>
         <th class="tanggal">Tanggal</th>
-        <th>Siswa</th>
-        <th>Paket</th>
-        <th>Mapel</th>
-        <th>Jenjang</th>
-        <th class="harga">Total</th>
-        <th class="status">Status</th>
+        <th>Keterangan</th>
+        <th class="harga">Debet</th>
+        <th class="harga">Kredit</th>
+        <th class="harga">Saldo</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach($trx_list as $index => $trx): ?>
+      <?php 
+      $saldo = 0;
+      foreach($keuangan_list as $index => $keuangan): 
+        $saldo += $keuangan['debet'] - $keuangan['kredit'];
+      ?>
       <tr>
         <td class="no"><?= $index + 1 ?></td>
-        <td class="tanggal"><?= date('d/m/Y', strtotime($trx['tanggal'])) ?></td>
-        <td><?= htmlspecialchars($trx['nama_siswa']) ?></td>
-        <td><?= htmlspecialchars($trx['nama_paket']) ?></td>
-        <td><?= htmlspecialchars($trx['nama_mapel']) ?></td>
-        <td><?= htmlspecialchars($trx['nama_jenjang']) ?></td>
-        <td class="harga">Rp <?= number_format($trx['total'], 0, ',', '.') ?></td>
-        <td class="status"><?= $trx['status'] == 1 ? 'Lunas' : 'Belum Lunas' ?></td>
+        <td class="tanggal"><?= date('d/m/Y', strtotime($keuangan['tanggal'])) ?></td>
+        <td><?= htmlspecialchars($keuangan['keterangan']) ?></td>
+        <td class="harga"><?= $keuangan['debet'] > 0 ? number_format($keuangan['debet'], 0, ',', '.') : '-' ?></td>
+        <td class="harga"><?= $keuangan['kredit'] > 0 ? number_format($keuangan['kredit'], 0, ',', '.') : '-' ?></td>
+        <td class="harga"><?= number_format($saldo, 0, ',', '.') ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

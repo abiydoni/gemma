@@ -266,7 +266,8 @@ foreach($events as $e) {
   <script>
     // Print button
     document.getElementById('btnPrint').addEventListener('click', function() {
-      window.open('print/print_jadwal.php', '_blank');
+      const currentBulan = '<?= $bulan ?>';
+      window.open('print/print_jadwal.php?bulan=' + currentBulan, '_blank');
     });
   </script>
 <?php include 'footer.php'; ?> 

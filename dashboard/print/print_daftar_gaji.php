@@ -5,21 +5,49 @@ include '../../api/db.php';
 $stmt = $pdo->query("SELECT * FROM tb_profile LIMIT 1");
 $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Ambil data gaji tentor
-$stmt = $pdo->query("
-  SELECT g.*, u.nama as nama_tentor, s.nama as nama_siswa, m.nama as nama_mapel
-  FROM tb_gaji g
-  LEFT JOIN tb_user u ON g.id_tentor = u.id
-  LEFT JOIN tb_siswa s ON g.id_siswa = s.id
-  LEFT JOIN tb_mapel m ON g.id_mapel = m.id
-  ORDER BY g.tanggal DESC
+// Ambil parameter filter
+$filter_tentor = isset($_GET['tentor']) ? $_GET['tentor'] : '';
+$filter_bulan = isset($_GET['bulan']) ? $_GET['bulan'] : '';
+$filter_status = isset($_GET['status']) ? $_GET['status'] : '';
+
+// Buat query dengan filter
+$where_conditions = [];
+$params = [];
+
+if (!empty($filter_tentor)) {
+    $where_conditions[] = "gt.id_tentor = ?";
+    $params[] = $filter_tentor;
+}
+
+if (!empty($filter_bulan)) {
+    $where_conditions[] = "gt.bulan = ?";
+    $params[] = $filter_bulan;
+}
+
+if (!empty($filter_status)) {
+    $where_conditions[] = "gt.status_pembayaran = ?";
+    $params[] = $filter_status;
+}
+
+$where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "";
+
+// Ambil data gaji tentor dengan filter
+$stmt = $pdo->prepare("
+  SELECT gt.*, u.nama as nama_tentor, s.nama as nama_siswa, m.nama as nama_mapel
+  FROM tb_gaji_tentor gt
+  LEFT JOIN tb_user u ON gt.id_tentor = u.id
+  LEFT JOIN tb_siswa s ON gt.email_siswa = s.email
+  LEFT JOIN tb_mapel m ON gt.mapel = m.id
+  $where_clause
+  ORDER BY gt.created_at DESC
 ");
+$stmt->execute($params);
 $gaji_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Hitung total
 $total_gaji = 0;
 foreach($gaji_list as $gaji) {
-  $total_gaji += $gaji['total'];
+  $total_gaji += $gaji['jumlah_gaji'];
 }
 ?>
 <!DOCTYPE html>
@@ -43,7 +71,6 @@ foreach($gaji_list as $gaji) {
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -114,26 +141,53 @@ foreach($gaji_list as $gaji) {
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>LAPORAN GAJI TENTOR</h2>
+  <?php if (!empty($filter_tentor) || !empty($filter_bulan) || !empty($filter_status)): ?>
+    <p style="text-align:center;margin:0 0 12px 0;font-size:10px;color:#666;">
+      Filter: 
+      <?php 
+      $filter_info = [];
+      if (!empty($filter_tentor)) {
+        // Ambil nama tentor
+        $stmt_tentor = $pdo->prepare("SELECT nama FROM tb_user WHERE id = ?");
+        $stmt_tentor->execute([$filter_tentor]);
+        $nama_tentor = $stmt_tentor->fetchColumn();
+        $filter_info[] = "Tentor: " . ($nama_tentor ?: 'Tidak diketahui');
+      }
+      if (!empty($filter_bulan)) {
+        $filter_info[] = "Bulan: " . date('F Y', strtotime($filter_bulan . '-01'));
+      }
+      if (!empty($filter_status)) {
+        $filter_info[] = "Status: " . ucfirst($filter_status);
+      }
+      echo implode(' | ', $filter_info);
+      ?>
+    </p>
+  <?php endif; ?>
   
   <div class="summary">
     <div>Total Gaji: <?= count($gaji_list) ?></div>
-    <div>Total Pembayaran: Rp <?= number_format($total_gaji, 0, ',', '.') ?></div>
+    <div>Total Pembayaran: <?= number_format($total_gaji, 0, ',', '.') ?></div>
   </div>
   
   <table>
     <thead>
       <tr>
         <th class="no">No</th>
-        <th class="tanggal">Tanggal</th>
+        <th class="tanggal">Bulan</th>
         <th>Tentor</th>
         <th>Siswa</th>
         <th>Mapel</th>
-        <th class="harga">Jumlah Les</th>
-        <th class="harga">Gaji/Les</th>
-        <th class="harga">Total</th>
+        <th class="harga">Total Pembayaran</th>
+        <th class="harga">Presentase</th>
+        <th class="harga">Jumlah Gaji</th>
         <th class="status">Status</th>
       </tr>
     </thead>
@@ -141,14 +195,14 @@ foreach($gaji_list as $gaji) {
       <?php foreach($gaji_list as $index => $gaji): ?>
       <tr>
         <td class="no"><?= $index + 1 ?></td>
-        <td class="tanggal"><?= date('d/m/Y', strtotime($gaji['tanggal'])) ?></td>
-        <td><?= htmlspecialchars($gaji['nama_tentor']) ?></td>
-        <td><?= htmlspecialchars($gaji['nama_siswa']) ?></td>
-        <td><?= htmlspecialchars($gaji['nama_mapel']) ?></td>
-        <td class="harga"><?= $gaji['jumlah_les'] ?></td>
-        <td class="harga">Rp <?= number_format($gaji['gaji_per_les'], 0, ',', '.') ?></td>
-        <td class="harga">Rp <?= number_format($gaji['total'], 0, ',', '.') ?></td>
-        <td class="status"><?= $gaji['status'] == 1 ? 'Dibayar' : 'Belum Dibayar' ?></td>
+        <td class="tanggal"><?= $gaji['bulan'] ?></td>
+        <td><?= htmlspecialchars($gaji['nama_tentor'] ?: 'Tidak diketahui') ?></td>
+        <td><?= htmlspecialchars($gaji['nama_siswa'] ?: $gaji['email_siswa']) ?></td>
+        <td><?= htmlspecialchars($gaji['nama_mapel'] ?: 'Tidak diketahui') ?></td>
+        <td class="harga"><?= number_format($gaji['total_pembayaran'], 0, ',', '.') ?></td>
+        <td class="harga"><?= $gaji['presentase_gaji'] ?>%</td>
+        <td class="harga"><?= number_format($gaji['jumlah_gaji'], 0, ',', '.') ?></td>
+        <td class="status"><?= $gaji['status_pembayaran'] == 'dibayar' ? 'Dibayar' : 'Pending' ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

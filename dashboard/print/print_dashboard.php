@@ -8,16 +8,16 @@ $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 // Ambil statistik
 $total_siswa = $pdo->query("SELECT COUNT(*) as total FROM tb_siswa")->fetch(PDO::FETCH_ASSOC)['total'];
 $total_trx = $pdo->query("SELECT COUNT(*) as total FROM tb_trx")->fetch(PDO::FETCH_ASSOC)['total'];
-$total_pendapatan = $pdo->query("SELECT SUM(total) as total FROM tb_trx WHERE status = 1")->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
+$total_pendapatan = $pdo->query("SELECT SUM(bayar) as total FROM tb_trx WHERE status = 1")->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
 $total_tentor = $pdo->query("SELECT COUNT(*) as total FROM tb_user WHERE role = 'tentor'")->fetch(PDO::FETCH_ASSOC)['total'];
 
 // Ambil data transaksi terbaru
 $stmt = $pdo->query("
   SELECT t.*, s.nama as nama_siswa, p.nama as nama_paket, m.nama as nama_mapel
   FROM tb_trx t
-  LEFT JOIN tb_siswa s ON t.id_siswa = s.id
-  LEFT JOIN tb_paket p ON t.id_paket = p.id
-  LEFT JOIN tb_mapel m ON t.id_mapel = m.id
+  LEFT JOIN tb_siswa s ON t.email = s.email
+  LEFT JOIN tb_paket p ON t.paket = p.kode
+  LEFT JOIN tb_mapel m ON t.mapel = m.kode
   ORDER BY t.tanggal DESC
   LIMIT 10
 ");
@@ -44,7 +44,6 @@ $trx_terbaru = $stmt->fetchAll(PDO::FETCH_ASSOC);
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -131,7 +130,12 @@ $trx_terbaru = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>LAPORAN DASHBOARD</h2>
   
@@ -175,7 +179,7 @@ $trx_terbaru = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td><?= htmlspecialchars($trx['nama_siswa']) ?></td>
         <td><?= htmlspecialchars($trx['nama_paket']) ?></td>
         <td><?= htmlspecialchars($trx['nama_mapel']) ?></td>
-        <td class="harga">Rp <?= number_format($trx['total'], 0, ',', '.') ?></td>
+        <td class="harga">Rp <?= number_format($trx['bayar'], 0, ',', '.') ?></td>
         <td class="status"><?= $trx['status'] == 1 ? 'Lunas' : 'Belum Lunas' ?></td>
       </tr>
       <?php endforeach; ?>

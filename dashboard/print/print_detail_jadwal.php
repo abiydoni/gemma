@@ -5,21 +5,24 @@ include '../../api/db.php';
 $stmt = $pdo->query("SELECT * FROM tb_profile LIMIT 1");
 $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Ambil data setting gaji
-$stmt = $pdo->query("
-  SELECT sg.*, m.nama as nama_mapel
-  FROM tb_setting_gaji sg
-  LEFT JOIN tb_mapel m ON sg.mapel = m.id
-  ORDER BY sg.id
-");
-$setting_gaji_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Ambil data dari parameter
+$data = isset($_GET['data']) ? json_decode(urldecode($_GET['data']), true) : null;
+
+if (!$data) {
+    echo "Data tidak ditemukan";
+    exit;
+}
+
+$jadwal = $data['jadwal'] ?? [];
+$mapel = $data['mapel'] ?? '';
+$siswa = $data['siswa'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Setting Gaji - Print</title>
+  <title>Detail Jadwal Les - Print</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -58,6 +61,25 @@ $setting_gaji_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       margin: 0 0 20px 0;
       font-size: 16px;
     }
+    .siswa-info {
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+    .siswa-item {
+      margin-bottom: 8px;
+      display: flex;
+    }
+    .siswa-label {
+      font-weight: bold;
+      width: 120px;
+      color: #333;
+    }
+    .siswa-value {
+      flex: 1;
+      color: #666;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -76,8 +98,14 @@ $setting_gaji_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       width: 50px;
       text-align: center;
     }
-    .presentase {
-      text-align: center;
+    .tanggal {
+      width: 100px;
+    }
+    .jam {
+      width: 80px;
+    }
+    .mapel {
+      width: 150px;
     }
     @media print {
       body {
@@ -100,28 +128,52 @@ $setting_gaji_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
     </div>
   </div>
-  <h2>SETTING GAJI TENTOR</h2>
+  <h2>DETAIL JADWAL LES</h2>
   
+  <div class="siswa-info">
+    <div class="siswa-item">
+      <div class="siswa-label">Nama Siswa:</div>
+      <div class="siswa-value"><?= htmlspecialchars($siswa['nama'] ?? '-') ?></div>
+    </div>
+    <div class="siswa-item">
+      <div class="siswa-label">Email:</div>
+      <div class="siswa-value"><?= htmlspecialchars($siswa['email'] ?? '-') ?></div>
+    </div>
+    <div class="siswa-item">
+      <div class="siswa-label">Mata Pelajaran:</div>
+      <div class="siswa-value"><?= htmlspecialchars($mapel) ?></div>
+    </div>
+    <div class="siswa-item">
+      <div class="siswa-label">Jumlah Jadwal:</div>
+      <div class="siswa-value"><?= count($jadwal) ?> sesi</div>
+    </div>
+  </div>
+  
+  <h3 style="margin: 20px 0 10px 0; font-size: 14px;">Jadwal Les</h3>
   <table>
     <thead>
       <tr>
         <th class="no">No</th>
-        <th>Mata Pelajaran</th>
-        <th class="presentase">Presentase Gaji (%)</th>
-        <th>Keterangan</th>
+        <th class="tanggal">Tanggal</th>
+        <th class="jam">Jam</th>
+        <th class="mapel">Mata Pelajaran</th>
       </tr>
     </thead>
     <tbody>
-      <?php foreach($setting_gaji_list as $index => $setting): ?>
+      <?php foreach($jadwal as $index => $j): ?>
       <tr>
         <td class="no"><?= $index + 1 ?></td>
-        <td><?= htmlspecialchars($setting['nama_mapel']) ?></td>
-        <td class="presentase"><?= $setting['presentase_gaji'] ?>%</td>
-        <td><?= htmlspecialchars($setting['keterangan'] ?? '-') ?></td>
+        <td class="tanggal"><?= date('d/m/Y', strtotime($j['tanggal'])) ?></td>
+        <td class="jam"><?= htmlspecialchars($j['jam_trx']) ?></td>
+        <td class="mapel"><?= htmlspecialchars($mapel) ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
+  
+  <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #666;">
+    <p>Dicetak pada: <?= date('d/m/Y H:i') ?></p>
+  </div>
   
   <script>
     window.onload = function() {

@@ -9,11 +9,13 @@ $profil = $stmt->fetch(PDO::FETCH_ASSOC);
 $stmt = $pdo->query("
   SELECT mt.*, m.nama as nama_mapel, u.nama as nama_tentor
   FROM tb_mapel_tentor mt
-  LEFT JOIN tb_mapel m ON mt.id_mapel = m.id
+  LEFT JOIN tb_mapel m ON mt.mapel = m.id AND m.status = 1
   LEFT JOIN tb_user u ON mt.id_tentor = u.id
-  ORDER BY u.nama, m.nama
+  ORDER BY m.nama, u.nama
 ");
 $mapel_tentor_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -36,7 +38,6 @@ $mapel_tentor_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -95,7 +96,12 @@ $mapel_tentor_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>DATA MAPEL TENTOR</h2>
   
@@ -103,18 +109,18 @@ $mapel_tentor_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <thead>
       <tr>
         <th class="no">No</th>
+        <th>Nama Mapel</th>
         <th>Tentor</th>
-        <th>Mapel</th>
-        <th class="status">Status</th>
+        <th>Tanggal Dibuat</th>
       </tr>
     </thead>
     <tbody>
       <?php foreach($mapel_tentor_list as $index => $mapel_tentor): ?>
       <tr>
         <td class="no"><?= $index + 1 ?></td>
-        <td><?= htmlspecialchars($mapel_tentor['nama_tentor']) ?></td>
-        <td><?= htmlspecialchars($mapel_tentor['nama_mapel']) ?></td>
-        <td class="status"><?= $mapel_tentor['status'] == 1 ? 'Aktif' : 'Nonaktif' ?></td>
+        <td><?= htmlspecialchars($mapel_tentor['nama_mapel'] ?: 'Mapel tidak ditemukan') ?></td>
+        <td><?= htmlspecialchars($mapel_tentor['nama_tentor'] ?: 'Tidak diketahui') ?></td>
+        <td><?= date('d/m/Y H:i', strtotime($mapel_tentor['created_at'])) ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

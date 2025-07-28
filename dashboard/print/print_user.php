@@ -30,7 +30,6 @@ $user_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
       padding-bottom: 10px;
     }
     .kop img {
-      width: 60px;
       height: 60px;
       margin-right: 15px;
     }
@@ -89,7 +88,12 @@ $user_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
   <div class="kop">
-    <?php include 'kop_surat.php'; ?>
+    <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
+    <div class="info">
+      <div class="nama"><?= htmlspecialchars($profil['nama']) ?></div>
+      <div class="alamat"><?= htmlspecialchars($profil['alamat']) ?></div>
+      <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
+    </div>
   </div>
   <h2>DATA USER</h2>
   
@@ -100,7 +104,6 @@ $user_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <th>Nama</th>
         <th>Email</th>
         <th>Role</th>
-        <th>Status</th>
       </tr>
     </thead>
     <tbody>
@@ -110,7 +113,6 @@ $user_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td><?= htmlspecialchars($user['nama']) ?></td>
         <td><?= htmlspecialchars($user['email']) ?></td>
         <td class="role"><?= htmlspecialchars($user['role']) ?></td>
-        <td class="role"><?= $user['status'] == 1 ? 'Aktif' : 'Nonaktif' ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

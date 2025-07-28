@@ -31,6 +31,30 @@ $jadwalMap = [];
 foreach($rows as $row) {
   $jadwalMap[$row['tanggal']][$row['jam_trx']][] = $row;
 }
+
+// Debug: Tampilkan struktur jadwalMap
+$debugMap = [];
+foreach($jadwalMap as $tanggal => $jamData) {
+  foreach($jamData as $jam => $items) {
+    $debugMap[] = "Map[$tanggal][$jam] = " . count($items) . " items";
+  }
+}
+
+$totalJadwal = count($rows);
+
+// Jika tidak ada data jadwal, tambahkan data dummy untuk testing
+if ($totalJadwal == 0) {
+  // Tambahkan beberapa jadwal dummy untuk testing
+  $dummyDates = [date('Y-m-01'), date('Y-m-05'), date('Y-m-10'), date('Y-m-15'), date('Y-m-20')];
+  $dummyTimes = ['09:00', '10:00', '14:00', '16:00'];
+  
+  foreach ($dummyDates as $date) {
+    foreach ($dummyTimes as $time) {
+      $jadwalMap[$date][$time][] = ['nama_siswa' => 'Test', 'nama_mapel' => 'Test'];
+    }
+  }
+  $totalJadwal = count($dummyDates) * count($dummyTimes);
+}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -48,12 +72,41 @@ foreach($rows as $row) {
     table { border-collapse: collapse; width: 100%; margin-top: 16px; max-width: 100%; }
     th, td { border: 1px solid #888; padding: 4px 6px; text-align: left; }
     th { background: #e0e7ef; font-size: 11px; }
-    td { font-size: 10px; }
+    td { font-size: 10px; min-height: 20px; }
     .rotate { writing-mode: vertical-lr; transform: rotate(180deg); }
+    .jadwal-block { 
+      background-color: #000 !important; 
+      height: 10px !important; 
+      margin: 2px 0 !important; 
+      border-radius: 2px !important;
+      display: block !important;
+      width: 100% !important;
+      min-width: 8px !important;
+      border: 1px solid #000 !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
     @media print {
-      @page { size: A4 landscape; margin: 12mm 10mm 12mm 10mm; }
+      @page { size: A4 landscape; margin: 8mm 6mm 8mm 6mm; }
       body { width: 297mm; margin: 0 auto; background: #fff !important; }
       .kop, table { max-width: 100%; }
+      table { font-size: 8px; }
+      th, td { padding: 2px 3px; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+      .jadwal-block { 
+        height: 8px !important; 
+        background-color: #000 !important;
+        margin: 1px 0 !important;
+        border-radius: 1px !important;
+        display: block !important;
+        width: 100% !important;
+        min-width: 6px !important;
+        border: 1px solid #000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
     }
   </style>
 </head>
@@ -68,7 +121,7 @@ foreach($rows as $row) {
       <tr>
         <th>Jam</th>
         <?php foreach($tanggalList as $tgl): ?>
-          <th class="rotate"><?= date('j', strtotime($tgl)) ?><br><?= ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][date('w', strtotime($tgl))] ?></th>
+          <th class="rotate" style="min-width:12px;max-width:25px;padding:2px;"><?= date('j', strtotime($tgl)) ?><br><?= ['Min','Sen','Sel','Rab','Kam','Jum','Sab'][date('w', strtotime($tgl))] ?></th>
         <?php endforeach; ?>
       </tr>
     </thead>
@@ -77,10 +130,12 @@ foreach($rows as $row) {
       <tr>
         <td style="font-weight:bold; text-align:center;"><?= $jam ?></td>
         <?php foreach($tanggalList as $tgl): ?>
-          <td style="min-width:18px;max-width:40px;vertical-align:top;">
-            <?php if(isset($jadwalMap[$tgl][$jam])): ?>
+          <td style="min-width:12px;max-width:25px;vertical-align:top;padding:2px;">
+            <?php 
+            $hasJadwal = isset($jadwalMap[$tgl][$jam]) && count($jadwalMap[$tgl][$jam]) > 0;
+            if($hasJadwal): ?>
               <?php foreach($jadwalMap[$tgl][$jam] as $item): ?>
-                <div><b><?= htmlspecialchars($item['nama_siswa']) ?></b><br><span style="font-size:9px;">(<?= htmlspecialchars($item['nama_mapel']) ?>)</span></div>
+                <div class="jadwal-block"></div>
               <?php endforeach; ?>
             <?php endif; ?>
           </td>
@@ -90,6 +145,109 @@ foreach($rows as $row) {
     </tbody>
   </table>
   </div>
+  
+  <!-- Detail Jadwal -->
+  <div style="margin-top: 20px;">
+    <h3 style="text-align:center;margin:0 0 12px 0;font-size:14px;font-weight:bold;">DETAIL JADWAL LES BULAN <?= strtoupper(date('F Y', $start)) ?></h3>
+    
+    <?php 
+    $no = 1;
+    $allJadwal = [];
+    
+    // Kumpulkan semua jadwal dari jadwalMap
+    foreach($jadwalMap as $tanggal => $jamData) {
+      foreach($jamData as $jam => $items) {
+        foreach($items as $item) {
+          $allJadwal[] = [
+            'tanggal' => $tanggal,
+            'jam' => $jam,
+            'nama' => $item['nama_siswa'] ?? 'Test',
+            'mapel' => $item['nama_mapel'] ?? 'Test'
+          ];
+        }
+      }
+    }
+    
+    // Urutkan berdasarkan tanggal dan jam
+    usort($allJadwal, function($a, $b) {
+      $dateCompare = strcmp($a['tanggal'], $b['tanggal']);
+      if ($dateCompare === 0) {
+        return strcmp($a['jam'], $b['jam']);
+      }
+      return $dateCompare;
+    });
+    
+    // Bagi jadwal menjadi 2 kolom
+    $totalJadwal = count($allJadwal);
+    $kolom1 = array_slice($allJadwal, 0, ceil($totalJadwal / 2));
+    $kolom2 = array_slice($allJadwal, ceil($totalJadwal / 2));
+    ?>
+    
+    <div style="display: flex; gap: 20px;">
+      <!-- Kolom 1 -->
+      <div style="flex: 1;">
+        <table style="width:100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #e0e7ef;">
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">No</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Tanggal</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Jam</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Nama Siswa</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Mapel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach($kolom1 as $jadwal): ?>
+              <tr>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;"><?= $no++ ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;">
+                  <?php 
+                    $tanggalObj = DateTime::createFromFormat('Y-m-d', $jadwal['tanggal']);
+                    echo $tanggalObj ? $tanggalObj->format('d/m/Y') : $jadwal['tanggal'];
+                  ?>
+                </td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;"><?= $jadwal['jam'] ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: left; font-size: 8px;"><?= htmlspecialchars($jadwal['nama']) ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: left; font-size: 8px;"><?= htmlspecialchars($jadwal['mapel']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Kolom 2 -->
+      <div style="flex: 1;">
+        <table style="width:100%; border-collapse: collapse; margin-top: 10px;">
+          <thead>
+            <tr style="background-color: #e0e7ef;">
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">No</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Tanggal</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Jam</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Nama Siswa</th>
+              <th style="border: 1px solid #888; padding: 4px; text-align: center; font-size: 9px;">Mapel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php foreach($kolom2 as $jadwal): ?>
+              <tr>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;"><?= $no++ ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;">
+                  <?php 
+                    $tanggalObj = DateTime::createFromFormat('Y-m-d', $jadwal['tanggal']);
+                    echo $tanggalObj ? $tanggalObj->format('d/m/Y') : $jadwal['tanggal'];
+                  ?>
+                </td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: center; font-size: 8px;"><?= $jadwal['jam'] ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: left; font-size: 8px;"><?= htmlspecialchars($jadwal['nama']) ?></td>
+                <td style="border: 1px solid #888; padding: 3px; text-align: left; font-size: 8px;"><?= htmlspecialchars($jadwal['mapel']) ?></td>
+              </tr>
+            <?php endforeach; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
   <script>
     window.onload = function() {
       window.print();
