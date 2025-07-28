@@ -5,6 +5,7 @@ include 'header.php';
   <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-2">
     <i class="fa fa-user-cog text-blue-600"></i> Update Profile
   </h1>
+  <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
 </div>
 <div class="max-w-full mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-blue-100 mt-8">
   <form id="form-profile" enctype="multipart/form-data" autocomplete="off">
@@ -76,6 +77,11 @@ function loadProfile() {
 
 $(document).ready(function(){
   loadProfile();
+
+  // Print button
+  $('#btnPrint').click(function(){
+    window.open('print/print_profile.php', '_blank');
+  });
 
   // Klik gambar untuk upload logo1
   $('#preview-logo1').on('click', function(){

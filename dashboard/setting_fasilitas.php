@@ -12,6 +12,7 @@ $data_fasilitas = $result->fetchAll(PDO::FETCH_ASSOC);
   <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-2">
     <i class="fa fa-cogs text-blue-600"></i> Setting Fasilitas
   </h1>
+  <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
 </div>
 <div class="max-w-5xl mx-auto">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -97,6 +98,11 @@ document.querySelectorAll('.fasilitas-form').forEach(form => {
             color: '#b91c1c',
         }));
     });
+});
+
+// Print button
+document.getElementById('btnPrint').addEventListener('click', function() {
+    window.open('print/print_setting_fasilitas.php', '_blank');
 });
 </script>
 <?php include 'footer.php'; ?> 

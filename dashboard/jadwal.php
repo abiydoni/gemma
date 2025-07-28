@@ -91,10 +91,11 @@ foreach($events as $e) {
   $usedMapel[$e['mapel']] = $mapelList[$e['mapel']] ?? 'bg-blue-500 text-white';
 }
 ?>
-<div class="flex items-center mb-6">
+<div class="flex items-center justify-between mb-6">
   <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-3">
     <i class="fa-solid fa-calendar-days text-blue-600"></i> Jadwal Les Harian Bulan <?= date('F Y', $start) ?>
   </h1>
+  <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
 </div>
   <div class="max-w-full overflow-x-auto bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-blue-100 relative">
     <div class="flex items-center justify-between gap-2 mb-2">
@@ -261,4 +262,11 @@ foreach($events as $e) {
     </div>
     <!-- Hapus form paginasi di bawah tabel di sini -->
   </div>
+
+  <script>
+    // Print button
+    document.getElementById('btnPrint').addEventListener('click', function() {
+      window.open('print/print_jadwal.php', '_blank');
+    });
+  </script>
 <?php include 'footer.php'; ?> 

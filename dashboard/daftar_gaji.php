@@ -11,9 +11,12 @@ try {
 ?>
 
 <div class="w-full px-2 sm:px-4 py-6">
-    <div class="mb-6">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Daftar Gaji Tentor</h1>
-        <p class="text-gray-600 text-sm">Kelola dan lihat daftar gaji tentor berdasarkan pembayaran siswa</p>
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Daftar Gaji Tentor</h1>
+            <p class="text-gray-600 text-sm">Kelola dan lihat daftar gaji tentor berdasarkan pembayaran siswa</p>
+        </div>
+        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
     </div>
 
     <!-- Tombol Hitung Gaji -->
@@ -1008,9 +1011,12 @@ document.getElementById('btn-refresh').addEventListener('click', function() {
 
 // Load data saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
-
-    
     loadGajiTentor();
+    
+    // Print button
+    document.getElementById('btnPrint').addEventListener('click', function() {
+        window.open('print/print_daftar_gaji.php', '_blank');
+    });
 });
 
 

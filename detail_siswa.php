@@ -65,11 +65,17 @@ try {
     
     <!-- Header dengan Foto dan Data Siswa -->
     <div class="text-center mb-8">
-      <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-lg mx-auto mb-4">
-      <div class="text-3xl font-extrabold text-blue-700 flex items-center justify-center gap-2">
-        <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
+      <div class="flex justify-between items-center mb-4">
+        <div></div>
+        <div>
+          <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-lg mx-auto mb-4">
+          <div class="text-3xl font-extrabold text-blue-700 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
+          </div>
+          <p class="text-gray-600 mt-2"><?= htmlspecialchars($siswa['email']) ?></p>
+        </div>
+        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
       </div>
-      <p class="text-gray-600 mt-2"><?= htmlspecialchars($siswa['email']) ?></p>
     </div>
 
     <!-- Tab Navigation -->
@@ -1501,5 +1507,11 @@ window.addEventListener('load', function() {
   background: #4b5563 !important;
   transform: translateY(-1px) !important;
 }
+
+// Print button
+document.getElementById('btnPrint').addEventListener('click', function() {
+    const id = <?= $siswa['id'] ?>;
+    window.open(`dashboard/print/print_detail_siswa.php?id=${id}`, '_blank');
+});
 </style>
 <?php include 'includes/footer.php'; ?> 

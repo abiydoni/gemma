@@ -197,6 +197,13 @@ try {
 ?>
 
 <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Dashboard</h1>
+            <p class="text-gray-600">Selamat datang di sistem manajemen bimbingan belajar</p>
+        </div>
+        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
+    </div>
     <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 mb-6 flex items-center gap-3 drop-shadow animate-fadeInUp">
         <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 shadow-xl animate-pulse">
             <i class="fa-solid fa-gauge-high text-white text-xl"></i>
@@ -829,6 +836,11 @@ document.querySelectorAll('.bg-white.p-6.rounded-2xl').forEach(card => {
 // Hide loading after page load
 window.addEventListener('load', function() {
     hideLoading();
+});
+
+// Print button
+document.getElementById('btnPrint').addEventListener('click', function() {
+    window.open('print/print_dashboard.php', '_blank');
 });
 </script>
 

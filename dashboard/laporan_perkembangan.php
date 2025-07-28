@@ -38,9 +38,12 @@ try {
 ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Laporan Perkembangan Siswa</h1>
-        <p class="text-gray-600">Kelola dan lihat perkembangan siswa untuk semua mata pelajaran</p>
+    <div class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Laporan Perkembangan Siswa</h1>
+            <p class="text-gray-600">Kelola dan lihat perkembangan siswa untuk semua mata pelajaran</p>
+        </div>
+        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
     </div>
 
     <!-- Filter dan Pencarian -->
@@ -600,6 +603,11 @@ $('#btn-tambah-laporan').on('click', function() {
 // Load data saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
     loadLaporan();
+    
+    // Print button
+    document.getElementById('btnPrint').addEventListener('click', function() {
+        window.open('print/print_laporan_perkembangan.php', '_blank');
+    });
 });
 
 // Set tanggal hari ini

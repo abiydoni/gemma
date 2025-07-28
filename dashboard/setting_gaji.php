@@ -11,9 +11,12 @@ try {
 ?>
 
 <div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Setting Presentase Gaji Tentor</h1>
-        <p class="text-gray-600">Atur presentase gaji tentor berdasarkan mata pelajaran</p>
+    <div class="mb-8 flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Setting Presentase Gaji Tentor</h1>
+            <p class="text-gray-600">Atur presentase gaji tentor berdasarkan mata pelajaran</p>
+        </div>
+        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
     </div>
 
     <!-- Form Setting Gaji -->
@@ -256,6 +259,11 @@ function deleteSetting(id) {
 // Load data saat halaman dimuat
 document.addEventListener('DOMContentLoaded', function() {
     loadSettingGaji();
+    
+    // Print button
+    document.getElementById('btnPrint').addEventListener('click', function() {
+        window.open('print/print_setting_gaji.php', '_blank');
+    });
 });
 
 // Init sample data

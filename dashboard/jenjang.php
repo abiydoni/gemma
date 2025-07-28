@@ -5,7 +5,10 @@ include 'header.php';
   <h1 class="text-2xl md:text-3xl font-extrabold text-blue-800 flex items-center gap-2">
     <i class="fa fa-layer-group text-blue-600"></i> Setting Jenjang
   </h1>
-  <button id="btn-tambah" class="px-3 py-1 rounded bg-blue-600 text-white font-bold shadow hover:bg-blue-700"><i class="fa fa-plus"></i> Tambah Jenjang</button>
+  <div class="flex gap-2">
+    <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
+    <button id="btn-tambah" class="px-3 py-1 rounded bg-blue-600 text-white font-bold shadow hover:bg-blue-700"><i class="fa fa-plus"></i> Tambah Jenjang</button>
+  </div>
 </div>
 <div class="max-w-full mx-auto bg-white rounded-3xl shadow-2xl p-4 md:p-8 border border-blue-100 mt-6">
   <div class="overflow-x-auto">
@@ -74,6 +77,11 @@ function loadJenjang() {
 
 $(document).ready(function(){
   loadJenjang();
+
+  // Print button
+  $('#btnPrint').click(function(){
+    window.open('print/print_jenjang.php', '_blank');
+  });
 
   $('#btn-tambah').click(function(){
     $('#form-jenjang')[0].reset();

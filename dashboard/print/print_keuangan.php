@@ -1,0 +1,165 @@
+<?php
+include '../../api/db.php';
+
+// Ambil data profil
+$stmt = $pdo->query("SELECT * FROM tb_profile LIMIT 1");
+$profil = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Ambil data transaksi
+$stmt = $pdo->query("
+  SELECT t.*, s.nama as nama_siswa, p.nama as nama_paket, m.nama as nama_mapel, j.nama as nama_jenjang
+  FROM tb_trx t
+  LEFT JOIN tb_siswa s ON t.id_siswa = s.id
+  LEFT JOIN tb_paket p ON t.id_paket = p.id
+  LEFT JOIN tb_mapel m ON t.id_mapel = m.id
+  LEFT JOIN tb_jenjang j ON t.id_jenjang = j.id
+  ORDER BY t.tanggal DESC
+");
+$trx_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Hitung total
+$total_pendapatan = 0;
+foreach($trx_list as $trx) {
+  $total_pendapatan += $trx['total'];
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Keuangan - Print</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      font-size: 12px;
+    }
+    .kop {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 10px;
+    }
+    .kop img {
+      width: 60px;
+      height: 60px;
+      margin-right: 15px;
+    }
+    .kop .info {
+      flex: 1;
+    }
+    .kop .nama {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .kop .alamat {
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+    .kop .kontak {
+      font-size: 11px;
+    }
+    h2 {
+      text-align: center;
+      margin: 0 0 20px 0;
+      font-size: 16px;
+    }
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    .no {
+      width: 50px;
+      text-align: center;
+    }
+    .tanggal {
+      width: 100px;
+    }
+    .harga {
+      text-align: right;
+    }
+    .status {
+      text-align: center;
+    }
+    @media print {
+      body {
+        margin: 0;
+        padding: 15px;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 1cm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="kop">
+    <?php include 'kop_surat.php'; ?>
+  </div>
+  <h2>LAPORAN KEUANGAN</h2>
+  
+  <div class="summary">
+    <div>Total Transaksi: <?= count($trx_list) ?></div>
+    <div>Total Pendapatan: Rp <?= number_format($total_pendapatan, 0, ',', '.') ?></div>
+  </div>
+  
+  <table>
+    <thead>
+      <tr>
+        <th class="no">No</th>
+        <th class="tanggal">Tanggal</th>
+        <th>Siswa</th>
+        <th>Paket</th>
+        <th>Mapel</th>
+        <th>Jenjang</th>
+        <th class="harga">Total</th>
+        <th class="status">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($trx_list as $index => $trx): ?>
+      <tr>
+        <td class="no"><?= $index + 1 ?></td>
+        <td class="tanggal"><?= date('d/m/Y', strtotime($trx['tanggal'])) ?></td>
+        <td><?= htmlspecialchars($trx['nama_siswa']) ?></td>
+        <td><?= htmlspecialchars($trx['nama_paket']) ?></td>
+        <td><?= htmlspecialchars($trx['nama_mapel']) ?></td>
+        <td><?= htmlspecialchars($trx['nama_jenjang']) ?></td>
+        <td class="harga">Rp <?= number_format($trx['total'], 0, ',', '.') ?></td>
+        <td class="status"><?= $trx['status'] == 1 ? 'Lunas' : 'Belum Lunas' ?></td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+  
+  <script>
+    window.onload = function() {
+      window.print();
+      window.onafterprint = function() {
+        window.close();
+      }
+    }
+  </script>
+</body>
+</html> 
