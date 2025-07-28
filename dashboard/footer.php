@@ -74,9 +74,9 @@
   </script>
   <!-- Modal User (Edit Profil) -->
 <div id="modal-user" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md relative">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-96 max-w-sm mx-4 relative">
     <button id="close-modal-user" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl"><i class="fa fa-xmark"></i></button>
-    <h2 class="text-lg font-bold text-blue-700 mb-4" id="modal-title">Edit Profil</h2>
+    <h2 class="text-lg font-bold text-blue-700 mb-4" id="modal-title">Edit Profil User</h2>
     <form id="form-user" autocomplete="off">
       <input type="hidden" name="id" id="user-id">
       <div class="mb-2">
@@ -108,7 +108,7 @@
 </div>
 <!-- Modal Ganti Password -->
 <div id="modal-password" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xs relative">
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-80 max-w-xs mx-4 relative">
     <button id="close-modal-password" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl"><i class="fa fa-xmark"></i></button>
     <h2 class="text-lg font-bold text-blue-700 mb-4">Ganti Password</h2>
     <form id="form-password" autocomplete="off">

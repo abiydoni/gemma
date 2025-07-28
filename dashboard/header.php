@@ -40,6 +40,103 @@ try {
     .animate-fadeInUp { animation: fadeInUp 0.8s cubic-bezier(.4,2,.3,1) both; }
     .sidebar-active { background: linear-gradient(90deg, #2563eb22 60%, #fff0 100%); color: #fff; font-weight: bold; }
     
+    /* Tambahan animasi untuk dashboard */
+    @keyframes slideInLeft { 
+      from { opacity:0; transform: translateX(-30px); } 
+      to { opacity:1; transform: none; } 
+    }
+    @keyframes slideInRight { 
+      from { opacity:0; transform: translateX(30px); } 
+      to { opacity:1; transform: none; } 
+    }
+    @keyframes pulse { 
+      0%, 100% { opacity: 1; } 
+      50% { opacity: 0.5; } 
+    }
+    @keyframes bounce { 
+      0%, 20%, 53%, 80%, 100% { transform: translate3d(0,0,0); } 
+      40%, 43% { transform: translate3d(0,-30px,0); } 
+      70% { transform: translate3d(0,-15px,0); } 
+      90% { transform: translate3d(0,-4px,0); } 
+    }
+    
+    .animate-slideInLeft { animation: slideInLeft 0.6s ease-out both; }
+    .animate-slideInRight { animation: slideInRight 0.6s ease-out both; }
+    .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    .animate-bounce { animation: bounce 1s infinite; }
+    
+    /* Hover effects */
+    .hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+    
+    /* Gradient text */
+    .gradient-text { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    /* Custom scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    
+    /* Loading animation */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin { animation: spin 1s linear infinite; }
+    
+    /* Notification animation */
+    @keyframes slideInDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-slideInDown { animation: slideInDown 0.3s ease-out; }
+    
+    /* Card hover effects */
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { 
+      transform: translateY(-2px) scale(1.02); 
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    /* Progress bar animation */
+    @keyframes progressFill {
+      from { width: 0%; }
+      to { width: var(--progress-width); }
+    }
+    .progress-animate { animation: progressFill 1s ease-out; }
+    
+    /* Glow effect */
+    .glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+    .glow:hover { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+    
+    /* Responsive text */
+    @media (max-width: 640px) {
+      .text-responsive { font-size: 0.875rem; }
+    }
+    
+    /* Dark mode support */
+    @media (prefers-color-scheme: dark) {
+      .dark-mode-auto { 
+        background-color: #1f2937; 
+        color: #f9fafb; 
+      }
+    }
+    
 
   </style>
 </head>
@@ -113,19 +210,77 @@ try {
     <div class="flex-1 flex flex-col min-h-0 ml-0 md:ml-64">
       <!-- Navbar User Info -->
       <nav class="w-full flex items-center justify-end px-8 py-4 bg-white/80 shadow-sm relative z-10">
-        <!-- Dropdown User di Navbar -->
+        <!-- User Info di Navbar -->
         <div class="relative inline-block text-left float-right mr-4 mt-2">
           <button id="dropdownUserBtn" class="flex items-center gap-2 px-3 py-2 rounded-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-bold focus:outline-none">
             <img src="../assets/img/profile/default.png" class="w-8 h-8 rounded-full border-2 border-blue-300" alt="User">
             <span><?= htmlspecialchars($_SESSION['user_nama'] ?? 'User') ?></span>
             <i class="fa fa-chevron-down"></i>
           </button>
-          <div id="dropdownUserMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg z-50 border border-blue-100 overflow-hidden">
-            <a href="#" id="menu-edit-profil" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-user-edit"></i> Edit Profil</a>
-            <a href="#" id="menu-ubah-password" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-key"></i> Ubah Password</a>
-            <button onclick="logout()" class="w-full text-left flex items-center gap-2 px-5 py-3 text-red-600 hover:bg-red-50 font-semibold"><i class="fa fa-sign-out-alt"></i> Logout</button>
-          </div>
         </div>
       </nav>
+
+      <!-- Dropdown Menu di luar navbar -->
+      <div id="dropdownUserMenu" class="hidden fixed top-20 right-4 z-[9999] w-52 bg-white rounded-xl shadow-lg border border-blue-100 overflow-hidden">
+        <a href="#" id="menu-edit-profil" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-user-edit"></i> Edit Profil</a>
+        <a href="#" id="menu-ubah-password" class="flex items-center gap-2 px-5 py-3 text-blue-700 hover:bg-blue-50 font-semibold border-b"><i class="fa fa-key"></i> Ubah Password</a>
+        <button onclick="logout()" class="w-full text-left flex items-center gap-2 px-5 py-3 text-red-600 hover:bg-red-50 font-semibold"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+
+
+
+      <!-- Script untuk dropdown user -->
+      <script>
+      // Dropdown User - Script sederhana dan langsung
+      document.addEventListener('DOMContentLoaded', function() {
+        const dropdownBtn = document.getElementById('dropdownUserBtn');
+        const dropdownMenu = document.getElementById('dropdownUserMenu');
+        
+        if (dropdownBtn && dropdownMenu) {
+          // Toggle dropdown saat tombol diklik
+          dropdownBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+          };
+          
+          // Tutup dropdown saat klik di luar
+          document.onclick = function(e) {
+            if (!dropdownBtn.contains(e.target)) {
+              dropdownMenu.classList.add('hidden');
+            }
+          };
+          
+
+          
+          // Edit Profil - menggunakan modal dari footer.php
+          const btnEditProfil = document.getElementById('menu-edit-profil');
+          if (btnEditProfil) {
+            btnEditProfil.onclick = function(e) {
+              e.preventDefault();
+              // Isi data user ke modal dan tampilkan
+              $('#user-email').val('<?= htmlspecialchars($_SESSION['user_email'] ?? '') ?>');
+              $('#user-nama').val('<?= htmlspecialchars($_SESSION['user_nama'] ?? '') ?>');
+              $('#user-hp').val('<?= htmlspecialchars($_SESSION['user_hp'] ?? '') ?>');
+              $('#user-role').val('<?= htmlspecialchars($_SESSION['user_role'] ?? '') ?>');
+              $('#user-id').val('<?= htmlspecialchars($_SESSION['user_id'] ?? '') ?>');
+              $('#modal-user').removeClass('hidden');
+            };
+          }
+          
+          // Ubah Password - menggunakan modal dari footer.php
+          const btnUbahPassword = document.getElementById('menu-ubah-password');
+          if (btnUbahPassword) {
+            btnUbahPassword.onclick = function(e) {
+              e.preventDefault();
+              // Isi ID user ke modal password dan tampilkan
+              $('#password-id').val('<?= htmlspecialchars($_SESSION['user_id'] ?? '') ?>');
+              $('#modal-password').removeClass('hidden');
+            };
+          }
+        }
+      });
+      </script>
+
       <!-- Konten Utama -->
       <main class="flex-grow p-8 md:p-12 overflow-y-auto pt-32">
