@@ -65,17 +65,11 @@ try {
     
     <!-- Header dengan Foto dan Data Siswa -->
     <div class="text-center mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <div></div>
-        <div>
-          <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-lg mx-auto mb-4">
-          <div class="text-3xl font-extrabold text-blue-700 flex items-center justify-center gap-2">
-            <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
-          </div>
-          <p class="text-gray-600 mt-2"><?= htmlspecialchars($siswa['email']) ?></p>
-        </div>
-        <button id="btnPrint" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700"><i class="fa fa-print"></i> Print</button>
+      <img src="<?= htmlspecialchars($foto) ?>" alt="Foto Siswa" class="w-32 h-32 rounded-full object-cover border-4 border-blue-200 shadow-lg mx-auto mb-4">
+      <div class="text-3xl font-extrabold text-blue-700 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-user-graduate"></i> <?= htmlspecialchars($siswa['nama']) ?>
       </div>
+      <p class="text-gray-600 mt-2"><?= htmlspecialchars($siswa['email']) ?></p>
     </div>
 
     <!-- Tab Navigation -->
@@ -91,7 +85,12 @@ try {
     <!-- Tab Content -->
     <div id="tab-content-transaksi" class="block">
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Informasi Transaksi</h3>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800">Informasi Transaksi</h3>
+          <button id="btnPrint" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold text-sm shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center gap-2">
+            <i class="fa fa-print text-sm"></i> Print
+          </button>
+        </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Kolom Kiri: Data Siswa & Orang Tua -->
@@ -260,10 +259,15 @@ try {
 
     <div id="tab-content-perkembangan" class="hidden">
       <div class="bg-white rounded-lg shadow-md p-6">
-        <h3 class="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-chart-line text-blue-600"></i>
-          Laporan Perkembangan Siswa
-        </h3>
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-blue-600"></i>
+            Laporan Perkembangan Siswa
+          </h3>
+          <button id="btnPrintPerkembangan" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold text-sm shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center gap-2">
+            <i class="fa fa-print text-sm"></i> Print
+          </button>
+        </div>
         
         <div id="perkembangan-content">
           <div class="text-center py-8">
@@ -1043,13 +1047,104 @@ function viewPerkembanganDetail(id) {
           </div>
         `,
         width: '800px',
-        confirmButtonText: 'Tutup',
+        confirmButtonText: '',
         confirmButtonColor: '#6b7280',
         showCloseButton: true,
+        showCancelButton: false,
+        showDenyButton: false,
+        showConfirmButton: false,
         customClass: {
           container: 'swal2-custom-container',
           popup: 'swal2-custom-popup',
           content: 'swal2-custom-content'
+        },
+        html: `
+          <div class="space-y-6 text-left">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flex items-center gap-3 bg-blue-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-user-graduate text-blue-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Siswa</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.nama_siswa || data.data.email}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-green-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-book-open-reader text-green-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Mapel</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.nama_mapel}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-yellow-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-calendar-days text-yellow-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Tanggal</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.tanggal}</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 bg-purple-50 rounded-lg p-4 shadow">
+                <i class="fa-solid fa-chalkboard-user text-purple-600 text-2xl"></i>
+                <div>
+                  <div class="text-xs text-gray-500 font-semibold">Tentor</div>
+                  <div class="text-base font-bold text-gray-800">${data.data.tentor}</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-star text-yellow-500"></i> Penilaian
+              </label>
+              <div class="bg-gray-50 p-1 rounded-lg shadow">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-gray-600">
+                      <th class="py-1 px-3 text-left">No</th>
+                      <th class="py-1 px-3 text-left">Jenis Penilaian</th>
+                      <th class="py-1 px-3 text-left">Nilai</th>
+                      <th class="py-1 px-3 text-left">Keterangan</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-sm">
+                    ${(data.data.nilai || []).map((n, i) => `
+                      <tr>
+                        <td class="py-1 px-3">${i+1}</td>
+                        <td class="py-1 px-3 font-medium text-gray-700">${(data.data.jenis_penilaian && data.data.jenis_penilaian[i]) ? data.data.jenis_penilaian[i] : '-'}</td>
+                        <td class="py-1 px-3 font-bold text-blue-700 flex items-center gap-1">
+                          <i class="fa-solid fa-star text-yellow-400"></i> ${n}
+                        </td>
+                        <td class="py-1 px-3">${(data.data.keterangan && data.data.keterangan[i]) ? data.data.keterangan[i] : '-'}</td>
+                      </tr>
+                    `).join('')}
+                    <tr class="bg-gray-100 font-semibold">
+                      <td class="py-1 px-3" colspan="2">Rata-rata</td>
+                      <td class="py-1 px-3 text-blue-700">${data.data.rata_nilai ?? '-'}</td>
+                      <td class="py-1 px-3">-</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="flex justify-center gap-3 mt-6">
+              <button id="btnPrintDetailPerkembangan" class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center gap-2">
+                <i class="fa fa-print"></i> Print
+              </button>
+              <button id="btnCloseDetailPerkembangan" class="px-4 py-2 bg-gray-500 text-white font-semibold rounded-lg shadow-lg hover:bg-gray-600 transition-all duration-200">
+                Tutup
+              </button>
+            </div>
+          </div>
+        `,
+        didOpen: () => {
+          // Event listener untuk tombol print
+          document.getElementById('btnPrintDetailPerkembangan').addEventListener('click', function() {
+            const id = data.data.id;
+            window.open(`dashboard/print/print_detail_laporan.php?id=${id}`, '_blank');
+          });
+          
+          // Event listener untuk tombol tutup
+          document.getElementById('btnCloseDetailPerkembangan').addEventListener('click', function() {
+            Swal.close();
+          });
         }
       });
     } else {
@@ -1078,7 +1173,7 @@ function viewTransaksiDetail(id) {
   
   // Tampilkan loading
   Swal.fire({
-    title: 'Memuat Detail Transaksi...',
+    title: 'Memuat Invoice...',
     text: 'Mohon tunggu sebentar',
     allowOutsideClick: false,
     didOpen: () => {
@@ -1176,9 +1271,15 @@ function viewTransaksiDetail(id) {
       }
       
       Swal.fire({
-        title: '<div class="flex items-center justify-center gap-3 mb-4"><div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-receipt text-white text-xl"></i></div><span class="text-2xl font-bold text-gray-800">Detail Transaksi</span></div>',
+        title: '<div class="flex items-center justify-center gap-3 mb-4"><div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg"><i class="fa-solid fa-receipt text-white text-xl"></i></div><span class="text-2xl font-bold text-gray-800">Invoice</span></div>',
         html: `
-          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg">
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg relative">
+            ${transaksi.harga - transaksi.bayar <= 0 ? `
+            <!-- Watermark LUNAS -->
+            <div class="watermark-lunas-modal">
+              LUNAS
+            </div>
+            ` : ''}
             <!-- Transaction Info Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
               <div class="bg-white rounded-xl p-2 shadow-sm border border-blue-100">
@@ -1279,7 +1380,13 @@ function viewTransaksiDetail(id) {
           htmlContainer: 'swal2-custom-html'
         },
         html: `
-          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg">
+          <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100 shadow-lg relative">
+            ${transaksi.harga - transaksi.bayar <= 0 ? `
+            <!-- Watermark LUNAS -->
+            <div class="watermark-lunas-modal">
+              LUNAS
+            </div>
+            ` : ''}
             <!-- Transaction Info Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
               <div class="bg-white rounded-xl p-2 shadow-sm border border-blue-100">
@@ -1385,7 +1492,7 @@ function viewTransaksiDetail(id) {
     } else {
       Swal.fire(
         'Error!',
-        data.message || 'Gagal memuat detail transaksi.',
+        data.message || 'Gagal memuat invoice.',
         'error'
       );
     }
@@ -1609,6 +1716,97 @@ window.addEventListener('load', function() {
   transform: translateY(-1px) !important;
 }
 
+/* Watermark styling for modal */
+.watermark-lunas-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 6rem;
+  font-weight: bold;
+  color: rgba(34, 197, 94, 0.3);
+  z-index: 10;
+  pointer-events: none;
+  user-select: none;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Custom styling untuk tombol print di detail siswa */
+#btnPrint {
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+#btnPrint:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Custom styling untuk tombol print perkembangan */
+#btnPrintPerkembangan {
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+#btnPrintPerkembangan:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+}
+
+/* Custom styling untuk tombol print detail perkembangan di modal */
+#btnPrintDetailPerkembangan {
+  min-width: 100px;
+  transition: all 0.3s ease;
+}
+
+#btnPrintDetailPerkembangan:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+}
+
+#btnCloseDetailPerkembangan {
+  min-width: 80px;
+  transition: all 0.3s ease;
+}
+
+#btnCloseDetailPerkembangan:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+}
+
+/* Responsive design untuk tombol print */
+@media (max-width: 768px) {
+  #btnPrint {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  #btnPrintPerkembangan {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+
+}
+
+@media (max-width: 480px) {
+  #btnPrint {
+    min-width: 80px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  #btnPrintPerkembangan {
+    min-width: 80px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+
+}
+
 </style>
 
 <script>
@@ -1618,9 +1816,15 @@ document.getElementById('btnPrint').addEventListener('click', function() {
     window.open(`dashboard/print/print_detail_siswa.php?id=${id}`, '_blank');
 });
 
-// Print Detail Transaksi
+// Print button untuk laporan perkembangan
+document.getElementById('btnPrintPerkembangan').addEventListener('click', function() {
+    const id = <?= $siswa['id'] ?>;
+    window.open(`dashboard/print/print_laporan_perkembangan.php?id=${id}`, '_blank');
+});
+
+// Print Invoice
 function printDetailTransaksi(id) {
-  // Ambil data transaksi untuk print
+  // Ambil data invoice untuk print
   fetch('api/trx_proses.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1633,7 +1837,7 @@ function printDetailTransaksi(id) {
       const encodedData = encodeURIComponent(JSON.stringify(transaksi));
       window.open(`dashboard/print/print_detail_transaksi.php?data=${encodedData}`, '_blank');
     } else {
-      Swal.fire('Error!', 'Gagal memuat data untuk print', 'error');
+      Swal.fire('Error!', 'Gagal memuat data invoice untuk print', 'error');
     }
   })
   .catch(error => {

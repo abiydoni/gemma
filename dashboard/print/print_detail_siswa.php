@@ -30,18 +30,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$siswa['email']]);
 $transaksi_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Ambil data jadwal siswa
-$stmt = $pdo->prepare("
-  SELECT tt.*, t.bayar as total_les, p.nama as nama_paket, m.nama as nama_mapel
-  FROM tb_trx_tanggal tt
-  LEFT JOIN tb_trx t ON tt.id_trx = t.id
-  LEFT JOIN tb_paket p ON t.paket = p.kode
-  LEFT JOIN tb_mapel m ON t.mapel = m.kode
-  WHERE t.email = ?
-  ORDER BY tt.tanggal DESC, tt.jam_trx ASC
-");
-$stmt->execute([$siswa['email']]);
-$jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -200,32 +189,6 @@ $jadwal_list = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <td><?= htmlspecialchars($trx['nama_mapel']) ?></td>
         <td class="harga">Rp <?= number_format($trx['bayar'], 0, ',', '.') ?></td>
         <td class="status"><?= $trx['status'] == 1 ? 'Lunas' : 'Belum Lunas' ?></td>
-      </tr>
-      <?php endforeach; ?>
-    </tbody>
-  </table>
-  
-  <h3 style="margin: 20px 0 10px 0; font-size: 14px;">Data Jadwal</h3>
-  <table>
-    <thead>
-      <tr>
-        <th class="no">No</th>
-        <th class="tanggal">Tanggal</th>
-        <th>Jam</th>
-        <th>Paket</th>
-        <th>Mapel</th>
-        <th>Total Les</th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach($jadwal_list as $index => $jadwal): ?>
-      <tr>
-        <td class="no"><?= $index + 1 ?></td>
-        <td class="tanggal"><?= date('d/m/Y', strtotime($jadwal['tanggal'])) ?></td>
-        <td><?= htmlspecialchars($jadwal['jam_trx']) ?></td>
-        <td><?= htmlspecialchars($jadwal['nama_paket']) ?></td>
-        <td><?= htmlspecialchars($jadwal['nama_mapel']) ?></td>
-        <td><?= $jadwal['total_les'] ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

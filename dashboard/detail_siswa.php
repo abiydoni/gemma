@@ -72,9 +72,14 @@ try {
       <div class="bg-white rounded-2xl shadow p-6 border border-blue-100">
         <div class="flex items-center justify-between mb-4">
           <div class="text-base font-bold text-blue-700">Informasi Transaksi</div>
-          <button id="btn-tambah-trx" class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow hover:scale-105 hover:shadow-lg transition flex items-center gap-1 text-sm whitespace-nowrap">
-            <i class="fa-solid fa-plus"></i> Tambah Transaksi
-          </button>
+          <div class="flex items-center gap-2">
+            <button id="btnPrintSiswa" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold text-sm shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center gap-2">
+              <i class="fa fa-print text-sm"></i> Print
+            </button>
+            <button id="btn-tambah-trx" class="px-3 py-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold rounded-full shadow hover:scale-105 hover:shadow-lg transition flex items-center gap-1 text-sm whitespace-nowrap">
+              <i class="fa-solid fa-plus"></i> Tambah Transaksi
+            </button>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="min-w-full text-sm text-gray-700 border rounded-xl shadow">
@@ -110,7 +115,7 @@ try {
                   <td class="py-2 px-3 text-right <?= $lunas ? 'text-green-600' : 'text-red-600' ?>"><?= number_format(max($sisa,0),0,',','.') ?></td>
                   <td class="py-2 px-3">
                     <?php if (!empty($t['jadwal'])): ?>
-                      <button type="button" class="btn-detail-jadwal px-3 py-1 bg-blue-500 text-white rounded text-xs font-bold" data-jadwal='<?= json_encode($t['jadwal']) ?>' data-mapel="<?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?>">Detail</button>
+                      <button type="button" class="btn-detail-jadwal px-3 py-1 bg-blue-500 text-white rounded text-xs font-bold" data-jadwal='<?= json_encode($t['jadwal']) ?>' data-mapel="<?= htmlspecialchars($t['nama_mapel'] ?? $t['mapel']) ?>" data-id="<?= $t['id'] ?>">Detail</button>
                     <?php else: ?>
                       <span class="text-gray-400">-</span>
                     <?php endif; ?>
@@ -372,15 +377,17 @@ try {
 </div>
 <!-- Tambahkan modal detail jadwal di bawah tabel -->
 <div id="modal-detail-jadwal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 hidden">
-  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg relative">
-    <button id="close-modal-detail-jadwal" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"><i class="fa fa-xmark"></i></button>
-    <div class="text-xl font-extrabold text-blue-700 mb-4 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-calendar-days text-blue-400"></i> Detail Jadwal Les
+  <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-2xl relative">
+    <button id="close-modal-detail-jadwal" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 text-2xl z-20 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-sm hover:bg-red-50 transition-colors"><i class="fa fa-xmark"></i></button>
+    <div class="text-xl font-extrabold text-blue-700 mb-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-calendar-days text-blue-400 text-2xl"></i> Detail Jadwal Les
       </div>
-      <button id="btnPrintDetailJadwal" class="px-3 py-1 rounded bg-green-600 text-white font-bold shadow hover:bg-green-700">
-        <i class="fa fa-print"></i> Print
-      </button>
+      <div class="flex items-center gap-3">
+        <button id="btnPrintDetailJadwal" class="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold text-sm shadow-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 flex items-center gap-2">
+          <i class="fa fa-print text-sm"></i> Print
+        </button>
+      </div>
     </div>
     <div id="isi-modal-detail-jadwal"></div>
   </div>
@@ -449,6 +456,125 @@ try {
 .btn-hapus-baris:hover, .btn-hapus-baris:focus {
   background: #b91c1c;
   box-shadow: 0 4px 16px 0 rgba(239,68,68,0.15);
+}
+
+/* Custom styling untuk tombol print di modal */
+#btnPrintDetailJadwal {
+  min-width: 120px;
+  transition: all 0.3s ease;
+  margin-right: 3rem; /* Memberikan ruang untuk tombol close */
+}
+
+/* Custom styling untuk tombol print siswa */
+#btnPrintSiswa {
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+#btnPrintSiswa:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+}
+
+#btnPrintDetailJadwal:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.3);
+}
+
+#btnPrintDetailJadwal:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#btnPrintDetailJadwal:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
+/* Custom styling untuk tombol close di modal */
+#close-modal-detail-jadwal {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 30;
+  background: white;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  min-width: 2.5rem; /* Memastikan ukuran minimum */
+}
+
+#close-modal-detail-jadwal:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+}
+
+/* Responsive design untuk modal */
+@media (max-width: 768px) {
+  #modal-detail-jadwal .bg-white {
+    margin: 1rem;
+    max-width: calc(100vw - 2rem);
+  }
+  
+  #btnPrintDetailJadwal {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    margin-right: 2rem; /* Kurangi margin untuk mobile */
+  }
+  
+  #btnPrintSiswa {
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  #modal-detail-jadwal .text-xl {
+    font-size: 1.125rem;
+  }
+  
+  #modal-detail-jadwal .flex.items-center.justify-between {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  #btnPrintDetailJadwal {
+    min-width: 80px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+    margin-right: 1.5rem; /* Margin minimal untuk mobile kecil */
+  }
+  
+  #btnPrintSiswa {
+    min-width: 80px;
+    font-size: 0.7rem;
+    padding: 0.4rem 0.6rem;
+  }
+  
+  #modal-detail-jadwal .p-6 {
+    padding: 1rem;
+  }
+  
+  #close-modal-detail-jadwal {
+    top: 0.25rem;
+    right: 0.25rem;
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -775,6 +901,7 @@ document.addEventListener('click', function(e) {
     const btn = e.target.closest('.btn-detail-jadwal');
     const jadwal = JSON.parse(btn.getAttribute('data-jadwal'));
     const mapel = btn.getAttribute('data-mapel');
+    const idTrx = btn.getAttribute('data-id');
     let html = `<table class='min-w-full text-xs border'><thead><tr><th class='px-2 py-1 border'>Mapel</th><th class='px-2 py-1 border'>Tanggal</th><th class='px-2 py-1 border'>Jam</th><th class='px-2 py-1 border'>Aksi</th></tr></thead><tbody>`;
     jadwal.forEach((j, idx) => {
       html += `<tr data-idx='${idx}' data-idjadwal='${j.id}'>
@@ -794,6 +921,7 @@ document.addEventListener('click', function(e) {
     window.currentJadwalData = {
       jadwal: jadwal,
       mapel: mapel,
+      id_trx: idTrx,
       siswa: {
         nama: '<?= htmlspecialchars($siswa['nama']) ?>',
         email: '<?= htmlspecialchars($siswa['email']) ?>'
@@ -826,10 +954,48 @@ document.addEventListener('click', function(e) {
   
   // Handler tombol print detail jadwal
   if (e.target.closest('#btnPrintDetailJadwal')) {
+    const btn = e.target.closest('#btnPrintDetailJadwal');
+    const originalContent = btn.innerHTML;
+    
     if (window.currentJadwalData) {
       const data = window.currentJadwalData;
-      const encodedData = encodeURIComponent(JSON.stringify(data));
-      window.open(`print/print_detail_jadwal.php?data=${encodedData}`, '_blank');
+      // Ambil data transaksi untuk print invoice
+      const idTrx = data.id_trx;
+      if (idTrx) {
+        // Tampilkan loading state
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin text-sm"></i> Loading...';
+        btn.disabled = true;
+        
+        // Gunakan file print invoice yang sama dengan root
+        fetch('../api/trx_proses.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `action=detail&id=${idTrx}`
+        })
+        .then(response => response.json())
+        .then(result => {
+          if (result.status === 'ok') {
+            const transaksi = result.data;
+            const encodedData = encodeURIComponent(JSON.stringify(transaksi));
+            window.open(`../dashboard/print/print_detail_transaksi.php?data=${encodedData}`, '_blank');
+            // Kembalikan tombol ke state normal
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+          } else {
+            Swal.fire('Error!', 'Gagal memuat data invoice untuk print', 'error');
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          Swal.fire('Error!', 'Terjadi kesalahan pada sistem.', 'error');
+          btn.innerHTML = originalContent;
+          btn.disabled = false;
+        });
+      } else {
+        Swal.fire('Error!', 'Data transaksi tidak ditemukan', 'error');
+      }
     }
     return;
   }
@@ -906,6 +1072,12 @@ document.getElementById('formEditJadwal').onsubmit = function(e) {
     Swal.fire('Gagal', 'Gagal update jadwal', 'error');
   });
 };
+
+// Print button untuk detail siswa
+document.getElementById('btnPrintSiswa').addEventListener('click', function() {
+    const id = <?= $siswa['id'] ?>;
+    window.open(`print/print_detail_siswa.php?id=${id}`, '_blank');
+});
 </script>
 <script>
 // Script modal bayar transaksi

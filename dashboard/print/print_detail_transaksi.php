@@ -21,7 +21,7 @@ $jadwal = $transaksi['jadwal'] ?? [];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detail Transaksi - Print</title>
+  <title>Invoice - Print</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -117,6 +117,20 @@ $jadwal = $transaksi['jadwal'] ?? [];
       text-align: center;
       padding: 5px 10px;
       border-radius: 15px;
+    }
+    .watermark-lunas {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 120px;
+      font-weight: bold;
+      color: rgba(34, 197, 94, 0.15);
+      z-index: 1000;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
       font-size: 10px;
       font-weight: bold;
     }
@@ -169,6 +183,9 @@ $jadwal = $transaksi['jadwal'] ?? [];
   </style>
 </head>
 <body>
+  <?php if (($transaksi['harga'] - $transaksi['bayar']) <= 0): ?>
+  <div class="watermark-lunas">LUNAS</div>
+  <?php endif; ?>
   <div class="kop">
     <img src="../../assets/img/<?= htmlspecialchars($profil['logo2']) ?>" alt="Logo">
     <div class="info">
@@ -177,7 +194,7 @@ $jadwal = $transaksi['jadwal'] ?? [];
       <div class="kontak">Telp: <?= htmlspecialchars($profil['wa']) ?> | Email: <?= htmlspecialchars($profil['email']) ?></div>
     </div>
   </div>
-  <h2>DETAIL TRANSAKSI</h2>
+  <h2>INVOICE</h2>
   
   <div class="info-section">
     <h3 style="margin: 0 0 10px 0; font-size: 14px;">Informasi Transaksi</h3>
