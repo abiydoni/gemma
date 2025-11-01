@@ -27,4 +27,4 @@ $_SESSION['user_role'] = $user['role'];
 $_SESSION['user_nama'] = $user['nama'];
 
 // Sukses
-echo json_encode(['status'=>'ok']); 
+echo json_encode(['status'=>'ok', 'role'=>$user['role']]); 

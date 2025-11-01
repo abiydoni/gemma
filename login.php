@@ -34,7 +34,12 @@ document.getElementById('form-login').addEventListener('submit', async function(
   btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Login';
   if (data.status === 'ok') {
     Swal.fire({ icon: 'success', title: 'Login Berhasil', text: 'Selamat datang!' }).then(() => {
-      window.location.href = 'dashboard/index.php';
+      // Redirect berdasarkan role
+      if (data.role === 'tentor') {
+        window.location.href = 'tentor/index.php';
+      } else {
+        window.location.href = 'dashboard/index.php';
+      }
     });
   } else {
     Swal.fire({ icon: 'error', title: 'Login Gagal', text: data.msg || 'Email atau password salah.' });
