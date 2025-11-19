@@ -128,6 +128,46 @@ elseif ($action === 'save') {
         exit;
     }
     
+    // Validasi: Cek apakah sudah ada laporan untuk kombinasi email+mapel+tanggal+tentor
+    // Untuk tambah baru: cek apakah kombinasi sudah ada
+    // Untuk edit: cek apakah kombinasi sudah ada (kecuali laporan yang sedang diedit)
+    try {
+        if ($id) {
+            // Saat edit, ambil data lama untuk dibandingkan
+            $stmt = $pdo->prepare('SELECT email, mapel, tanggal FROM tb_perkembangan_siswa WHERE id = ? AND tentor = ? LIMIT 1');
+            $stmt->execute([$id, $tentor_nama]);
+            $oldData = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$oldData) {
+                echo json_encode(['status' => 'fail', 'msg' => 'Laporan tidak ditemukan atau bukan milik Anda!']);
+                exit;
+            }
+            
+            // Jika kombinasi baru berbeda dengan yang lama, cek apakah kombinasi baru sudah ada
+            if ($oldData['email'] != $email || $oldData['mapel'] != $mapel || $oldData['tanggal'] != $tanggal) {
+                $stmt = $pdo->prepare('SELECT COUNT(*) as count FROM tb_perkembangan_siswa WHERE email = ? AND mapel = ? AND tanggal = ? AND tentor = ? AND id != ?');
+                $stmt->execute([$email, $mapel, $tanggal, $tentor_nama, $id]);
+                $check = $stmt->fetch();
+                if ($check['count'] > 0) {
+                    echo json_encode(['status' => 'fail', 'msg' => 'Laporan untuk siswa ini pada tanggal dan mapel yang dipilih sudah ada!']);
+                    exit;
+                }
+            }
+        } else {
+            // Saat tambah baru, cek apakah kombinasi sudah ada
+            $stmt = $pdo->prepare('SELECT COUNT(*) as count FROM tb_perkembangan_siswa WHERE email = ? AND mapel = ? AND tanggal = ? AND tentor = ?');
+            $stmt->execute([$email, $mapel, $tanggal, $tentor_nama]);
+            $check = $stmt->fetch();
+            if ($check['count'] > 0) {
+                echo json_encode(['status' => 'fail', 'msg' => 'Laporan untuk siswa ini pada tanggal dan mapel yang dipilih sudah ada!']);
+                exit;
+            }
+        }
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'msg' => 'Error validasi duplikasi: ' . $e->getMessage()]);
+        exit;
+    }
+    
     try {
         $pdo->beginTransaction();
         
@@ -259,6 +299,72 @@ elseif ($action === 'delete') {
         } else {
             echo json_encode(['status' => 'fail', 'msg' => 'Data tidak ditemukan atau bukan milik Anda!']);
         }
+    } catch (Exception $e) {
+        echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
+    }
+}
+
+elseif ($action === 'get_siswa_tersedia') {
+    // Ambil siswa yang diajar tentor ini dan belum punya laporan untuk tanggal dan mapel tertentu
+    $tanggal = $_POST['tanggal'] ?? '';
+    $mapel = $_POST['mapel'] ?? '';
+    $exclude_id = $_POST['exclude_id'] ?? ''; // ID laporan yang sedang diedit (untuk exclude dari pengecekan)
+    
+    try {
+        // Query untuk mendapatkan siswa yang diajar tentor ini
+        // dan belum punya laporan untuk kombinasi tanggal+mapel+tentor
+        // Kecuali laporan dengan exclude_id (saat edit)
+        
+        // Jika tanggal dan mapel sudah dipilih, cek kombinasi lengkap
+        // Jika belum, tampilkan semua siswa yang diajar tentor
+        if ($tanggal && $mapel) {
+            $sql = "
+                SELECT DISTINCT 
+                    t.email, 
+                    COALESCE(s.nama, t.email) as nama
+                FROM tb_trx t
+                LEFT JOIN tb_siswa s ON t.email = s.email
+                WHERE t.id_tentor = ?
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM tb_perkembangan_siswa p 
+                    WHERE p.email = t.email 
+                    AND p.tentor = ?
+                    AND p.tanggal = ?
+                    AND p.mapel = ?
+            ";
+            
+            $params = [$tentor_id, $tentor_nama, $tanggal, $mapel];
+            
+            // Exclude laporan yang sedang diedit
+            if ($exclude_id) {
+                $sql .= " AND p.id != ?";
+                $params[] = $exclude_id;
+            }
+            
+            $sql .= "
+                )
+                ORDER BY s.nama ASC, t.email ASC
+            ";
+        } else {
+            // Jika tanggal atau mapel belum dipilih, tampilkan semua siswa yang diajar tentor
+            $sql = "
+                SELECT DISTINCT 
+                    t.email, 
+                    COALESCE(s.nama, t.email) as nama
+                FROM tb_trx t
+                LEFT JOIN tb_siswa s ON t.email = s.email
+                WHERE t.id_tentor = ?
+                ORDER BY s.nama ASC, t.email ASC
+            ";
+            $params = [$tentor_id];
+        }
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode(['status' => 'ok', 'data' => $data]);
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'msg' => $e->getMessage()]);
     }

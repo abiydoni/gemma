@@ -4,9 +4,11 @@
 $tentor_id = $_SESSION['user_id'] ?? 0;
 $tentor_nama = $_SESSION['user_nama'] ?? '';
 
-// Ambil siswa yang diajar oleh tentor ini
+// Ambil siswa yang diajar oleh tentor ini (belum punya laporan untuk tanggal tertentu)
+// Query ini akan di-update via AJAX saat tanggal dipilih
 $siswa = [];
 try {
+    // Ambil semua siswa yang diajar tentor ini
     $stmt = $pdo->prepare('SELECT DISTINCT t.email, s.nama FROM tb_trx t LEFT JOIN tb_siswa s ON t.email = s.email WHERE t.id_tentor = ? ORDER BY s.nama ASC, t.email ASC');
     $stmt->execute([$tentor_id]);
     $siswa = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -274,14 +276,82 @@ function resetFilter() {
     loadLaporan();
 }
 
+// Fungsi untuk update dropdown siswa berdasarkan tanggal dan mapel
+function updateSiswaDropdown() {
+    const tanggal = document.getElementById('laporan-tanggal').value;
+    const mapel = document.getElementById('laporan-mapel').value;
+    const emailSelect = document.getElementById('laporan-email');
+    const currentValue = emailSelect.value;
+    const laporanId = document.getElementById('laporan-id').value; // ID laporan yang sedang diedit
+    
+    // Jika tanggal atau mapel belum dipilih, reset dropdown
+    if (!tanggal || !mapel) {
+        emailSelect.innerHTML = '<option value="">Pilih Tanggal dan Mapel terlebih dahulu</option>';
+        emailSelect.disabled = true;
+        return;
+    }
+    
+    // Tampilkan loading
+    emailSelect.innerHTML = '<option value="">Memuat...</option>';
+    emailSelect.disabled = true;
+    
+    const formData = new FormData();
+    formData.append('action', 'get_siswa_tersedia');
+    formData.append('tanggal', tanggal);
+    formData.append('mapel', mapel);
+    if (laporanId) formData.append('exclude_id', laporanId); // Exclude laporan yang sedang diedit
+    
+    fetch('api/laporan_proses.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        emailSelect.innerHTML = '<option value="">Pilih Siswa</option>';
+        emailSelect.disabled = false;
+        
+        if (data.status === 'ok' && data.data.length > 0) {
+            data.data.forEach(siswa => {
+                const option = document.createElement('option');
+                option.value = siswa.email;
+                option.textContent = (siswa.nama || siswa.email) + ' (' + siswa.email + ')';
+                emailSelect.appendChild(option);
+            });
+            
+            // Restore previous value if still available
+            if (currentValue) {
+                const optionExists = Array.from(emailSelect.options).some(opt => opt.value === currentValue);
+                if (optionExists) {
+                    emailSelect.value = currentValue;
+                }
+            }
+        } else {
+            emailSelect.innerHTML = '<option value="">Tidak ada siswa tersedia (semua sudah memiliki laporan)</option>';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        emailSelect.innerHTML = '<option value="">Error memuat data</option>';
+        emailSelect.disabled = false;
+    });
+}
+
 // Modal handlers
 document.getElementById('btn-tambah-laporan').addEventListener('click', function() {
     document.getElementById('modal-title-laporan').textContent = 'Tambah Laporan Perkembangan';
     document.getElementById('form-laporan').reset();
     document.getElementById('laporan-id').value = '';
     document.getElementById('laporan-tanggal').value = new Date().toISOString().split('T')[0];
+    document.getElementById('laporan-email').innerHTML = '<option value="">Pilih Tanggal dan Mapel terlebih dahulu</option>';
+    document.getElementById('laporan-email').disabled = true;
     document.getElementById('modal-laporan').classList.remove('hidden');
+    // Update dropdown siswa saat modal dibuka (jika tanggal dan mapel sudah ada)
+    updateSiswaDropdown();
 });
+
+// Update dropdown siswa saat tanggal atau mapel berubah
+document.getElementById('laporan-tanggal').addEventListener('change', updateSiswaDropdown);
+document.getElementById('laporan-mapel').addEventListener('change', updateSiswaDropdown);
 
 document.getElementById('close-modal-laporan').addEventListener('click', function() {
     document.getElementById('modal-laporan').classList.add('hidden');
@@ -428,6 +498,8 @@ function editLaporan(id) {
             
             document.getElementById('modal-title-laporan').textContent = 'Edit Laporan Perkembangan';
             document.getElementById('modal-laporan').classList.remove('hidden');
+            // Update dropdown siswa setelah data dimuat (untuk memastikan siswa yang diedit tetap muncul)
+            updateSiswaDropdown();
         } else {
             Swal.fire({
                 title: 'Error!',
