@@ -1,7 +1,11 @@
 <?php include "header.php"; ?>
 
 <?php
-$tentor_id = $_SESSION['user_id'] ?? 0;
+$tentor_id = intval($_SESSION['user_id'] ?? 0);
+if ($tentor_id <= 0) {
+    header('Location: ../login.php');
+    exit;
+}
 
 // Ambil statistik untuk tentor
 $stats = [];
@@ -35,12 +39,10 @@ try {
     ];
 }
 
-// Ambil jadwal hari ini atau jadwal terdekat (jika tidak ada jadwal hari ini)
-$jadwal_hari_ini = [];
+// Ambil jadwal mendatang untuk tentor (termasuk hari ini)
+$jadwal_mendatang = [];
 $debug_jadwal = [];
 try {
-    // Query untuk mengambil semua jadwal untuk tentor ini (tidak dibatasi tanggal)
-    // Pastikan semua field sesuai dan JOIN benar
     $stmt = $pdo->prepare("
         SELECT 
             tt.id as jadwal_id,
@@ -59,87 +61,24 @@ try {
         LEFT JOIN tb_siswa s ON t.email = s.email
         LEFT JOIN tb_mapel m ON t.mapel = m.kode
         LEFT JOIN tb_paket p ON t.paket = p.Kode
-        ORDER BY tt.tanggal DESC, tt.jam_trx ASC
+        WHERE DATE(tt.tanggal) >= CURRENT_DATE()
+        ORDER BY tt.tanggal ASC, tt.jam_trx ASC
         LIMIT 10
     ");
     $stmt->execute([$tentor_id]);
-    $all_jadwal = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    // Filter dan urutkan: prioritaskan jadwal hari ini, lalu akan datang, lalu yang terbaru
-    $today_jadwal = [];
-    $upcoming_jadwal = [];
-    $past_jadwal = [];
-    $today = date('Y-m-d');
-    
-    foreach($all_jadwal as $j) {
-        // Normalisasi format tanggal - pastikan konsisten dengan jadwal.php
-        $tanggal = $j['tanggal'];
-        if (is_string($tanggal)) {
-            // Jika ada waktu, ambil hanya tanggal
-            if (strpos($tanggal, ' ') !== false) {
-                $tanggal = explode(' ', $tanggal)[0];
-            }
-            // Pastikan format Y-m-d
-            if (strtotime($tanggal)) {
-                $tanggal = date('Y-m-d', strtotime($tanggal));
-            }
-        } else {
-            $tanggal = date('Y-m-d', strtotime($tanggal));
+    $jadwal_mendatang = array_map(function($row) {
+        if (!empty($row['tanggal'])) {
+            $row['tanggal'] = date('Y-m-d', strtotime($row['tanggal']));
         }
-        
-        // Update tanggal di array untuk konsistensi
-        $j['tanggal'] = $tanggal;
-        
-        if ($tanggal == $today) {
-            $today_jadwal[] = $j;
-        } elseif ($tanggal > $today) {
-            $upcoming_jadwal[] = $j;
-        } else {
-            $past_jadwal[] = $j;
-        }
-    }
-    
-    // Urutkan masing-masing array berdasarkan tanggal yang sudah dinormalisasi
-    usort($today_jadwal, function($a, $b) {
-        return strcmp($a['jam_trx'] ?? '', $b['jam_trx'] ?? '');
-    });
-    usort($upcoming_jadwal, function($a, $b) {
-        $tgl_a = $a['tanggal'] ?? '';
-        $tgl_b = $b['tanggal'] ?? '';
-        if ($tgl_a == $tgl_b) {
-            return strcmp($a['jam_trx'] ?? '', $b['jam_trx'] ?? '');
-        }
-        return strcmp($tgl_a, $tgl_b);
-    });
-    usort($past_jadwal, function($a, $b) {
-        $tgl_a = $a['tanggal'] ?? '';
-        $tgl_b = $b['tanggal'] ?? '';
-        if ($tgl_a == $tgl_b) {
-            return strcmp($a['jam_trx'] ?? '', $b['jam_trx'] ?? '');
-        }
-        return strcmp($tgl_b, $tgl_a); // Descending untuk yang sudah lewat
-    });
-    
-    // Prioritas: hari ini > akan datang > yang terbaru (jika tidak ada yang akan datang)
-    if (!empty($today_jadwal)) {
-        $jadwal_hari_ini = array_slice($today_jadwal, 0, 5);
-    } elseif (!empty($upcoming_jadwal)) {
-        $jadwal_hari_ini = array_slice($upcoming_jadwal, 0, 5);
-    } else {
-        // Jika tidak ada jadwal hari ini atau akan datang, tampilkan yang terbaru (walaupun sudah lewat)
-        $jadwal_hari_ini = array_slice($past_jadwal, 0, 5);
-    }
+        return $row;
+    }, $stmt->fetchAll(PDO::FETCH_ASSOC));
     $debug_jadwal = [
-        'total_found' => count($all_jadwal),
-        'today_count' => count($today_jadwal),
-        'upcoming_count' => count($upcoming_jadwal),
-        'past_count' => count($past_jadwal),
-        'final_count' => count($jadwal_hari_ini),
         'tentor_id' => $tentor_id,
-        'today_date' => $today
+        'rows_found' => count($jadwal_mendatang),
+        'today_date' => date('Y-m-d')
     ];
 } catch(Exception $e) {
-    error_log("Error loading jadwal hari ini tentor ID $tentor_id: " . $e->getMessage());
+    error_log("Error loading jadwal mendatang tentor ID $tentor_id: " . $e->getMessage());
     $debug_jadwal['error'] = $e->getMessage();
 }
 
@@ -255,37 +194,22 @@ try {
 
     <!-- Jadwal Hari Ini dan Data Lainnya -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Jadwal Hari Ini / Terdekat -->
+        <!-- Jadwal Mendatang -->
         <div class="bg-white p-6 rounded-2xl shadow-lg">
             <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <i class="fas fa-calendar-day text-blue-600"></i>
-                <?php 
-                $is_hari_ini = false;
-                if (!empty($jadwal_hari_ini)) {
-                    $first_tanggal = $jadwal_hari_ini[0]['tanggal'];
-                    if (strpos($first_tanggal, ' ') !== false) {
-                        $first_tanggal = explode(' ', $first_tanggal)[0];
-                    }
-                    $first_tanggal = date('Y-m-d', strtotime($first_tanggal));
-                    $is_hari_ini = $first_tanggal == date('Y-m-d');
-                }
-                echo $is_hari_ini ? 'Jadwal Hari Ini' : 'Jadwal Terdekat';
-                ?>
+                Jadwal Mendatang
             </h3>
             <div class="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                <?php if (empty($jadwal_hari_ini)): ?>
-                    <p class="text-gray-500 text-center py-4">Tidak ada jadwal</p>
+                <?php if (empty($jadwal_mendatang)): ?>
+                    <p class="text-gray-500 text-center py-4">Belum ada jadwal mendatang</p>
                     <?php if (!empty($debug_jadwal)): ?>
                     <details class="mt-2 text-xs text-gray-400">
                         <summary class="cursor-pointer">Debug Info</summary>
                         <div class="mt-2 p-2 bg-gray-100 rounded text-left">
                             <div>Tentor ID: <?= $debug_jadwal['tentor_id'] ?? 'N/A' ?></div>
                             <div>Today Date: <?= $debug_jadwal['today_date'] ?? date('Y-m-d') ?></div>
-                            <div>Total Found: <?= $debug_jadwal['total_found'] ?? 0 ?></div>
-                            <div>Today Count: <?= $debug_jadwal['today_count'] ?? 0 ?></div>
-                            <div>Upcoming Count: <?= $debug_jadwal['upcoming_count'] ?? 0 ?></div>
-                            <div>Past Count: <?= $debug_jadwal['past_count'] ?? 0 ?></div>
-                            <div>Final Count: <?= $debug_jadwal['final_count'] ?? 0 ?></div>
+                            <div>Total Found: <?= $debug_jadwal['rows_found'] ?? 0 ?></div>
                             <?php if (isset($debug_jadwal['error'])): ?>
                                 <div class="text-red-600">Error: <?= htmlspecialchars($debug_jadwal['error']) ?></div>
                             <?php endif; ?>
@@ -293,18 +217,14 @@ try {
                     </details>
                     <?php endif; ?>
                 <?php else: ?>
-                    <?php foreach ($jadwal_hari_ini as $jadwal): ?>
+                    <?php foreach ($jadwal_mendatang as $jadwal): ?>
                         <?php 
                         // Normalisasi tanggal untuk perbandingan
                         $jadwal_tanggal = $jadwal['tanggal'];
-                        if (strpos($jadwal_tanggal, ' ') !== false) {
-                            $jadwal_tanggal = explode(' ', $jadwal_tanggal)[0];
-                        }
                         $jadwal_tanggal = date('Y-m-d', strtotime($jadwal_tanggal));
                         $is_today = $jadwal_tanggal == date('Y-m-d');
-                        $is_past = $jadwal_tanggal < date('Y-m-d');
                         ?>
-                        <div class="flex items-center justify-between p-3 <?= $is_today ? 'bg-blue-50' : ($is_past ? 'bg-gray-50' : 'bg-green-50') ?> rounded-lg hover:bg-opacity-80 transition">
+                        <div class="flex items-center justify-between p-3 <?= $is_today ? 'bg-blue-50' : 'bg-green-50' ?> rounded-lg hover:bg-opacity-80 transition">
                             <div class="flex-1">
                                 <p class="font-semibold text-gray-800"><?= htmlspecialchars($jadwal['nama_siswa'] ?? $jadwal['email'] ?? 'Tidak Diketahui') ?></p>
                                 <p class="text-sm text-gray-600"><?= htmlspecialchars($jadwal['nama_mapel'] ?? '-') ?></p>
@@ -313,6 +233,9 @@ try {
                             <div class="text-right">
                                 <p class="font-bold text-blue-600"><?= htmlspecialchars($jadwal['jam_trx'] ?? '-') ?></p>
                                 <p class="text-xs text-gray-500"><?= date('d/m/Y', strtotime($jadwal_tanggal)) ?></p>
+                                <?php if ($is_today): ?>
+                                    <span class="inline-block mt-1 px-2 py-0.5 rounded-full text-xs bg-blue-600 text-white">Hari ini</span>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
